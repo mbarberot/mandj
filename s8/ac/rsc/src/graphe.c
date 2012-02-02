@@ -1,0 +1,4 @@
+void piou ()
+{
+  printf("piou");
+}
