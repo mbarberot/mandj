@@ -20,26 +20,64 @@
 # -----------------------------------------------------------------------
 
 
+#
+# Variables pour la compilation
+# CC : Le compilateur des sources
+# CFLAGS : Les options de compilations
+# 	-O4 -W -Wall : Compilation rigoureuse (tous les warnings sont affichés) 
+#	-g : Permet d'utiliser le débogueur
+# CPPFLAGS : ?
+# LDFLGAD : Les librairies à utiliser lors de la compilation
+#	- m : ?
+# AR : La commande construisant les .a
+#
+CC=gcc
+CFLAGS=-O4 -W -Wall -g
+CPPFLAGS=-I.
+LDFLAGS=-lm
+AR=ar -q
+
+#
+# EXE : Le fichier à créer
+# SRC : Les fichiers .c
+# HDR : Les fichiers .h
+# OBJ : Les fichiers .o
+#
+EXE=liste.a
+SRC=$(wildcard *.c)
+HDR=$(wildcard *.h)
+OBJ=$(SRC:.c=.o)
 
 #
 # Dossiers utiles
 # INC : dossier contenant les .h (généralement appelé "include")
 # LIB : dossier contenant les .a/.so (généralement appelé "lib")
 #
-LISTE= ./liste
-GRAPHE= ./graphe
+INC=../../include/
+LIB=../../lib
 
 
 #
 # Règle principale
 #
-all : liste.a graphe.a
+all : $(EXE)
 
-liste.a:
-	make -C $(LISTE)
+#
+# 1/ Construction de l'archive
+# 2/ Copie des .h dans le dossier "include"
+# 3/ Copie des .a dans le dossier "lib"
+#
+$(EXE) : $(OBJ)
+	$(AR) $@ $^
+	cp $(HDR) $(INC)
+	cp $(EXE) $(LIB)
 
-graphe.a: liste
-	make -C $(GRAPHE)
+#
+# Compilation de tous les .c et .h en .o
+#
+%.o : %.c %.h
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ -c $< $(LDFLAGS)
+
 
 # 
 # Nettoyage
@@ -52,11 +90,12 @@ graphe.a: liste
 #		3/ supprime les fichier .a du dossier "lib"
 #
 clean : 
-	make -C $(LISTE) clean
-	make -C $(GRAPHE) clean
+	rm *.o
 
 reset :
-	make -C $(LISTE) reset
-	make -C $(GRAPHE) reset
+	rm $(EXE)
 
 veryclean : clean reset
+	rm $(INC)$(HDR)
+	rm $(LIB)$(EXE)
+
