@@ -58,10 +58,14 @@ testerArete(int idGraphe,
 	    char oriente,
 	    int resAttendu);		// Todo
 testerSommet(int idGraphe,
-	     int X,Res);
-testerDegreSommet(G,X,D,R)
-compareGraphe(Res)
-compareSommet(X,Res)
+	     int X,Res);		// Todo
+testerDegreSommet(int idGraphe,
+		  int sommet,
+		  int value,
+		  int resAttendu);	// Todo
+compareGraphe(int resAttendu);		// Todo
+compareSommet(int sommet,
+	      int resAttendu);		// Todo
 
 
 #endif
