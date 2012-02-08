@@ -29,6 +29,22 @@ typedef struct enum
         RES_OK
 };
 
+/*
+ * La structure de graphe :
+ *
+ *      int id          - ID du graphe (1 ou 2)
+ *      int nbSommets   - Nombre de sommets du graphe
+ *      int[] aretes    - Ensemble des aretes
+ *
+ *
+ */
+typedef struct Graphe {
+        int id;
+        int nbSommets;
+        int[] aretes; 
+} Graphe ;
+
+
 
 /*
  * Fonctions
