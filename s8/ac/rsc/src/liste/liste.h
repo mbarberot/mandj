@@ -12,10 +12,13 @@ typedef struct voisins {
   struct voisins* voisinSuivant; 
 }TypVoisins;
 
-void initialiseListe(TypVoisins* l);
-void ajouteVoisin(TypVoisins* l, int numVoisin, int poidsVoisin, void* info);
-void supprimeVoisin(TypVoisins* l, int numVoisin);
-void afficheVoisins(TypVoisins* l);
+
+
+int initialiseListe(TypVoisins** l);
+int ajouteVoisin(TypVoisins** l, int numVoisin, int poidsVoisin, void* info);
+int supprimeVoisin(TypVoisins** l, int numVoisin);
+void afficheVoisins(TypVoisins** l);
+int voisinExiste(TypVoisins** l, int numVoisin);
 
 #endif
 
