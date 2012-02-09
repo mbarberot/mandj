@@ -5,7 +5,7 @@
 /*
  * Les erreurs
  */
-typedef struct enum 
+typedef enum 
 {       
         SOMMET_INVALIDE,
         POIDS_INVALIDE,
@@ -27,7 +27,7 @@ typedef struct enum
         PROBLEME_MEMOIRE,
         COMMANDE_INVALIDE,
         RES_OK
-};
+} error ;
 
 /*
  * La structure de graphe :
@@ -41,7 +41,7 @@ typedef struct enum
 typedef struct Graphe {
         int id;
         int nbSommets;
-        int[] aretes; 
+        int aretes[]; 
 } Graphe ;
 
 
@@ -50,41 +50,42 @@ typedef struct Graphe {
  * Fonctions
  */
 
-choisirGraphe(int idGraphe);            // Todo
-chargerGraph();                         // Todo, Arg?
-creation(int maxSommet);                // Todo
-modifierNbMaxSommet(int maxSommet);     // Todo
-suppressionGraphe(int idGraphe);        // Todo
-insertionSommet(int nvSommet);          // Todo
-suppressionSommet(int sommet);          // Todo
-insertionArete(int sommetDep,
-                int poids,
-                int sommetArr,
-                char oriente);          // Todo
-modifierPoids(int sommetDep,
-                int nvPoids,
-                int sommetArr,
-                char oriente);          // Todo
-suppressionArete(int sommetDep,
-                int sommetArr,
-                char oriente);          // Todo
-viderGraphe()                           // Todo
-viderAreteGraphe()                      // Todo
-testerArete(int idGraphe,
-            int sommetDep,
-            int poids,
-            int sommetArr,
-            char oriente,
-            int resAttendu);            // Todo
-testerSommet(int idGraphe,
-             int X,Res);                // Todo
-testerDegreSommet(int idGraphe,
+void choisirGraphe(int idGraphe);       // Todo
+void chargerGraph();                    // Todo, Arg?
+void creation(int maxSommet);           // Todo
+void modifierNbMaxSommet(int maxSommet);// Todo
+void suppressionGraphe(int idGraphe);   // Todo
+void insertionSommet(int nvSommet);     // Todo
+void suppressionSommet(int sommet);     // Todo
+void insertionArete(int sommetDep,
+                    int poids,
+                    int sommetArr,
+                    char oriente);      // Todo
+void modifierPoids(int sommetDep,
+                   int nvPoids,
+                   int sommetArr,
+                   char oriente);       // Todo
+void suppressionArete(int sommetDep,
+                      int sommetArr,
+                      char oriente);    // Todo
+void viderGraphe();                      // Todo
+void viderAreteGraphe();                 // Todo
+void testerArete(int idGraphe,
+                 int sommetDep,
+                 int poids,
+                 int sommetArr,
+                 char oriente,
+                 int resAttendu);       // Todo
+void testerSommet(int idGraphe,
                   int sommet,
-                  int value,
                   int resAttendu);      // Todo
-compareGraphe(int resAttendu);          // Todo
-compareSommet(int sommet,
-              int resAttendu);          // Todo
+void testerDegreSommet(int idGraphe,
+                       int sommet,
+                       int value,
+                       int resAttendu); // Todo
+void compareGraphe(int resAttendu);     // Todo
+void compareSommet(int sommet,
+                   int resAttendu);     // Todo
 
 
 #endif

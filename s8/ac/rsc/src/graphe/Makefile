@@ -60,7 +60,13 @@ LIB=../../lib
 #
 # Règle principale
 #
-all : $(EXE)
+all : lib $(EXE)
+
+
+lib :
+	make -C ../liste/
+
+
 
 #
 # 1/ Construction de l'archive
