@@ -33,7 +33,7 @@
 #
 CC=gcc
 CFLAGS=-O4 -W -Wall -g
-CPPFLAGS=-I.
+CPPFLAGS=-I $(INC)
 LDFLAGS=-lm $(LIB)/liste.a
 AR=ar -q
 
@@ -53,7 +53,7 @@ OBJ=$(SRC:.c=.o)
 # INC : dossier contenant les .h (généralement appelé "include")
 # LIB : dossier contenant les .a/.so (généralement appelé "lib")
 #
-INC=../../include/
+INC=../../include
 LIB=../../lib
 
 

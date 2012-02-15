@@ -15,6 +15,7 @@
 /*
  * Librairie de gestion des listes
  */
+#include <stdlib.h>
 #include "liste.h"
 
 /*
@@ -42,7 +43,7 @@ typedef enum
 	PROBLEME_MEMOIRE,
 	COMMANDE_INVALIDE,
 	RES_OK
-} error ;
+} erreur ;
 
 /*
  * La structure de graphe :
@@ -53,69 +54,76 @@ typedef enum
  *
  *
  */
-typedef struct 
+typedef struct TypGraphe
 {
 	int nbMaxSommets;
-	TypVoisins aretes[]; 
+	TypVoisins **aretes; 
 } TypGraphe ;
 
 
-
+/*
+ * Le graphe courant : 1 ou 2
+ */
 int grapheCourant;
+
+/*
+ * Les deux graphes à manipuler
+ */
+TypGraphe *graphes[2] = {NULL, NULL} ; 
 
 /*
  * Fonctions
  */
 
-void choisirGraphe(int idGraphe);	// Todo
-void chargerGraph();			// Todo, Arg?
-void creation(int maxSommet);		// Todo
-void modifierNbMaxSommet(int maxSommet);// Todo
-void suppressionGraphe(int idGraphe);	// Todo
-void insertionSommet(int nvSommet);	// Todo
-void suppressionSommet(int sommet);	// Todo
-void insertionArete(
+erreur choisirGraphe(int idGraphe);
+erreur creation(int maxSommet);			// Todo
+erreur modifierNbMaxSommet(int maxSommet);	// Todo
+erreur suppressionGraphe(int idGraphe);		// Todo
+erreur insertionSommet(int nvSommet);		// Todo
+erreur suppressionSommet(int sommet);		// Todo
+erreur insertionArete(
 		int sommetDep,
 		int poids,
 		int sommetArr,
 		char oriente
-		);			// Todo
-void modifierPoids(
+		);				// Todo
+erreur modifierPoids(
 		int sommetDep,
 		int nvPoids,
 		int sommetArr,
 		char oriente
-		);			// Todo
-void suppressionArete(
+		);				// Todo
+erreur suppressionArete(
 		int sommetDep,
 		int sommetArr,
 		char oriente
-		);			// Todo
-void viderGraphe();			// Todo
-void viderAreteGraphe();		// Todo
-void testerArete(
+		);				// Todo
+erreur viderGraphe();				// Todo
+erreur viderAreteGraphe();			// Todo
+erreur testerArete(
 		int idGraphe,
 		int sommetDep,
 		int poids,
 		int sommetArr,
 		char oriente,
 		int resAttendu
-		);			// Todo
-void testerSommet(
+		);				// Todo
+erreur testerSommet(
 		int idGraphe,
 		int sommet,
 		int resAttendu
-		);			// Todo
-void testerDegreSommet(
+		);				// Todo
+erreur testerDegreSommet(
 		int idGraphe,
                 int sommet,
 		int value,
 		int resAttendu
-		);			// Todo
-void compareGraphe(int resAttendu);	// Todo
-void compareSommet(
+		);				// Todo
+erreur compareGraphe(int resAttendu);		// Todo
+erreur compareSommet(
 		int sommet,
 		int resAttendu
-		);			// Todo
+		);				// Todo
+char* afficheGraphe(int idGraphe);		// Todo
 
 #endif
