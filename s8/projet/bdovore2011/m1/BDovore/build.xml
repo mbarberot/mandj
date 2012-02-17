@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="BDovore" default="compile" basedir=".">
+	
+	<property name="Sources" value="src"/>
+	<property name="Classes" value="bin"/>
+	<property name="Final"	 value="."/>
+	<property name="JavaDoc" value="Doc"/>
+	<property name="version" value="BDovore-0.8"/>
+	
+	<path id="classpath">  
+		<pathelement location="lib/"/>  
+		<pathelement path="lib/opencsv-1.8.jar"/>  
+		<pathelement path="lib/lucene-core-2.4.jar"/>
+		<pathelement path="lib/h2.jar"/>
+		<pathelement path="lib/axis.jar"/>
+		<pathelement path="lib/jaxrpc.jar"/>
+	</path>  
+	
+	
+	<target name="run" depends="compile">
+		<echo message="Execution du programme"/>
+		<java jar="${Final}/BDovore.jar" fork="yes"/>
+	</target>
+	
+	
+	<target name="compile">
+		
+		<mkdir dir="${Classes}"/>
+		
+		<echo message="Compilation des classes Java"/>
+		<javac srcdir="${Sources}" destdir="${Classes}" encoding="UTF-8"> <!-- "javac -encoding UTF-8" -->
+			<classpath refid="classpath"/>
+		</javac>
+		
+		<echo message="Creation du .JAR (avec ajout ressources)"/>
+		<copy todir="${Classes}/img"><fileset dir="img"/></copy>
+		<jar jarfile="${Final}/BDovore.jar" 
+		manifest="MANIFEST.MF" basedir="${Classes}"/>
+		
+	</target>
+	
+	
+	<target name="clean">
+		<echo message="Suppression des fichiers produits"/>
+		<delete dir="${Classes}"/>
+		<delete dir="${JavaDoc}"/>
+	</target>
+	
+	
+	<target name="doc">
+		
+		<mkdir dir="${JavaDoc}"/>
+		
+		<echo message="Generation de la documentation JAVA"/>
+		<javadoc sourceFiles="${Sources}/main/Main.java" sourcepath="${Sources}" 
+			destdir="${JavaDoc}" private="true" encoding="UTF-8"
+		/>
+	</target>
+</project>

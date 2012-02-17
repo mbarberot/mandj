@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<definitions name='BDovore'
+    targetNamespace='server.wsdl' 
+    xmlns:tns='server.wsdl'
+    xmlns:xsd='http://www.w3.org/2001/XMLSchema' 
+    xmlns:soap='http://schemas.xmlsoap.org/wsdl/soap/'
+    xmlns:soapenc='http://schemas.xmlsoap.org/soap/encoding/'
+    xmlns:wsdl='http://schemas.xmlsoap.org/wsdl/'
+    xmlns='http://schemas.xmlsoap.org/wsdl/'>
+
+<wsdl:message name='getDetailsRequest'></wsdl:message>
+<wsdl:message name='getDetailsResponse'>
+<wsdl:part name='details' type='xsd:string'/></wsdl:message> 
+
+<wsdl:message name='getBibliothequeRequest'></wsdl:message>
+<wsdl:message name='getBibliothequeResponse'>
+<wsdl:part name='bibliotheque' type='xsd:string'/></wsdl:message> 
+
+<wsdl:message name='setBibliothequeRequest'>
+<wsdl:part name='bibliotheque' type='xsd:string'/></wsdl:message>
+<wsdl:message name='setBibliothequeResponse'>
+<wsdl:part name='date' type='xsd:string'/></wsdl:message> 
+
+<wsdl:message name='getDateRequest'></wsdl:message>
+<wsdl:message name='getDateResponse'>
+<wsdl:part name='date' type='xsd:string'/></wsdl:message> 
+
+<wsdl:message name='getAlbumsRequest'>
+<wsdl:part name='date' type='xsd:string'/></wsdl:message>
+<wsdl:message name='getAlbumsResponse'>
+<wsdl:part name='albums' type='xsd:string'/></wsdl:message> 
+
+<wsdl:message name='setSubmissionRequest'>
+<wsdl:part name='album' type='xsd:string'/></wsdl:message>
+<wsdl:message name='setSubmissionResponse'>
+<wsdl:part name='id' type='xsd:string'/></wsdl:message> 
+
+<wsdl:message name='getValidationStateRequest'>
+<wsdl:part name='id' type='xsd:string'/></wsdl:message>
+<wsdl:message name='getValidationStateResponse'>
+<wsdl:part name='state' type='xsd:string'/></wsdl:message> 
+
+<wsdl:message name='getScenaristeRequest'>
+<wsdl:part name='id' type='xsd:string'/></wsdl:message>
+<wsdl:message name='getScenaristeResponse'>
+<wsdl:part name='scenariste' type='xsd:string'/></wsdl:message> 
+
+<wsdl:message name='getDessinateurRequest'>
+<wsdl:part name='id' type='xsd:string'/></wsdl:message>
+<wsdl:message name='getDessinateurResponse'>
+<wsdl:part name='dessinateur' type='xsd:string'/></wsdl:message>
+
+<wsdl:message name='getColoristeRequest'>
+<wsdl:part name='id' type='xsd:string'/></wsdl:message>
+<wsdl:message name='getColoristeResponse'>
+<wsdl:part name='coloriste' type='xsd:string'/></wsdl:message> 
+
+<wsdl:message name='getSerieRequest'>
+<wsdl:part name='id' type='xsd:string'/></wsdl:message>
+<wsdl:message name='getSerieResponse'>
+<wsdl:part name='serie' type='xsd:string'/></wsdl:message> 
+
+<wsdl:message name='getGenreRequest'>
+<wsdl:part name='id' type='xsd:string'/></wsdl:message>
+<wsdl:message name='getGenreResponse'>
+<wsdl:part name='genre' type='xsd:string'/></wsdl:message> 
+
+<wsdl:message name='getEditeurRequest'>
+<wsdl:part name='id' type='xsd:string'/></wsdl:message>
+<wsdl:message name='getEditeurResponse'>
+<wsdl:part name='editeur' type='xsd:string'/></wsdl:message> 
+
+<wsdl:message name='getCollectionRequest'>
+<wsdl:part name='id' type='xsd:string'/></wsdl:message>
+<wsdl:message name='getCollectionResponse'>
+<wsdl:part name='collection' type='xsd:string'/></wsdl:message> 
+
+<portType name='BDovore_PortType'>
+    <wsdl:operation name='getDetails'>
+        <wsdl:input  message='tns:getDetailsRequest'/>
+        <wsdl:output message='tns:getDetailsResponse'/>
+    </wsdl:operation>
+	<wsdl:operation name='getBibliotheque'>
+        <wsdl:input  message='tns:getBibliothequeRequest'/>
+        <wsdl:output message='tns:getBibliothequeResponse'/>
+    </wsdl:operation>
+	<wsdl:operation name='setBibliotheque'>
+        <wsdl:input  message='tns:setBibliothequeRequest'/>
+        <wsdl:output message='tns:setBibliothequeResponse'/>
+    </wsdl:operation>
+	<wsdl:operation name='getDate'>
+        <wsdl:input  message='tns:getDateRequest'/>
+        <wsdl:output message='tns:getDateResponse'/>
+    </wsdl:operation>
+	<wsdl:operation name='getAlbums'>
+        <wsdl:input  message='tns:getAlbumsRequest'/>
+        <wsdl:output message='tns:getAlbumsResponse'/>
+    </wsdl:operation>
+	<wsdl:operation name='setSubmission'>
+        <wsdl:input  message='tns:setSubmissionRequest'/>
+        <wsdl:output message='tns:setSubmissionResponse'/>
+    </wsdl:operation>
+	<wsdl:operation name='getValidationState'>
+        <wsdl:input  message='tns:getValidationStateRequest'/>
+        <wsdl:output message='tns:getValidationStateResponse'/>
+    </wsdl:operation>
+	<wsdl:operation name='getScenariste'>
+        <wsdl:input  message='tns:getScenaristeRequest'/>
+        <wsdl:output message='tns:getScenaristeResponse'/>
+    </wsdl:operation>
+	<wsdl:operation name='getDessinateur'>
+        <wsdl:input  message='tns:getDessinateurRequest'/>
+        <wsdl:output message='tns:getDessinateurResponse'/>
+    </wsdl:operation>
+	<wsdl:operation name='getColoriste'>
+        <wsdl:input  message='tns:getColoristeRequest'/>
+        <wsdl:output message='tns:getColoristeResponse'/>
+    </wsdl:operation>
+	<wsdl:operation name='getSerie'>
+        <wsdl:input  message='tns:getSerieRequest'/>
+        <wsdl:output message='tns:getSerieResponse'/>
+    </wsdl:operation>
+	<wsdl:operation name='getGenre'>
+        <wsdl:input  message='tns:getGenreRequest'/>
+        <wsdl:output message='tns:getGenreResponse'/>
+    </wsdl:operation>
+	<wsdl:operation name='getEditeur'>
+        <wsdl:input  message='tns:getEditeurRequest'/>
+        <wsdl:output message='tns:getEditeurResponse'/>
+    </wsdl:operation>
+	<wsdl:operation name='getCollection'>
+        <wsdl:input  message='tns:getCollectionRequest'/>
+        <wsdl:output message='tns:getCollectionResponse'/>
+    </wsdl:operation>
+
+</portType>
+
+<binding name='BDovore_Binding'  type='tns:BDovore_PortType'>
+    <soap:binding style='rpc' 
+        transport='http://schemas.xmlsoap.org/soap/http' />
+      <wsdl:operation name='getDetails'>
+          <soap:operation
+             soapAction='getDetails'/>
+        <wsdl:input>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:input>
+        <wsdl:output>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:output>
+    </wsdl:operation>
+	
+	<wsdl:operation name='getBibliotheque'>
+          <soap:operation
+             soapAction='getBibliotheque'/>
+        <wsdl:input>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:input>
+        <wsdl:output>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:output>
+    </wsdl:operation>
+	
+	<wsdl:operation name='setBibliotheque'>
+          <soap:operation
+             soapAction='setBibliotheque'/>
+        <wsdl:input>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:input>
+        <wsdl:output>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:output>
+    </wsdl:operation>
+	<wsdl:operation name='getDate'>
+          <soap:operation
+             soapAction='getDate'/>
+        <wsdl:input>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:input>
+        <wsdl:output>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:output>
+    </wsdl:operation>
+	<wsdl:operation name='getAlbums'>
+          <soap:operation
+             soapAction='getAlbums'/>
+        <wsdl:input>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:input>
+        <wsdl:output>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:output>
+    </wsdl:operation>
+	<wsdl:operation name='setSubmission'>
+          <soap:operation
+             soapAction='setSubmission'/>
+        <wsdl:input>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:input>
+        <wsdl:output>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:output>
+    </wsdl:operation>
+	<wsdl:operation name='getValidationState'>
+          <soap:operation
+             soapAction='getValidationState'/>
+        <wsdl:input>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:input>
+        <wsdl:output>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:output>
+    </wsdl:operation>
+	<wsdl:operation name='getScenariste'>
+          <soap:operation
+             soapAction='getScenariste'/>
+        <wsdl:input>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:input>
+        <wsdl:output>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:output>
+    </wsdl:operation>
+	<wsdl:operation name='getDessinateur'>
+          <soap:operation
+             soapAction='getDessinateur'/>
+        <wsdl:input>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:input>
+        <wsdl:output>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:output>
+    </wsdl:operation>
+	<wsdl:operation name='getColoriste'>
+          <soap:operation
+             soapAction='getColoriste'/>
+        <wsdl:input>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:input>
+        <wsdl:output>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:output>
+    </wsdl:operation>
+	<wsdl:operation name='getSerie'>
+          <soap:operation
+             soapAction='getSerie'/>
+        <wsdl:input>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:input>
+        <wsdl:output>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:output>
+    </wsdl:operation>
+	<wsdl:operation name='getGenre'>
+          <soap:operation
+             soapAction='getGenre'/>
+        <wsdl:input>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:input>
+        <wsdl:output>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:output>
+    </wsdl:operation>
+	<wsdl:operation name='getEditeur'>
+          <soap:operation
+             soapAction='getEditeur'/>
+        <wsdl:input>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:input>
+        <wsdl:output>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:output>
+    </wsdl:operation>
+	<wsdl:operation name='getCollection'>
+          <soap:operation
+             soapAction='getCollection'/>
+        <wsdl:input>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:input>
+        <wsdl:output>
+            <soap:body use='literal' namespace='namespace_adress'/>
+        </wsdl:output>
+    </wsdl:operation>
+</binding>
+
+<service name='BDovore'>
+    <documentation>Webservice BDovore</documentation>
+    <port name='BDovore_Port' binding='tns:BDovore_Binding'>
+    	<soap:address location='http://172.20.128.37/server.php'/>    	
+    </port>
+ </service> 
+
+</definitions> 
