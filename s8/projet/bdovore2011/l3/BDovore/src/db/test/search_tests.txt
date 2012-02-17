@@ -1,0 +1,19 @@
+Searching in the database -- a handy guide.
+
+
+- Ouverture de la base : db = new DataBase("db/bdovore");
+- PENSER A LA FERMER APRES : db.shutdown();
+
+- Requete de recherche : String = Query.searchXXX("recherche", 10, 0);
+=> Génère une requête de recherche, avec Limit=10 et Offset=0 (pour pagination)
+=> searchNothing permet une sélection sans recherche (affichage par défaut donc)
+
+- Récupération des données : db.search(requête); => db.search(Query.searchSerie("recherche", 10, 0));
+=> Génère une ArrayList<Album>. Ces albums sont incomplets (manque editions et auteurs, mais tout ce qui est nécessaire à l'affichage en liste est là)
+
+- Lorsqu'on veut afficher un album, on le complète par : db.fillAlbum(Album)
+=> Récupère la liste des éditions, et celles des différents auteurs dans leurs rôles
+
+
+- Pour récupérer une série à afficher, db.getSerie(int idSerie) (retourne un objet Serie)
+=> UPDATE : raccourci : Album.getSerieObj();

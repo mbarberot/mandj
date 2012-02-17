@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<definitions name="BdovoreWS"
+
+xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+
+<types />
+<message name="getQueryDelete">
+	<part name="id" type="xsd:integer"/>
+</message>
+<message name="getQueryDeleteResponse">						<!-- Retourne une chaine de caractere(requete SQL) de type DELETE pour un IdEdition donné en param -->
+	<part name="sql_query_delete" type="xsd:String"/>
+</message>
+
+
+<message name="getQueryInsert">
+	<part name="id" type="xsd:integer"/>
+	<part name="flg_pret" type="xsd:integer"/>
+	<part name="flg_dedicace" type="xsd:integer"/>
+	<part name="flg_aacheter" type="xsd:integer"/>
+	<part name="date" type="xsd:date"/>
+</message>
+
+<message name="getQueryInsertResponse">						<!-- Retourne une chaine de caractere(requete SQL) de type INSERT pour un IdEdition donné en param -->
+	<part name="sql_query_insert" type="xsd:String"/>
+</message>
+
+<message name="getQueryUpdate">
+	<part name="id" type="xsd:integer"/>
+	<part name="flg_pret" type="xsd:integer"/>
+	<part name="flg_dedicace" type="xsd:integer"/>
+	<part name="flg_aacheter" type="xsd:integer"/>
+	<part name="date" type="xsd:date"/>
+</message>
+<message name="getQueryUpdateResponse">						<!-- Retourne une chaine de caractere(requete SQL) de type UPDATE pour un IdEdition donné en param -->
+	<part name="sql_query_update" type="xsd:string"/>
+</message>
+
+
+<portType name="ModifOnSite">
+	<operation name="addOnSite">
+		<input message="getQueryInsert" />
+		<output message="getQueryInsertResponse" />
+	</operation>
+	
+<portType name="">
+	<operation name="getListEdition">
+		<output message="getListEditionUserResponse" />
+	</operation>
+	<operation name="getInfosManquantesEdition">
+		<input message="getInfosManquantesEdition" />
+		<output message="getInfosManquantesEditionResponse" />
+	</operation>
+	<operation name="getInfosManquantesAuteur">
+		<input message="getInfosManquantesAuteur" />
+		<output message="getInfosManquantesAuteurResponse" />
+	</operation>
+</portType>
+	<operation name="deleteOnSite">
+		<input message="getQueryDelete" />
+		<output message="getQueryDeleteResponse" />
+	</operation>
+</portType>
+
+<!-- ============================================================================================================================================== -->
+<!-- ============================================================================================================================================== -->
+
+
+<message name="getNewEntries">
+	<part name="userName" type="xsd:string"/>
+	<part name="userPass" type="xsd:string"/>
+	<part name="nomTable" type="xsd:string"/>
+	<part name="lastId" type="xsd:integer" />
+</message>
+<message name="getNewEntriesResponse">
+	<part name="listNewEntries" type="xsd:string"/>	<!-- Entrée sous la forme d'un csv dépendant de la table choisie					-->	
+</message>											<!--		pour GENRE => (idGenre, Nom_Genre)										-->	
+													<!--		pour SERIE => (idSerie, Nom_serie, idGenre)								-->		
+													<!--		pour AUTEUR => (idAuteur, Pseudo, Nom, Prenom)							-->
+													<!--		pour EDITEUR => (idEditeur, Nom_Editeur, Url)							-->
+													<!--		pour TOME => (idTome, Titre, idSerie, Role)								-->
+													<!--		pour EDITION => (idEdition, idTome, ISBN, Date_Parution, idEditeur)		-->
+
+
+
+<message name="getListEditionUser"> 						<!-- Retourne la liste des editions d'un user -->
+	<part name="userName" type="xsd:string"/>
+	<part name="userPass" type="xsd:string"/>
+</message>
+
+<message name="getListEditionUserResponse">
+	<part name="listEditionUser" type="xsd:string"/>		<!-- String sous la forme d'un csv 1 ligne = 1edition(idEdition,FLG_P,FLG_D,FLG_A,Date) -->
+</message>
+
+
+<message name="getInfosManquantesEdition">
+	<part name="userName" type="xsd:string"/>
+	<part name="userPass" type="xsd:string"/>
+	<part name="idEdition" type="xsd:integer"/>
+</message>
+<message name="getInfosManquantesEditionResponse">
+	<part name="infosManquantes" type="xsd:string"/>			<!-- String sous la forme (Img)-->
+</message>
+
+<message name="getInfosManquantesSerie">
+	<part name="userName" type="xsd:string"/>
+	<part name="userPass" type="xsd:string"/>
+	<part name="idSerie" type="xsd:integer"/>
+</message>
+<message name="getInfosManquantesSerieResponse">				<!-- String sous la forme (idSerie, nbTome, FLG_Fini, histoire)-->
+	<part name="responseSerie" type="xsd:string"/>
+</message>
+
+
+<message name="getInfosManquantesAuteurTome">
+	<part name="userName" type="xsd:string"/>
+	<part name="userPass" type="xsd:string"/>
+	<part name="idTome" type="xsd:integer"/>
+</message>
+<message name="getInfosManquantesAuteurTomeResponse">			<!-- String sous la forme (idTome, idAuteur, Role)-->
+	<part name="responseAuteurTome" type="xsd:string"/>
+</message>
+
+<message name="getInfosManquantesAuteur">
+	<part name="userName" type="xsd:string"/>
+	<part name="userPass" type="xsd:string"/>
+	<part name="idAuteur" type="xsd:integer"/>
+</message>
+<message name="getInfosManquantesAuteurResponse">
+	<part name="responseAuteur" type="xsd:string"/>							<!-- String sous la forme (idAuteur, dateNaissance, dateDeces, nationalite) -->
+</message>
+
+<message name="ajouter">										<!-- Il faut ajouter l'edition idEdition avec les données en parametre sur la base du site-->
+	<part name="idEdition" type="xsd:integer" />
+	<part name="FLG_Pret" type="xsd:integer" />
+	<part name="FLG_Dedicace" type="xsd:integer" />
+	<part name="FLG_AAcheter" type="xsd:integer" />
+	<part name="Date" type="xsd:Date" />
+</message>
+
+<message name="modifier">										<!-- Il faut modifier l'edition idEdition avec les données en parametre sur la base du site-->
+	<part name="idEdition" type="xsd:integer" />
+	<part name="FLG_Pret" type="xsd:integer" />
+	<part name="FLG_Dedicace" type="xsd:integer" />
+	<part name="FLG_AAcheter" type="xsd:integer" />
+</message>
+<!-- REPONSE ?!? -->
+
+
+<portType name="">
+	<operation name="getEntries">								<!-- Recupere les dernieres nouvelles entrées(bd globale)			-->
+		<input message="getNewEntries" />
+		<output message="getNewEntriesResponse" />
+	</operation>
+	<operation name="getListEdition">							<!-- Recupere la liste des ouvrages possédé par l'user				-->
+		<input message="getListEditionUser" />
+		<output message="getListEditionUserResponse" />
+	</operation>
+	<operation name="getInfosManquantesEdition">				<!-- Recupere les infos pour remplir la table DETAILS_EDITION		-->
+		<input message="getInfosManquantesEdition" />
+		<output message="getInfosManquantesEditionResponse" />
+	</operation>
+	<operation name="getInfosManquantesAuteurTome">				<!-- Recupere les infos pour remplir la table DETAILS_AUTEUR		-->
+		<input message="getInfosManquantesAuteurTome" />
+		<output message="getInfosManquantesAuteurResponse" />
+	</operation>
+	<operation>
+		<input message="getInfosManquantesAuteur" />
+		<output message ="getInfosManquantesAuteurResponse"/>
+	</operation>
+	<operation name="getInfosManquantesSerie">					<!-- Recupere les infos pour remplir la table DETAILS_SERIE			-->
+		<input message="getInfosManquantesSerie" />
+		<output message="getInfosManquantesSerieResponse" />
+	</operation>
+	<operation name="ajouter">									<!-- Envoie l'ordre d'ajouter un ouvrage sur la bd distante			-->
+		<input message="ajouter" />
+	</operation>
+	<operation name="modifier">									<!-- Envoie l'ordre de modifier un ouvrage sur la bd distante		-->
+		<input message="modifier" />
+	</operation>
+	
+</portType>
+
+</definitions>
