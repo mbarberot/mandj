@@ -1,0 +1,146 @@
+\documentclass[12pt]{article}
+
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[francais]{babel}
+\usepackage[a4paper]{geometry}
+%\usepackage{setspace}
+%\usepackage{layout}	
+\usepackage{lscape}
+%\usepackage{soul}
+%\usepackage{ulem}
+\usepackage{eurosym}		
+%\usepackage{bookman}
+%\usepackage{charter}
+%\usepackage{newcent}
+%\usepackage{lmodern}
+\usepackage{mathpazo}					
+%\usepackage{mathptmx}
+%\usepackage{verbatim}	
+%\usepackage{listings}	
+%\usepackage{url}		
+%\usepackage{moreverb}
+%\usepackage{color}	
+%\usepackage{colortbl}	
+%\usepackage[svgnames]{xcolor}
+%\usepackage{amsmath}
+%\usepackage{amssymb}
+%\usepackage{mathrsfs}
+%\usepackage{asmthm}
+%\usepackage[pdftex]{graphicx}	
+%\usepackage{wrapfig}		
+%\usepackage{makeidx}	
+%\usepackage{fancyhdr}
+%\usepackage{sfheaders}
+%\usepackage{pdfpages}
+%\usepackage[nottoc, notlof, notlot]{tocbibind}
+\usepackage{tocvsec2}
+
+
+\title{Client Java BDOvore\\Compte rendu de réunion}
+\date{11 Janvier 2012}
+
+\makeatletter
+\renewcommand\section{\@startsection{section}{1}{\z@}%
+	{2cm \@plus -1ex \@minus -.2ex}%
+	{2.3ex \@plus.2ex}%
+	{\reset@font\large\bfseries}}
+\makeatother
+
+\begin{document}
+
+\maketitle
+
+\begin{center}
+\begin{tabular}{lr}
+% 
+% Présents :
+%
+  \multicolumn{2}{c}{Présents :} \\ \hline
+  \begin{minipage}{0.47\linewidth}
+    \vspace{0.1cm}
+    \begin{flushleft}
+% 	Etudiants :
+      Barberot Mathieu
+    \end{flushleft}
+  \end{minipage} &
+  \begin{minipage}{0.47\linewidth}
+    \vspace{0.1cm}
+    \begin{flushright}
+% 	Encadrants :
+      Bouquet Fabrice \\
+      Coqblin Mathias
+    \end{flushright}
+  \end{minipage} \\
+  
+%
+%	Absents :
+%
+  \multicolumn{2}{c}{Absents :} \\ \hline
+  \begin{minipage}{0.47\linewidth}
+    \vspace{0.1cm}
+    \begin{flushleft}   
+% 	Etudiants :
+      Racenet Joan (Excusé)
+    \end{flushleft}
+  \end{minipage} &
+  \begin{minipage}{0.47\linewidth}
+    \vspace{0.1cm}	
+    \begin{flushright}
+%	Encadrants :
+    \end{flushright}
+  \end{minipage} \\
+\end{tabular}
+\end{center}
+
+
+
+\renewcommand{\contentsname}{Ordre du jour :}
+\tableofcontents
+
+
+\section{Installation de la base de données}
+Mathieu a installé la base de données obtenue lors de la dernière réunion en local sur sa machine. La manipulation fonctionne parfaitement et le travail avec une base de données distante peut désormais commencer.
+
+
+\section{Le web-service}
+Plusieurs fichiers nous ont été fournis avec la base de données :
+\begin{description}
+ \item[server.wsdl :] Un fichier au format XML décrivant les services offerts par le web-service.
+ \item[BDovore.class.php :] Un fichier à implémenter pour répondre aux requêtes effectuée via le web-service.
+ \item[serveur.php :] Le fichier à appeler lors des requêtes. Il crée un serveur SOAP apte à fournir les services.
+ \item[client.php :] Un fichier de test destiné à contacter le web-service via le serveur SOAP.
+\end{description}
+Ces fichiers permettent de faire l'interface entre les programmes utilisant le web-service et la base de données.\\
+Implémentant les requêtes à effectuer en fonction des services qu'il propose, le web-service permet aux programmes l'utilisant de ne pas se préoccuper de la structure de la base. Le web-service garantit donc que si la base change, il sera le seul à changer.
+
+
+\section{Rappel sur les bases de données en présence}
+D'un côté, on a la base de données distante en ``version 1''. Aucun changement de sa structure n'est à l'ordre du jour et quand bien même cela devait arriver, seule l'implémentation du web-service en sera affecté.\\
+De l'autre côté, le client utilise une base de données en ``version 2''. C'est une version optimisée de la base de données distante.
+
+
+\section{Vers une nouvelle version}
+Pour travailler sur une base solide, un travail d'unification doit être effectué.\\
+La première étape de cette tâche est d'ouvrir une nouvelle branche sur le SVN et de faire un tri des sources des deux projets de l'an dernier pour ne garder que les version les plus abouties et fonctionnelles.\\
+La seconde étape sera de reprendre les requêtes SQL pour s'assurer, et corriger si nécessaire, qu'elles utilisent bien la deuxième version de la base de données.\\
+Enfin, il faudra également vérifier que ces requêtes sont bien liées avec l'interface homme-machine.\\
+
+
+\section{Première ébauche de l'utilisation du web-service}
+Une fois le client Java opérationnel, nous pourrons travailler sur le web-service.\\
+Le premier des services que nous allons implémenter sera la mise à jour. Cette action pouvant être lourde, un découpage devra être mis en place de manière à ne demander les résultats par tranche de 500 par exemple. On pourra détecter le dernier envoi qui sera celui dont le nombre de résultats est inférieur à 500.\\
+Cette mise à jour, lorsqu'elle sera bien en place, pourra être symbolisée par une barre de progression.
+
+\section{Tâches pour la prochaine réunion}
+\begin{itemize}
+  \item Unifier les deux versions du client Java en une seule
+  \item Implémenter la mise à jour
+\end{itemize}
+
+\section{Prochaine réunion}
+La prochaine réunion aura lieu le jeudi 23 février 2012 à 9h00 dans le bureau de M. Bouquet.
+
+
+\end{document}

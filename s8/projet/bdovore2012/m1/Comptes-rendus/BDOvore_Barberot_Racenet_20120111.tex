@@ -1,0 +1,117 @@
+\documentclass[12pt]{article}
+
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[francais]{babel}
+\usepackage[a4paper]{geometry}
+%\usepackage{setspace}
+%\usepackage{layout}	
+\usepackage{lscape}
+%\usepackage{soul}
+%\usepackage{ulem}
+\usepackage{eurosym}		
+%\usepackage{bookman}
+%\usepackage{charter}
+%\usepackage{newcent}
+%\usepackage{lmodern}
+\usepackage{mathpazo}					
+%\usepackage{mathptmx}
+%\usepackage{verbatim}	
+%\usepackage{listings}	
+%\usepackage{url}		
+%\usepackage{moreverb}
+%\usepackage{color}	
+%\usepackage{colortbl}	
+%\usepackage[svgnames]{xcolor}
+%\usepackage{amsmath}
+%\usepackage{amssymb}
+%\usepackage{mathrsfs}
+%\usepackage{asmthm}
+%\usepackage[pdftex]{graphicx}	
+%\usepackage{wrapfig}		
+%\usepackage{makeidx}	
+%\usepackage{fancyhdr}
+%\usepackage{sfheaders}
+%\usepackage{pdfpages}
+%\usepackage[nottoc, notlof, notlot]{tocbibind}
+\usepackage{tocvsec2}
+
+
+\title{Client Java BDOvore\\Compte rendu de réunion}
+\date{11 Janvier 2012}
+
+\makeatletter
+\renewcommand\section{\@startsection{section}{1}{\z@}%
+	{2cm \@plus -1ex \@minus -.2ex}%
+	{2.3ex \@plus.2ex}%
+	{\reset@font\large\bfseries}}
+\makeatother
+
+\begin{document}
+
+\maketitle
+
+\begin{center}
+\begin{tabular}{lr}
+% 
+% Présents :
+%
+  \multicolumn{2}{c}{Présents :} \\ \hline
+  \begin{minipage}{0.47\linewidth}
+    \vspace{0.1cm}
+    \begin{flushleft}
+% 	Etudiants :
+      Barberot Mathieu \\
+      Racenet Joan
+    \end{flushleft}
+  \end{minipage} &
+  \begin{minipage}{0.47\linewidth}
+    \vspace{0.1cm}
+    \begin{flushright}
+% 	Encadrants :
+      Bouquet Fabrice
+    \end{flushright}
+  \end{minipage} \\
+  
+%
+%	Absents :
+%
+  \multicolumn{2}{c}{Absents :} \\ \hline
+  \begin{minipage}{0.47\linewidth}
+    \vspace{0.1cm}
+    \begin{flushleft}   
+% 	Etudiants :
+    \end{flushleft}
+  \end{minipage} &
+  \begin{minipage}{0.47\linewidth}
+    \vspace{0.1cm}	
+    \begin{flushright}
+%	Encadrants :
+      Coqblin Mathias
+    \end{flushright}
+  \end{minipage} \\
+\end{tabular}
+\end{center}
+
+
+
+\renewcommand{\contentsname}{Ordre du jour :}
+\tableofcontents
+
+\section{Test du programme}
+La version fournie lors de la précédente réunion compile et se lance, mais des erreurs SQL surviennent au démarrage et lors de certaines manipulations. La base de données locale ne semble pas fonctionner.\\
+L'accès SVN fonctionne et la version du programme qu'il héberge possède quant à elle une base de donnée locale opérationnelle.
+
+\section{Tâches pour la prochaine réunion}
+\begin{itemize}
+  \item Regarder le code plus en profondeur
+  \item Se connecter au serveur de développement pour tester la synchronisation,
+  \item Se renseigner sur ``h2'' : le serveur SQL embarqué.
+\end{itemize}
+
+\section{Prochaine réunion}
+La prochaine réunion aura lieu le vendredu 20 janvier 2012 à 16h30 dans le bureau de M. Bouquet.
+
+
+\end{document}
