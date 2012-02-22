@@ -13,11 +13,11 @@
 
 /**
  * Choisi un des deux graphes que la librairie permet de gérer
- * @param idGraphe - L'id du graphe (1 ou 2)
+ * @param idGraphe - L'id du graphe (0 ou 1)
  */
 erreur choisirGraphe(int idGraphe)
 {
-	if(idGraphe <= 0)
+	if(idGraphe < 0)
 	{
 		return NUMERO_GRAPHE_TROP_PETIT;
 	}
