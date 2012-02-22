@@ -62,7 +62,7 @@ typedef struct TypGraphe
 
 
 /*
- * Le graphe courant : 0 ou 1
+ * Le graphe courant : 1 ou 2
  */
 int grapheCourant;
 
