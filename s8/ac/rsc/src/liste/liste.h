@@ -19,6 +19,7 @@ int ajouteVoisin(TypVoisins** l, int numVoisin, int poidsVoisin, void* info);
 int supprimeVoisin(TypVoisins** l, int numVoisin);
 void afficheVoisins(TypVoisins** l);
 int voisinExiste(TypVoisins** l, int numVoisin);
+void supprimeListe(TypVoisins** l);
 
 #endif
 

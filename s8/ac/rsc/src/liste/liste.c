@@ -103,3 +103,17 @@ int voisinExiste(TypVoisins** l , int numVoisin){
     
     return -1;
 }
+
+// Libération de la liste en mémoire
+void supprimeListe(TypVoisins** l){
+  TypVoisins* next;
+  TypVoisins* tmp = *l;
+  
+  while(tmp != NULL){
+    next = tmp->voisinSuivant;
+    free(tmp);
+    tmp = next;
+  }
+  
+  free(*l);
+}
