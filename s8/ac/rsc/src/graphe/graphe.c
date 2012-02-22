@@ -62,7 +62,13 @@ erreur creation(int nbSommet)
 				// Allocation réussie
 				// On instancie la structure
 				g->nbMaxSommets = nbSommet;
-				g->aretes = NULL;
+				g->aretes = (TypVoisins**)malloc(g->nbMaxSommets * sizeof(TypVoisins*));
+				
+				// Initialisation de la liste des sommets
+				for(int i = 0 ; i < g->nbMaxSommets ; i++){
+				  initialiseListe(g->aretes[i]);
+				}
+				
 				// On place la structure dans le tableau à
 				//  l'indice courant
 				graphes[grapheCourant] = g;
@@ -82,3 +88,41 @@ erreur creation(int nbSommet)
 		return GRAPHE_DEJA_EXISTANT;
 	}
 }
+
+/**
+* Change le nombre de sommets max sur le graphe courant.
+* Plusieurs cas :
+* - Si maxSommet > maxSommet en cours : on rajoute une nouvelle entrée dans le tableau des arêtes.
+* - Si maxSommet < maxSommet en cours : on doit supprimer des entrées dans le tableau des arêtes (et supprimer dans les autres listes les références aux sommets supprimés).
+* @param maxSommet : le nouveau nombre de sommets
+*/
+erreur modifierNbMaxSommet(int maxSommet){
+  TypGraphe* current = graphes[grapheCourant];
+  TypGraphe* new;
+  
+  /* Le nouveau nombre max de sommet est supérieur */
+  if(maxSommet > current->nbMaxSommets)
+  {
+    
+    new = (TypGraphe*) malloc(sizeof(TypGraphe));
+    
+    if(new != NULL) // L'allocation a réussi ?
+    {
+      new->nbMaxSommets = maxSommet
+      new->aretes = (TypVoisins**)malloc(g->nbMaxSommets * sizeof(TypVoisins*));
+      
+      // On effectue la recopie de l'ancien graphe dans le nouveau
+      for(int i = 0 ; i < current -> nbMaxSommets ; i++){
+	initialiseListe(new->aretes[i]);
+	
+	// Copie des éléments de la liste
+	
+      }
+    }
+  }
+  else
+  {
+  }
+  
+}
+
