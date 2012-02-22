@@ -18,17 +18,17 @@
 erreur choisirGraphe(int idGraphe)
 {
 	int pcId = idGraphe -1; // Conversion de "1 ou 2" en "0 ou 1"
-	if(idGraphe < 0)
+	if(pcId < 0)
 	{
 		return NUMERO_GRAPHE_TROP_PETIT;
 	}
-	else if(idGraphe > 1)
+	else if(pcId > 1)
 	{
 		return NUMERO_GRAPHE_INVALIDE;
 	}
 	else
 	{
-		grapheCourant = idGraphe;
+		grapheCourant = pcId;
 		return RES_OK;
 	}
 }
