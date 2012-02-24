@@ -157,4 +157,11 @@ void afficheGraphe(int idGraphe){
     printf("\n");
 }
 
+/**
+ * Suppression d'un graphe (désigné par idGraphe). Si idGraphe vaut 0, on supprime les deux graphes
+ * @param idGraphe : le(s) graphe(s) à supprimer 
+ */
+erreur suppressionGraphe(int idGraphe){
 
+    
+}

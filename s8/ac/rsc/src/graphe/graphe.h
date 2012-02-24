@@ -20,6 +20,7 @@
 
 #include "liste.h"
 
+#define NB_GRAPHES 2
 /*
  * Les erreurs
  */
@@ -44,13 +45,12 @@ typedef enum
 	TEST_OK,
 	PROBLEME_MEMOIRE,
 	COMMANDE_INVALIDE,
-	RES_OK
+	RES_OK,
+	TEST_KO
 } erreur ;
 
 /*
  * La structure de graphe :
- *
- *      int id          - ID du graphe (1 ou 2)
  *      int nbSommets   - Nombre de sommets du graphe
  *      int[] aretes    - Ensemble des aretes
  *
@@ -71,7 +71,7 @@ int grapheCourant;
 /*
  * Les deux graphes à manipuler
  */
-TypGraphe *graphes[2]; 
+TypGraphe *graphes[NB_GRAPHES]; 
 
 /*
  * Fonctions

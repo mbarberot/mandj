@@ -35,13 +35,13 @@ BIN= ../bin
 #
 all : liste graphe tests
 
-liste:
+liste.a:
 	make -C $(LISTE)
 
-graphe: liste
+graphe.a: liste.a
 	make -C $(GRAPHE)
 
-tests: liste graphe
+tests: graphe.a liste.a
 	make -C $(TESTS)
 
 # 

@@ -19,6 +19,6 @@ main(int argc, char **argv){
   // Modification du nb max de sommets
   modifierNbMaxSommet(6);
   afficheGraphe(grapheCourant);
-  
+
 
 }

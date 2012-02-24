@@ -8,10 +8,9 @@
 typedef struct voisins {
   int voisin; /* Le numéro du voisin */
   int poidsVoisin; /* Pondération de l'arête entre le sommet en cours et le voisin */
-  void* info;
+  void* info; /* Autres informations */
   struct voisins* voisinSuivant; 
 }TypVoisins;
-
 
 
 int initialiseListe(TypVoisins** l);

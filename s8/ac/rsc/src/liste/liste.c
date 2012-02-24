@@ -1,17 +1,13 @@
 #include <stdlib.h>
 #include <stdio.h>
+
 #include "liste.h"
 
-/* Structure de liste simplement chainée
- * typedef struct voisins {
- *  int voisin; 
- *  int poidsVoisin; 
- *  void* info;
- *  struct voisins* voisinSuivant; 
- * }TypVoisins;
- */
-
-// Initialise la liste avec ajout d'un marqueur de fin
+/**
+ * Initialise la liste avec ajout d'un marqueur de fin
+ * @param l : la liste à initialiser
+ * @return 1 si succès, -1 sinon
+ * */
 int initialiseListe(TypVoisins** l){
     
     TypVoisins* new;
@@ -29,7 +25,14 @@ int initialiseListe(TypVoisins** l){
     return 1;
 }
 
-// Ajoute dans la liste l un nouveau voisin avec les infos passées en paramètres
+/**
+ * Ajoute dans la liste l un nouveau voisin avec les infos passées en paramètres
+ * @param l : la liste dans laquelle on veut rajouter un élément
+ * @param numVoisin : l'identifiant du voisin
+ * @param poidsVoisin : la pondération du voisin
+ * @param info : des infos complémentaires
+ * @return 1 si succès, -1 sinon
+ */
 int ajouteVoisin(TypVoisins** l, int numVoisin, int poidsVoisin, void* info){
     TypVoisins* new;
     
@@ -53,7 +56,12 @@ int ajouteVoisin(TypVoisins** l, int numVoisin, int poidsVoisin, void* info){
     return -1;
 }
 
-// Supprime dans la liste le voisin désigné par numVoisin
+/**
+ * Supprime dans la liste le voisin désigné par numVoisin
+ * @param l : la liste dans laquelle on veut supprimer un élément
+ * @param numVoisin : l'identifiant du voisin que l'on veut supprimer
+ * @return 1 si succès, -1 sinon.
+ * */
 int supprimeVoisin(TypVoisins** l, int numVoisin){
     TypVoisins* tmp = *l;
     TypVoisins* prec;
@@ -80,7 +88,10 @@ int supprimeVoisin(TypVoisins** l, int numVoisin){
     return 1;
 }
 
-// Affichage de la liste
+/**
+ * Affichage de la liste dans la console
+ * @param l : la liste à afficher
+ */
 void afficheVoisins(TypVoisins** l){
     TypVoisins* tmp = *l;
     
@@ -91,20 +102,29 @@ void afficheVoisins(TypVoisins** l){
     printf("[= \n");  
 }
 
-// Vérifie l'existence du voisin numVoisin dans la liste
+/**
+ * Vérifie l'existence du voisin numVoisin dans la liste
+ * @param l : la liste a traiter
+ * @param numVoisin : l'id du voisin dont on veut vérifier l'existence
+ * @return 1 si le voisin est présent, -1 sinon
+ */
 int voisinExiste(TypVoisins** l , int numVoisin){
     TypVoisins* tmp = *l;
     
     while(tmp != NULL){
-	if(tmp->voisin == numVoisin)
+	if(tmp->voisin == numVoisin){
 	    return 1;
+	}
 	tmp = tmp->voisinSuivant;
     }
     
     return -1;
 }
 
-// Libération de la liste en mémoire
+/**
+ *  Désallocation de la mémoire occupée par la liste
+ * @param l : la liste à supprimer
+ */
 void supprimeListe(TypVoisins** l){
   TypVoisins* next;
   TypVoisins* tmp = *l;
@@ -115,5 +135,4 @@ void supprimeListe(TypVoisins** l){
     tmp = next;
   }
   
-  free(*l);
 }

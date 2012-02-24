@@ -17,4 +17,7 @@ main(int argc, char **argv){
   // Affichage
   afficheVoisins(&liste);
   
+  // Suppression
+  supprimeListe(&liste);
+  
 }
