@@ -23,23 +23,26 @@
 
 #
 # Dossiers utiles
-# INC : dossier contenant les .h (généralement appelé "include")
-# LIB : dossier contenant les .a/.so (généralement appelé "lib")
-#
+# LISTE : dossier des sources de la bibliothèque de manipulation de listes
+# GRAPHE : pareil, mais pour les graphes
+# TESTS : Fichiers sources permettant de tester les fonctions développées
 LISTE= ./liste
 GRAPHE= ./graphe
-
-
+TESTS= ./tests
+BIN= ../bin
 #
 # Règle principale
 #
-all : liste.a graphe.a
+all : liste graphe tests
 
-liste.a:
+liste:
 	make -C $(LISTE)
 
-graphe.a: liste
+graphe: liste
 	make -C $(GRAPHE)
+
+tests: liste graphe
+	make -C $(TESTS)
 
 # 
 # Nettoyage
@@ -60,3 +63,4 @@ reset :
 	make -C $(GRAPHE) reset
 
 veryclean : clean reset
+	rm $(BIN)/*

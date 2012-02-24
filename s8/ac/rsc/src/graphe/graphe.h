@@ -16,6 +16,8 @@
  * Librairie de gestion des listes
  */
 #include <stdlib.h>
+#include <string.h>
+
 #include "liste.h"
 
 /*
@@ -69,15 +71,15 @@ int grapheCourant;
 /*
  * Les deux graphes à manipuler
  */
-TypGraphe *graphes[2] = {NULL, NULL} ; 
+TypGraphe *graphes[2]; 
 
 /*
  * Fonctions
  */
 
 erreur choisirGraphe(int idGraphe);
-erreur creation(int maxSommet);			// Todo
-erreur modifierNbMaxSommet(int maxSommet);	// Todo
+erreur creation(int maxSommet);
+erreur modifierNbMaxSommet(int maxSommet);
 erreur suppressionGraphe(int idGraphe);		// Todo
 erreur insertionSommet(int nvSommet);		// Todo
 erreur suppressionSommet(int sommet);		// Todo
@@ -124,6 +126,6 @@ erreur compareSommet(
 		int sommet,
 		int resAttendu
 		);				// Todo
-char* afficheGraphe(int idGraphe);		// Todo
+void afficheGraphe(int idGraphe);
 
 #endif

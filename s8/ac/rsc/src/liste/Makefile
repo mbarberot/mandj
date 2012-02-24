@@ -43,7 +43,7 @@ AR=ar -q
 # HDR : Les fichiers .h
 # OBJ : Les fichiers .o
 #
-EXE=liste.a
+EXE=libliste.a
 SRC=$(wildcard *.c)
 HDR=$(wildcard *.h)
 OBJ=$(SRC:.c=.o)
@@ -54,7 +54,7 @@ OBJ=$(SRC:.c=.o)
 # LIB : dossier contenant les .a/.so (généralement appelé "lib")
 #
 INC=../../include/
-LIB=../../lib
+LIB=../../lib/
 
 
 #
@@ -68,9 +68,9 @@ all : $(EXE)
 # 3/ Copie des .a dans le dossier "lib"
 #
 $(EXE) : $(OBJ)
-	$(AR) $@ $^
+	$(AR) $(LIB)$@ $^
 	cp $(HDR) $(INC)
-	cp $(EXE) $(LIB)
+	
 
 #
 # Compilation de tous les .c et .h en .o
@@ -93,9 +93,9 @@ clean :
 	rm *.o
 
 reset :
-	rm $(EXE)
-
-veryclean : clean reset
 	rm $(INC)$(HDR)
 	rm $(LIB)$(EXE)
+
+veryclean : clean reset
+	
 

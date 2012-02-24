@@ -34,7 +34,7 @@
 CC=gcc
 CFLAGS=-O4 -W -Wall -g
 CPPFLAGS=-I $(INC)
-LDFLAGS=-lm $(LIB)/liste.a
+LDFLAGS=-L $(LIB) -lliste
 AR=ar -q
 
 #
@@ -43,7 +43,7 @@ AR=ar -q
 # HDR : Les fichiers .h
 # OBJ : Les fichiers .o
 #
-EXE=graphe.a
+EXE=libgraphe.a
 SRC=$(wildcard *.c)
 HDR=$(wildcard *.h)
 OBJ=$(SRC:.c=.o)
@@ -53,17 +53,17 @@ OBJ=$(SRC:.c=.o)
 # INC : dossier contenant les .h (généralement appelé "include")
 # LIB : dossier contenant les .a/.so (généralement appelé "lib")
 #
-INC=../../include
-LIB=../../lib
+INC=../../include/
+LIB=../../lib/
 
 
 #
 # Règle principale
 #
-all : lib $(EXE)
+all : liste $(EXE)
 
 
-lib :
+liste :
 	make -C ../liste/
 
 
@@ -74,9 +74,9 @@ lib :
 # 3/ Copie des .a dans le dossier "lib"
 #
 $(EXE) : $(OBJ)
-	$(AR) $@ $^
+	$(AR) $(LIB)$@ $^
 	cp $(HDR) $(INC)
-	cp $(EXE) $(LIB)
+	
 
 #
 # Compilation de tous les .c et .h en .o
@@ -99,9 +99,9 @@ clean :
 	rm *.o
 
 reset :
-	rm $(EXE)
-
-veryclean : clean reset
 	rm $(INC)$(HDR)
 	rm $(LIB)$(EXE)
+
+veryclean : clean reset
+	
 
