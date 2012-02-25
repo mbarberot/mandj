@@ -18,8 +18,7 @@ int initialiseListe(TypVoisins** l){
 	new->info = NULL;
 	new->voisinSuivant = NULL;    
 	*l = new;
-    }else{
-	perror("Impossible d'initialiser la liste \n");
+    }else{	
 	return -1;
     }
     return 1;
@@ -31,7 +30,7 @@ int initialiseListe(TypVoisins** l){
  * @param numVoisin : l'identifiant du voisin
  * @param poidsVoisin : la pondération du voisin
  * @param info : des infos complémentaires
- * @return 1 si succès, -1 sinon
+ * @return 1 si succès, -1 sinon, 0 si le voisin est deja present dans la liste
  */
 int ajouteVoisin(TypVoisins** l, int numVoisin, int poidsVoisin, void* info){
     TypVoisins* new;
@@ -46,10 +45,10 @@ int ajouteVoisin(TypVoisins** l, int numVoisin, int poidsVoisin, void* info){
 		*l = new;      
 		return 1;
 	    }else{
-		perror("Erreur a l'initialisation du nouveau voisin");
+		return -1;
 	    }
 	}else{
-	    perror("Le voisin est deja present dans la liste");
+	    return 0;
 	}
     }
     
@@ -67,8 +66,7 @@ int supprimeVoisin(TypVoisins** l, int numVoisin){
     TypVoisins* prec;
     
     if(l != NULL){
-	if(voisinExiste(l,numVoisin) != 1 ){
-	    perror("Le voisin a supprimer n'existe pas");
+	if(voisinExiste(l,numVoisin) != 1 ){	    
 	    return -1;
 	}else{
 	    // Le maillon à supprimer est le premier 
@@ -134,5 +132,6 @@ void supprimeListe(TypVoisins** l){
     free(tmp);
     tmp = next;
   }
+  
   
 }

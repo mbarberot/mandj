@@ -10,24 +10,22 @@
  */
 
 main(int argc, char **argv){
-    
+  erreur err;  
   graphes[0] = NULL;
   graphes[1] = NULL;
     
   // Definir le graphe courant
-  grapheCourant = 0;
-  // Création de ce graphe
-  creation(5);
-  // initialise des sommets
-  insertionSommet(1);
-  insertionSommet(5);
-  // Affichage du graphe
-  afficheGraphe(grapheCourant);
-  // Modification du nb max de sommets
-  modifierNbMaxSommet(6);
-  afficheGraphe(grapheCourant);
+  err = choisirGraphe(2);
+  printf("Choix d'un graphe %d : %s \n", err, errToString(err));
   
-  suppressionGraphe(grapheCourant);
+  // Création de ce graphe
+  err = creation(10);
+  printf("Creation du graphe %d : %s \n ",err, errToString(err) );
+  
+
+  // Suppression du graphe
+  err = suppressionGraphe(2);
+  printf("Suppression graphe %d : %s \n", err, errToString(err));
 
 
 }

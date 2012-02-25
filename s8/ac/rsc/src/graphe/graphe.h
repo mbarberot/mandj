@@ -26,28 +26,29 @@
  */
 typedef enum 
 {       
-	SOMMET_INVALIDE,
-	POIDS_INVALIDE,
-	MAX_SOMMET_INVALIDE,
-	DEGRE_INVALIDE,
-	NUMERO_GRAPHE_INVALIDE,
-	NUMERO_GRAPHE_TROP_PETIT,
-	GRAPHE_INEXISTANT,
-	SOMMET_INEXISTANT,
-	ARETE_INEXISTANTE,
-	GRAPHE_DEJA_EXISTANT,
-	SOMMET_DEJA_EXISTANT,
-	ARETE_DEJA_EXISTANTE,
-	MAX_SOMMET_DIFFERENT,
-	SOMMET_DIFFERENT,
-	ARETE_DIFFERENTE,
-	DEGRE_DIFFERENT,
-	TEST_OK,
-	PROBLEME_MEMOIRE,
-	COMMANDE_INVALIDE,
-	RES_OK,
-	TEST_KO
+	SOMMET_INVALIDE = 1,
+	POIDS_INVALIDE = 2,
+	MAX_SOMMET_INVALIDE = 3,
+	DEGRE_INVALIDE = 4,
+	NUMERO_GRAPHE_INVALIDE = 5,
+	NUMERO_GRAPHE_TROP_PETIT = 6,
+	GRAPHE_INEXISTANT = 7,
+	SOMMET_INEXISTANT = 8,
+	ARETE_INEXISTANTE = 9,
+	GRAPHE_DEJA_EXISTANT = 10,
+	SOMMET_DEJA_EXISTANT = 11,
+	ARETE_DEJA_EXISTANTE = 12,
+	MAX_SOMMET_DIFFERENT = 13,
+	SOMMET_DIFFERENT = 14,
+	ARETE_DIFFERENTE = 15,
+	DEGRE_DIFFERENT = 16,
+	TEST_OK = 17,
+	PROBLEME_MEMOIRE = 18,
+	COMMANDE_INVALIDE = 19,
+	RES_OK = 20,
+	TEST_KO = 21
 } erreur ;
+
 
 /*
  * La structure de graphe :
@@ -74,7 +75,13 @@ int grapheCourant;
 TypGraphe *graphes[NB_GRAPHES]; 
 
 /*
- * Fonctions
+ * 	Fonctions utilitaires
+ */	
+char* errToString(erreur err);
+void afficheGraphe(int idGraphe);
+
+/*
+ * Fonctions de manipulation
  */
 
 erreur choisirGraphe(int idGraphe);
@@ -82,7 +89,7 @@ erreur creation(int maxSommet);
 erreur modifierNbMaxSommet(int maxSommet);
 erreur suppressionGraphe(int idGraphe);		
 erreur insertionSommet(int nvSommet);		
-erreur suppressionSommet(int sommet);		// Todo
+erreur suppressionSommet(int sommet);		
 erreur insertionArete(
 		int sommetDep,
 		int poids,
@@ -126,6 +133,6 @@ erreur compareSommet(
 		int sommet,
 		int resAttendu
 		);				// Todo
-void afficheGraphe(int idGraphe);
+
 
 #endif
