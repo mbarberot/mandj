@@ -67,7 +67,7 @@ erreur creation(int nbSommet)
 		
 		// Initialisation de la liste des sommets
 		for( i = 0 ; i < g->nbMaxSommets ; i++){
-		    initialiseListe(&g->aretes[i]);
+		    g->aretes[i] = NULL;
 		}
 		
 		// On place la structure dans le tableau à
@@ -97,7 +97,8 @@ erreur creation(int nbSommet)
  * - Si maxSommet < maxSommet en cours : on doit supprimer des entrées dans le tableau des arêtes (et supprimer dans les autres listes les références aux sommets supprimés).
  * @param maxSommet : le nouveau nombre de sommets
  */
-erreur modifierNbMaxSommet(int maxSommet){
+erreur modifierNbMaxSommet(int maxSommet)
+{
     
     TypGraphe* current = graphes[grapheCourant];
     TypGraphe* new;
@@ -115,14 +116,16 @@ erreur modifierNbMaxSommet(int maxSommet){
 	new->aretes = (TypVoisins**)malloc(new->nbMaxSommets * sizeof(TypVoisins*));
 	
 	// On effectue la recopie de l'ancien graphe dans le nouveau
-	for(i = 0 ; i < lim ; i++){
-	    initialiseListe(&new->aretes[i]);
+	for(i = 0 ; i < lim ; i++)
+	{
+	    new->aretes[i] = NULL;
 	    
 	    /* Copie des éléments de la liste */
 	    TypVoisins* tmp = current->aretes[i];
 	    
 	    while(tmp != NULL){
-		if(tmp->voisin != -1){
+		if(tmp->voisin < lim)
+		{ // tmp->voisin < lim : on évite de rajouter des sommets supprimés
 		    ajouteVoisin(&new->aretes[i], tmp->voisin , tmp->poidsVoisin, tmp->info);		
 		}
 		tmp = tmp -> voisinSuivant;
@@ -132,9 +135,12 @@ erreur modifierNbMaxSommet(int maxSommet){
 	
 	/* Si le nouveau nombre max de sommets et supérieur : on initialise les sommets en plus */
 	if(lim == current -> nbMaxSommets){
-	    for(i = lim ; i < maxSommet ; i++) initialiseListe(&new->aretes[i]);
+	    for(i = lim ; i < maxSommet ; i++) new->aretes[i] = NULL;
 	}
+	// supprimer le graphe courant
+	suppressionGraphe(grapheCourant);
 	
+	// On assigne le nouveau graphe
 	graphes[grapheCourant] = new;
     }
     
@@ -145,13 +151,17 @@ erreur modifierNbMaxSommet(int maxSommet){
  * @param idGraphe : un entier désignant un des deux graphes
  */
 
-void afficheGraphe(int idGraphe){
+void afficheGraphe(int idGraphe)
+{
     int i;
     TypGraphe* current = graphes[idGraphe];
     
-    for(i = 0; i < current->nbMaxSommets ; i++){
-	printf("Sommet : %d : \n",i); 
-	afficheVoisins(&current->aretes[i]);
+    for(i = 0; i < current->nbMaxSommets ; i++){	
+	    printf("Sommet : %d : \n",i+1); 
+	    if(current->aretes[i] != NULL)
+	    {
+		afficheVoisins(&current->aretes[i]);
+	    }	
     }
     
     printf("\n");
@@ -161,7 +171,59 @@ void afficheGraphe(int idGraphe){
  * Suppression d'un graphe (désigné par idGraphe). Si idGraphe vaut 0, on supprime les deux graphes
  * @param idGraphe : le(s) graphe(s) à supprimer 
  */
-erreur suppressionGraphe(int idGraphe){
-
-    
+erreur suppressionGraphe(int idGraphe)
+{
+    if(idGraphe == 0){ // On supprime les deux graphes
+	suppressionGraphe(1);
+	suppressionGraphe(2);
+    }
+    else
+    {
+	int i;
+	TypGraphe *current = graphes[idGraphe - 1];
+	if(current != NULL)
+	{
+	    for(i = 0 ; i < current->nbMaxSommets ; i++)
+	    {
+		supprimeListe(&current->aretes[i]);
+	    }
+	    free(current->aretes);
+	    free(current);
+	}
+    }
 }
+
+/**
+ * Création d'un nouveau sommet dans le graphe courant. nvSommet doit être compris entre 0 et nbMaxSommets
+ * En pratique, la fonction initialise la case du tableau correspondant au nouveau sommet
+ * @param nvSommet : le nouveau sommet à insérer
+ */
+erreur insertionSommet(int nvSommet)
+{
+    int som = nvSommet - 1;
+    
+    if(som >= 0 && som < graphes[grapheCourant]->nbMaxSommets)
+    {
+	if(graphes[grapheCourant] != NULL)
+	{
+	    initialiseListe(&graphes[grapheCourant]->aretes[som]);
+	}
+	else
+	{
+	    // Sommet déjà existant
+	}
+    }
+    else
+    {
+	// Sommet invalide
+    }
+}
+
+/**
+ * Suppression du sommet dans le graphe. On supprime de même toutes les références à se sommet dans le reste des aretes
+ * @param sommet : le sommet à retirer (compris entre 1 et nbMaxSommets)
+ */
+erreur suppressionSommet(int sommet)
+{
+}
+

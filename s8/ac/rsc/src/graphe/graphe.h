@@ -80,8 +80,8 @@ TypGraphe *graphes[NB_GRAPHES];
 erreur choisirGraphe(int idGraphe);
 erreur creation(int maxSommet);
 erreur modifierNbMaxSommet(int maxSommet);
-erreur suppressionGraphe(int idGraphe);		// Todo
-erreur insertionSommet(int nvSommet);		// Todo
+erreur suppressionGraphe(int idGraphe);		
+erreur insertionSommet(int nvSommet);		
 erreur suppressionSommet(int sommet);		// Todo
 erreur insertionArete(
 		int sommetDep,
