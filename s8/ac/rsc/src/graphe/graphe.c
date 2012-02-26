@@ -199,8 +199,8 @@ erreur creation(int nbSommet)
 erreur modifierNbMaxSommet(int maxSommet)
 {
     
-    TypGraphe* current = graphes[grapheCourant];
-    TypGraphe* new;
+    TypGraphe *current = graphes[grapheCourant];
+    TypGraphe *new;
     int i;
     int lim;
     
@@ -333,7 +333,7 @@ erreur suppressionGraphe(int idGraphe)
  */
 erreur insertionSommet(int nvSommet)
 {
-    TypGraphe* current = graphes[grapheCourant];    
+    TypGraphe *current = graphes[grapheCourant];    
     int toAdd = nvSommet - 1;
     
     if(current == NULL)
@@ -372,7 +372,7 @@ erreur suppressionSommet(int sommet)
 {
     int i;
     int toDel = sommet - 1 ;
-    TypGraphe* current = graphes[grapheCourant];
+    TypGraphe *current = graphes[grapheCourant];
     
     if(current == NULL)
 	return GRAPHE_INEXISTANT;
@@ -511,7 +511,7 @@ erreur insertionArete(int sommetDep,int poids,int sommetArr,char oriente)
  */
 erreur modifierPoids(int sommetDep, int nvPoids,int sommetArr,char oriente)
 {
-    TypGraphe* current = graphes[grapheCourant];
+    TypGraphe *current = graphes[grapheCourant];
     
     // Le graphe existe ?
     if(current == NULL)
@@ -525,7 +525,8 @@ erreur modifierPoids(int sommetDep, int nvPoids,int sommetArr,char oriente)
     if(sommetDep <= 0 || sommetDep > current->nbMaxSommets || sommetArr <= 0 || sommetArr > current->nbMaxSommets)
 	return SOMMET_INVALIDE;
     
-    if(current->aretes[sommetDep - 1] != NULL && current->aretes[sommetArr - 1])
+    // Les sommets sont-ils initialisés ?
+    if(current->aretes[sommetDep - 1] != NULL && current->aretes[sommetArr - 1] != NULL)
     {
 	// Action à effectuer en fonction de oriente
 	if(oriente == 'o')
@@ -573,9 +574,364 @@ erreur modifierPoids(int sommetDep, int nvPoids,int sommetArr,char oriente)
  * @return SOMMET_INVALIDE : sommetDep ou sommetArr ne sont pas compris dans le graphe
  * @return SOMMET_INEXISTANT : sommetDep ou sommetArr ne sont pas initialisés
  * @return ARETE_INEXISTANTE : l'arête (orientée ou non) entre sommetDep et sommetArr n'existe pas
- * @return POIDS_INVALIDE : nvPoids est incorrect (< 0)
  * @return COMMANDE_INVALIDE : oriente est différent de 'o' ou 'n'
  */
 erreur suppressionArete(int sommetDep,int sommetArr,char oriente)
 {
+    TypGraphe *current = graphes[grapheCourant];
+    
+    // Le graphe existe ?
+    if(current == NULL)
+	return GRAPHE_INEXISTANT;
+
+    // Les sommets précisés sont bien dans les bornes ?
+    if(sommetDep <= 0 || sommetDep > current->nbMaxSommets || sommetArr <= 0 || sommetArr > current->nbMaxSommets)
+	return SOMMET_INVALIDE;
+    
+    // Les sommets sont ils bien initialisés ?
+    if(current->aretes[sommetDep - 1] != NULL && current->aretes[sommetArr - 1] != NULL)
+    {
+	if(oriente == 'o')
+	{
+	    int err;
+	    err = supprimeVoisin(&current->aretes[sommetDep - 1], sommetArr);
+	    
+	    if(err != 1)
+		return ARETE_INEXISTANTE;
+	}
+	else if(oriente == 'n')
+	{
+	    // On vérifie que l'arête existe avant de faire toute modification
+	    if(voisinExiste(&current->aretes[sommetDep - 1] , sommetArr) != NULL
+		&& voisinExiste(&current->aretes[sommetArr - 1], sommetDep) != NULL)	    
+	    {
+		supprimeVoisin(&current->aretes[sommetDep-1], sommetArr);
+		
+		// Arête non-orientée + sommetDep == sommetArr => meme traitement qu'une arete orientée
+		if(sommetDep != sommetArr)
+		    supprimeVoisin(&current->aretes[sommetArr-1], sommetDep);
+	    }
+	    else
+	    {
+		return ARETE_INEXISTANTE;
+	    }
+	}
+	else
+	{
+	    return COMMANDE_INVALIDE;
+	}
+    }
+    else
+    {
+	return SOMMET_INEXISTANT;
+    }
+    
+    return RES_OK;
+}
+
+
+/**
+ * Supprime tous les sommets et toutes les arêtes du graphe
+ * @return RES_OK : l'opération s'est correctement déroulée
+ * @return GRAPHE_INEXISTANT : le graphe courant n'existe pas en mémoire
+ */
+erreur viderGraphe()
+{
+    TypGraphe *current;
+    int i;
+    
+    current = graphes[grapheCourant];
+    
+    if(current == NULL)
+	return GRAPHE_INEXISTANT;
+    
+    for(i = 0 ; i < current -> nbMaxSommets ; i++)
+    {
+	if(current -> aretes[i] != NULL)
+	{
+	    supprimeListe(&current->aretes[i]);
+	    current->aretes[i] = NULL;
+	}
+    }
+    
+    return RES_OK;
+}
+
+/**
+ * Supprime toutes les arêtes du graphe.
+ * Cette fonction laisse les sommets initialisés (dans l'état d'un sommet isolé, avec seulement le voisin fictif -1)
+ * @return RES_OK : l'opération s'est correctement déroulée
+ * @return GRAPHE_INEXISTANT : le graphe courant n'existe pas en mémoire
+ */
+erreur viderAreteGraphe()
+{
+    TypGraphe *current = graphes[grapheCourant];
+    int i;
+    TypVoisins* next;
+    TypVoisins* tmp;
+    
+    if(current == NULL)
+	return GRAPHE_INEXISTANT;
+    
+    for(i = 0 ; i < current->nbMaxSommets ; i++)
+    {
+	
+	if(current -> aretes[i] != NULL)
+	{
+	    tmp = current->aretes[i];
+	    
+	    while(tmp != NULL)
+	    {
+		next = tmp->voisinSuivant;
+		
+		if(tmp->voisin != -1)
+		{
+		    free(tmp);
+		}
+		else
+		{
+		    // Si on tombe sur le voisin factice : on change le pointeur de début de liste
+		    current->aretes[i] = tmp;
+		}
+		tmp = next;
+	    }
+
+	}
+	
+    }
+    
+    return RES_OK;   
+}
+
+/**
+ * Teste l'existence de l'arête sommetDep <-> sommetArr (orientée ou non) avec le poids correspondant
+ * Mode orienté : l'arc sommetDep -> sommetArr existe et son poids est le même que précisé à l'appel de la fonction
+ * Mode non-orienté : les deux arcs (sommetDep -> sommetArr et sommetArr -> sommetDep) existe avec le poids précisé
+ * 
+ * @param idGraphe : le graphe à tester (0 pour les deux graphes)
+ * @param sommetDep : le sommet de départ / l'extrémité de l'arête à tester
+ * @param poids : le poids supposé de l'arête / de l'un des deux arcs
+ * @param sommetArr : le sommet d'arrivée / l'extrémité de l'arête à tester
+ * @param oriente : 'o' pour un test en mode orienté, 'n' sinon
+ * @param resAttendu : le resultat attendu du test. S'il est en adéquation avec le resultat réel, renvoyer TEST_OK, TEST_KO sinon
+ * @return TEST_OK : le résultat attendu est égal au résultat obtenu
+ * @return TEST_KO : le résultat attendu est différent du résultat obtenu
+ * @return GRAPHE_INEXISTANT : le graphe demandé n'existe pas en mémoire
+ * @return SOMMET_INVALIDE : sommetDep ou sommetArr ne sont pas compris dans le graphe
+ * @return SOMMET_INEXISTANT : sommetDep ou sommetArr ne sont pas initialisés
+ * @return ARETE_DIFFERENTE : l'arête existe, mais a un poids différent
+ * @return COMMANDE_INVALIDE : oriente est différent de 'o' ou 'n'
+ */
+erreur testerArete(int idGraphe, int sommetDep,	int poids, 
+		   int sommetArr, char oriente, int resAttendu)
+{
+    
+    if(idGraphe == 0)
+    {
+	erreur gr1 = testerArete(1, sommetDep, poids, sommetArr, oriente, resAttendu);
+	
+	// On vérifie si on a un résultat valide pour le graphe 1. Si c'est le cas, on teste maintenant le graphe 2
+	if(gr1 == TEST_OK || gr1 == TEST_KO)
+	{
+	    erreur gr2 = testerArete(2, sommetDep, poids, sommetArr, oriente, resAttendu);
+	    
+	    // On vérifie si on a un résultat valide pour le graphe 2. On peut alors faire "le bilan" des deux tests
+	    if(gr2 == TEST_OK || gr2 == TEST_KO)
+	    {
+		if(gr1 == TEST_OK && gr2 == TEST_OK) // Si les deux tests sont OK => on renvoie OK
+		{
+		    return TEST_OK;
+		}
+		else // Si au moins un des deux tests est KO => on renvoie KO
+		{
+		    return TEST_KO;
+		}
+	    }
+	    else // On renvoie l'erreur sur le second graphe
+	    {
+		return gr2;
+	    }
+	}
+	else // Sinon, on renvoie l'erreur rencontrée sur le premier graphe
+	{
+	    return gr1;
+	}
+    }
+    
+    TypGraphe *current = graphes[idGraphe - 1];
+    
+    // On vérifie l'existence du graphe
+    if(current== NULL)
+	return GRAPHE_INEXISTANT;
+    
+    // Les sommets précisés sont bien dans les bornes ?
+    if(sommetDep <= 0 || sommetDep > current->nbMaxSommets || sommetArr <= 0 || sommetArr > current->nbMaxSommets)
+	return SOMMET_INVALIDE;
+    
+    // Les sommets précisés sont bien initialisés ?
+    if(current->aretes[sommetDep - 1] != NULL && current->aretes[sommetArr - 1] != NULL)
+    {
+	if(oriente == 'o')
+	{
+	    TypVoisins *arete = voisinExiste(&current->aretes[sommetDep - 1], sommetArr);	    
+	    // Si l'arête n'existe pas ... 
+	    if(arete == NULL)
+	    {
+		if(resAttendu == 0) // ... et que le résultat attendu était faux : le test est OK
+		{
+		    return TEST_OK;
+		}
+		else // Si le résultat attendu était à vrai : le test est KO
+		{
+		    return TEST_KO;
+		}
+	    }
+	    else // L'arête existe 
+	    {
+		// Mais le poids est différent que celui attendu
+		if(arete->poidsVoisin != poids)
+		{
+		    return ARETE_DIFFERENTE;
+		}
+		else // On renvoie TEST_OK ou TEST_KO en fonction du résultat attendu
+		{
+		    if(resAttendu == 0)
+		    {
+			return TEST_KO;
+		    }
+		    else
+		    {
+			return TEST_OK;
+		    }
+		}
+	    }
+	    
+	}
+	else if(oriente == 'n') // Test d'existence de l'arête non-orientée
+	{
+	    TypVoisins *arc1 = voisinExiste(&current->aretes[sommetDep - 1], sommetArr);
+	    TypVoisins *arc2 = voisinExiste(&current->aretes[sommetArr - 1], sommetDep);
+	    
+	    // Si les deux arcs existent => l'arete existe
+	    if(arc1 != NULL || arc2 != NULL)
+	    {
+		if(arc1->poidsVoisin == poids && arc2->poidsVoisin == poids)
+		{
+		    if(resAttendu == 1)
+		    {
+			return TEST_OK;
+		    }
+		    else
+		    {
+			return TEST_KO;
+		    }
+		}
+		else
+		{
+		    return ARETE_DIFFERENTE;
+		}
+	    }
+	    else
+	    {
+		if(resAttendu == 0)
+		{
+		    return TEST_OK;
+		}
+		else
+		{
+		    return TEST_KO;
+		}
+	    }
+	}
+	else // Si oriente n'est ni 'o' ni 'n' => commande invalide
+	{
+	    return COMMANDE_INVALIDE;
+	}
+    }
+    else
+    {
+	return SOMMET_INEXISTANT;
+    }    
+}
+
+/**
+ * Teste l'existence d'un sommet dans le graphe désigné par idGraphe (voire dans les deux, si idGraphe = 0)
+ * @param idGraphe : le graphe dans lequel on cherche le sommet (0 pour les deux graphes)
+ * @param sommet : le sommet dont on veut vérifier l'existence
+ * @param resAttendu : 1 si le sommet est censé exister, 0 sinon
+ * @return TEST_OK : le résultat obtenu est le même que le résultat attendu
+ * @return TEST_KO : le résultat obtenu n'est pas le même que le résultat attendu
+ * @return GRAPHE_INEXISTANT : le(s) graphe(s) n'existe(nt) pas en mémoire
+ * @return SOMMET_INVALIDE : le sommet n'est pas compris dans les bornes
+ */
+erreur testerSommet(int idGraphe, int sommet, int resAttendu)
+{
+    // On teste les deux graphes
+    if(idGraphe == 0)
+    {
+	erreur gr1 = testerSommet(1, sommet, resAttendu);
+	
+	// Si le premier test nous renvoie un résultat correct
+	if(gr1 == TEST_OK || gr1 == TEST_KO)
+	{
+	    // On teste le deuxième graphe
+	    erreur gr2 = testerSommet(2, sommet, resAttendu);
+	    
+	    // Le second test nous renvoie un résultat correct
+	    if(gr2 == TEST_OK || gr2 == TEST_KO)
+	    {
+		// Si les deux sont ok => on renvoie ok. Si l'un des deux est ko => on renvoie ko
+		if(gr1 == TEST_OK && gr2 == TEST_OK)
+		{
+		    return TEST_OK;
+		}
+		else
+		{
+		    return TEST_KO;
+		}
+	    }
+	    else // Sinon, on renvoie l'erreur trouvée sur le graphe 2
+	    {
+		return gr2;
+	    }
+	}
+	else // Sinon, on renvoie l'erreur trouvée sur le graphe 1
+	{
+	    return gr1;
+	}
+    }
+    
+    TypGraphe *current = graphes[idGraphe - 1];
+    
+    // On vérifie l'existence du graphe
+    if(current== NULL)
+	return GRAPHE_INEXISTANT;
+    
+    // Les sommets précisés sont bien dans les bornes ?
+    if(sommet <= 0 || sommet > current->nbMaxSommets)
+	return SOMMET_INVALIDE;
+    
+    // On teste l'existence du sommet
+    if(current->aretes[sommet -1] != NULL)
+    {
+	if(resAttendu == 1)
+	{
+	    return TEST_OK;
+	}
+	else
+	{
+	    return TEST_KO;
+	}
+    }
+    else
+    {
+	if(resAttendu == 0)
+	{
+	    return TEST_OK;
+	}
+	else
+	{
+	    return TEST_KO;
+	}
+    }
 }

@@ -106,9 +106,9 @@ erreur suppressionArete(
 		int sommetDep,
 		int sommetArr,
 		char oriente
-		);				// Todo
-erreur viderGraphe();				// Todo
-erreur viderAreteGraphe();			// Todo
+		);				
+erreur viderGraphe();				
+erreur viderAreteGraphe();			
 erreur testerArete(
 		int idGraphe,
 		int sommetDep,
@@ -116,7 +116,7 @@ erreur testerArete(
 		int sommetArr,
 		char oriente,
 		int resAttendu
-		);				// Todo
+		);				
 erreur testerSommet(
 		int idGraphe,
 		int sommet,

@@ -30,9 +30,13 @@ main(int argc, char **argv){
   
   
   // Quelques arêtes
-  // arete 1<->3
-  err = insertionArete(1,10,3,'n');
+  // arete 1->3
+  err = insertionArete(1,10,3,'o');
   printf("Creation arete 1 3 %d : %s \n", err, errToString(err));
+  // arete 3-> 1
+  err = insertionArete(3,12,1,'o');
+  printf("Creation arete 3 1 %d : %s \n", err, errToString(err));
+  
   // arete 3->3
   err = insertionArete(3,0,3,'n');
   printf("Creation arete 3 3 %d : %s \n", err, errToString(err));
@@ -44,12 +48,6 @@ main(int argc, char **argv){
   printf("Creation arete 7 8 %d : %s \n", err, errToString(err));
   
   afficheGraphe(2);
-
-  // Suppression du sommet 1
-  err = suppressionSommet(1);
-  printf("Suppression sommet 1 %d : %s \n", err, errToString(err));
-  
-  afficheGraphe(2);
   
   // Modification du poids des arêtes 3->3 et 7<->8
   err = modifierPoids(3, 42, 3,'n');
@@ -58,9 +56,18 @@ main(int argc, char **argv){
   printf("Modifier poids arete 7 8 %d : %s \n", err, errToString(err));
   
   afficheGraphe(2);
+  
+  // Tests sur les arêtes
+  err = testerArete(2,7,42,8,'n',1);
+  printf("Existence arete 7 8 %d : %s \n", err, errToString(err));
+  
+  // Tests sur les sommets
+  err = testerSommet(2, 3, 0);
+  printf("Existence sommet 3 %d : %s \n", err, errToString(err));
+  
   // Suppression du graphe
   err = suppressionGraphe(2);
   printf("Suppression graphe %d : %s \n", err, errToString(err));
 
-
 }
+
