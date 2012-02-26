@@ -287,8 +287,15 @@ erreur suppressionGraphe(int idGraphe)
     
     if(idGraphe == 0)
     {
-	suppressionGraphe(1);
-	suppressionGraphe(2);
+	int err1, err2;
+	err1 = suppressionGraphe(1);
+	err2 = suppressionGraphe(2);
+	
+	if(err1 != RES_OK)
+	    return err1;
+	if(err2 != RES_OK)
+	    return err2;
+	
 	return RES_OK;
     }
     else
@@ -450,21 +457,29 @@ erreur insertionArete(int sommetDep,int poids,int sommetArr,char oriente)
 	}	
 	else if(oriente == 'n')
 	{
-	    int err1, err2;
 	    
-	    err1 = ajouteVoisin(&current->aretes[sommetDep-1], sommetArr, poids, NULL);
-	    err2 = ajouteVoisin(&current->aretes[sommetArr-1], sommetDep, poids, NULL);
-	    
-	    // On vérifie si une arête existe déjà
-	    if(err1 == 0 || err2 == 0)
+	    // On vérifie si l'arête n'existe pas déjà
+	    if(voisinExiste(&current->aretes[sommetDep-1], sommetArr) == NULL
+		&& voisinExiste(&current->aretes[sommetArr-1], sommetDep) == NULL
+	    )
+	    {		
+		int err1 = 0, err2 = 0;
+		err1 = ajouteVoisin(&current->aretes[sommetDep-1], sommetArr, poids, NULL);
+		// On vérifie que le sommet de départ et d'arrivée sont différents pour éviter de rajouter deux fois la même arête
+		// (et provoquer une erreur)
+		if(sommetDep != sommetArr)
+		    err2 = ajouteVoisin(&current->aretes[sommetArr-1], sommetDep, poids, NULL);
+		
+		// Pas de problèmes mémoire ?
+		if(err1 == -1 || err2 == -1)
+		    return PROBLEME_MEMOIRE;
+	    }
+	    else
 	    {
 		return ARETE_DEJA_EXISTANTE;
 	    }
-	    else if(err1 == -1 || err2 == -1)
-	    {
-		return PROBLEME_MEMOIRE;
-	    }
-		
+	  
+	   
 	}
 	else
 	{
@@ -478,5 +493,89 @@ erreur insertionArete(int sommetDep,int poids,int sommetArr,char oriente)
     
     return RES_OK;
 }
-
-
+/**
+ * Modifie le poids de l'arête précisée par sommetDep, sommetArr et oriente
+ * Si oriente vaut 'o' => on modifie l'arête sommetDep -> sommetArr
+ * Si oriente vaut 'n' => on modifie aussi l'arête sommetArr -> sommetDep
+ * @param sommetDep : le sommet de départ (une extrémité dans le cas d'une arête non-orientée) de l'arête à modifier
+ * @param nvPoids : le nouveau poids de l'arête
+ * @param sommetArr : le sommet d'arrivée (une extrémité dans le cas d'une arête non-orientée) de l'arête à modifier
+ * @param oriente : 'o' si on modifie une arête orientée, 'n' sinon
+ * @return RES_OK : l'opération s'est déroulée correctement
+ * @return GRAPHE_INEXISTANT : le graphe courant n'est pas initialisé
+ * @return SOMMET_INVALIDE : sommetDep ou sommetArr ne sont pas compris dans le graphe
+ * @return SOMMET_INEXISTANT : sommetDep ou sommetArr ne sont pas initialisés
+ * @return ARETE_INEXISTANTE : l'arête (orientée ou non) entre sommetDep et sommetArr n'existe pas
+ * @return POIDS_INVALIDE : nvPoids est incorrect (< 0)
+ * @return COMMANDE_INVALIDE : oriente est différent de 'o' ou 'n'
+ */
+erreur modifierPoids(int sommetDep, int nvPoids,int sommetArr,char oriente)
+{
+    TypGraphe* current = graphes[grapheCourant];
+    
+    // Le graphe existe ?
+    if(current == NULL)
+	return GRAPHE_INEXISTANT;
+    
+    // Le poids est valide ?
+    if(nvPoids < 0)
+	return POIDS_INVALIDE;
+    
+    // Les sommets précisés sont bien dans les bornes ?
+    if(sommetDep <= 0 || sommetDep > current->nbMaxSommets || sommetArr <= 0 || sommetArr > current->nbMaxSommets)
+	return SOMMET_INVALIDE;
+    
+    if(current->aretes[sommetDep - 1] != NULL && current->aretes[sommetArr - 1])
+    {
+	// Action à effectuer en fonction de oriente
+	if(oriente == 'o')
+	{
+	    int err = modifiePoidsVoisin(&current->aretes[sommetDep -1], sommetArr, nvPoids);
+	    if(err == -1)
+		return ARETE_INEXISTANTE;
+	}
+	else if(oriente == 'n')
+	{
+	    // On vérifie que l'arête existe avant de faire toute modification
+	    if(voisinExiste(&current->aretes[sommetDep - 1] , sommetArr) != NULL
+		&& voisinExiste(&current->aretes[sommetArr - 1], sommetDep) != NULL)	    
+	    {
+		modifiePoidsVoisin(&current->aretes[sommetDep-1], sommetArr, nvPoids);
+		
+		// Arête non-orientée + sommetDep == sommetArr => meme traitement qu'une arete orientée
+		if(sommetDep != sommetArr)
+		    modifiePoidsVoisin(&current->aretes[sommetArr-1], sommetDep, nvPoids);
+	    }
+	    else
+	    {
+		return ARETE_INEXISTANTE;
+	    }
+	}
+	else
+	{
+	    return COMMANDE_INVALIDE;
+	}
+    }
+    else
+    {
+	return SOMMET_INEXISTANT;
+    }
+    
+    return RES_OK;
+}
+/**
+ * Supprime l'arête entre sommetDep et sommetArr
+ * @param sommetDep : le sommet de départ / une extrémité de l'arête (arête non-orientée)
+ * @param sommetArr : le sommet d'arrivée / une extrémité de l'arête (arête non-orientée)
+ * @param oriente : spécifie si l'arête à supprimer est orientée ou pas
+ * @return RES_OK : l'opération s'est déroulée correctement
+ * @return GRAPHE_INEXISTANT : le graphe courant n'est pas initialisé
+ * @return SOMMET_INVALIDE : sommetDep ou sommetArr ne sont pas compris dans le graphe
+ * @return SOMMET_INEXISTANT : sommetDep ou sommetArr ne sont pas initialisés
+ * @return ARETE_INEXISTANTE : l'arête (orientée ou non) entre sommetDep et sommetArr n'existe pas
+ * @return POIDS_INVALIDE : nvPoids est incorrect (< 0)
+ * @return COMMANDE_INVALIDE : oriente est différent de 'o' ou 'n'
+ */
+erreur suppressionArete(int sommetDep,int sommetArr,char oriente)
+{
+}

@@ -36,7 +36,7 @@ int ajouteVoisin(TypVoisins** l, int numVoisin, int poidsVoisin, void* info){
     TypVoisins* new;
     
     if(l != NULL ){
-	if(voisinExiste(l,numVoisin) != 1){
+	if(voisinExiste(l,numVoisin) == NULL){
 	    if((new = (TypVoisins*)malloc(sizeof(TypVoisins))) != NULL){
 		new->voisin = numVoisin;
 		new->poidsVoisin = poidsVoisin;
@@ -66,7 +66,7 @@ int supprimeVoisin(TypVoisins** l, int numVoisin){
     TypVoisins* prec;
     
     if(l != NULL){
-	if(voisinExiste(l,numVoisin) != 1 ){	    
+	if(voisinExiste(l,numVoisin) == NULL ){	    
 	    return -1;
 	}else{
 	    // Le maillon à supprimer est le premier 
@@ -84,6 +84,28 @@ int supprimeVoisin(TypVoisins** l, int numVoisin){
 	}
     }
     return 1;
+}
+/**
+ * Change le poids de l'arête l -> numVoisin
+ * @param l :la liste contenant le voisin à modifier
+ * @param numVoisin : le voisin à modifier
+ * @param nPoids : le nouveau poids de l'arête
+
+ * @return 1 si succès, -1 sinon
+ */
+int modifiePoidsVoisin(TypVoisins** l, int numVoisin, int nPoids)
+{
+    TypVoisins* toModify = voisinExiste(l,numVoisin);
+    
+    if(toModify != NULL)
+    {
+	toModify->poidsVoisin = nPoids;	
+	return 1;
+    }
+    else
+    {
+	return -1;
+    }
 }
 
 /**
@@ -104,19 +126,19 @@ void afficheVoisins(TypVoisins** l){
  * Vérifie l'existence du voisin numVoisin dans la liste
  * @param l : la liste a traiter
  * @param numVoisin : l'id du voisin dont on veut vérifier l'existence
- * @return 1 si le voisin est présent, -1 sinon
+ * @return le voisin s'il est trouvé, NULL sinon
  */
-int voisinExiste(TypVoisins** l , int numVoisin){
+TypVoisins* voisinExiste(TypVoisins** l , int numVoisin){
     TypVoisins* tmp = *l;
     
     while(tmp != NULL){
 	if(tmp->voisin == numVoisin){
-	    return 1;
+	    return tmp;
 	}
 	tmp = tmp->voisinSuivant;
     }
     
-    return -1;
+    return NULL;
 }
 
 /**

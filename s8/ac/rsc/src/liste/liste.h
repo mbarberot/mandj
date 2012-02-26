@@ -16,8 +16,9 @@ typedef struct voisins {
 int initialiseListe(TypVoisins** l);
 int ajouteVoisin(TypVoisins** l, int numVoisin, int poidsVoisin, void* info);
 int supprimeVoisin(TypVoisins** l, int numVoisin);
+int modifiePoidsVoisin(TypVoisins** l, int numVoisin, int nPoids);
 void afficheVoisins(TypVoisins** l);
-int voisinExiste(TypVoisins** l, int numVoisin);
+TypVoisins* voisinExiste(TypVoisins** l, int numVoisin);
 void supprimeListe(TypVoisins** l);
 
 #endif

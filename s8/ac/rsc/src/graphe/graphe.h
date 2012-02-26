@@ -95,13 +95,13 @@ erreur insertionArete(
 		int poids,
 		int sommetArr,
 		char oriente
-		);				// Todo
+		);				
 erreur modifierPoids(
 		int sommetDep,
 		int nvPoids,
 		int sommetArr,
 		char oriente
-		);				// Todo
+		);				
 erreur suppressionArete(
 		int sommetDep,
 		int sommetArr,
