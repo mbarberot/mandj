@@ -79,6 +79,8 @@ TypGraphe *graphes[NB_GRAPHES];
  */	
 char* errToString(erreur err);
 void afficheGraphe(int idGraphe);
+erreur calculerDegreSommet(int idGraphe, int sommet, int *degre);
+erreur isNonOrientee(int idGraphe, int s1, int s2);
 
 /*
  * Fonctions de manipulation
@@ -121,18 +123,18 @@ erreur testerSommet(
 		int idGraphe,
 		int sommet,
 		int resAttendu
-		);				// Todo
+		);
 erreur testerDegreSommet(
 		int idGraphe,
                 int sommet,
 		int value,
 		int resAttendu
-		);				// Todo
-erreur compareGraphe(int resAttendu);		// Todo
+		);				
+erreur compareGraphe(int resAttendu);
 erreur compareSommet(
 		int sommet,
 		int resAttendu
-		);				// Todo
+		);				
 
 
 #endif

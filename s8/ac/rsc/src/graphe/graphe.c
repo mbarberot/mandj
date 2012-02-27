@@ -98,6 +98,127 @@ void afficheGraphe(int idGraphe)
     }
 }
 
+/**
+ * Calcule le degré d'un sommet, c'est à dire, le nombre d'arêtes reliées à ce sommet
+ * @param idGraphe : le graphe dans lequel on travaille
+ * @param sommet : le sommet dont on veut connaître le degré
+ * @param degre : le degré calculé
+ * @return RES_OK : l'opération s'est déroulée normalement
+ * @return NUMERO_GRAPHE_TROP_PETIT : idGraphe <= 0
+ * @return NUMERO_GRAPHE_INVALIDE : idGraphe > 2
+ * @return GRAPHE_INEXISTANT : le graphe n'est pas initialisé
+ * @return SOMMET_INVALIDE : le sommet invalide est hors bornes
+ * @return SOMMET_INEXISTANT : le sommet n'est pas initialisé
+ */
+erreur calculerDegreSommet(int idGraphe, int sommet, int *degre)
+{
+    int res = 0;
+    int i;
+    
+    // Vérifications sur le graphe
+    if(idGraphe < 1)
+	return NUMERO_GRAPHE_TROP_PETIT;
+    
+    if(idGraphe > 2)
+	return NUMERO_GRAPHE_INVALIDE;    
+    
+    TypGraphe* current = graphes[idGraphe -1 ];
+    
+    if(current == NULL)
+	return GRAPHE_INEXISTANT;
+    
+    // Les sommets sont bien compris dans les bornes ?
+    if(sommet < 1 || sommet > current->nbMaxSommets)
+	return SOMMET_INVALIDE;
+    
+    // Le sommet est initialisé ? (=> il existe ?)
+    if(current->aretes[sommet-1] == NULL)
+	return SOMMET_INEXISTANT;
+	
+    // On parcourt toutes les arêtes.
+    for(i = 0 ; i < current -> nbMaxSommets ; i++)
+    {
+	if(current->aretes[i] != NULL)
+	{
+	    if( i == sommet - 1)
+	    {
+		res = res + (tailleListe(&current->aretes[i]) - 1); // -1 : on ne compte pas le sommet fictif
+	    }
+	    else
+	    {
+		// On incrémente le compteur si l'arête est orientée (si non-orientée => on la compte déjà dans le if précédent)
+		if(isNonOrientee(idGraphe, i+1, sommet) == TEST_KO)
+		{		   
+		    res++;
+		}
+	    }
+	    
+	}	
+    }
+    
+    *degre = res;
+    return RES_OK;
+}
+
+/**
+ * Vérifie si l'arête précisée par s1 et s2 est une arête non-orientée du graphe idGraphe
+ * @param idGraphe : le graphe dans lequel on travaille
+ * @param s1 : une extrémité de l'arête
+ * @param s2 : une autre extrémité de l'arête
+ * @return GRAPHE_INEXISTANT : le graphe n'existe pas en mémoire
+ * @return SOMMET_INVALIDE : s1 ou s2 hors bornes
+ * @return SOMMET_INEXISTANT : s1 ou s2 non initialisés
+ * @return TEST_OK : l'arête s1 <-> s2 est non orientée (les deux arcs existent et ont la même pondération)
+ * @return TEST_KO : l'arête s1 -> s2 est orientée
+ * @return ARETE_INEXISTANTE : pas d'arête entre s1 et s2 ou s2 -> s1 existe
+ */
+erreur isNonOrientee(int idGraphe, int s1, int s2)
+{
+    
+    // Vérifications sur le graphe
+    if(idGraphe < 1)
+	return NUMERO_GRAPHE_TROP_PETIT;
+    
+    if(idGraphe > 2)
+	return NUMERO_GRAPHE_INVALIDE;    
+    
+    TypGraphe* current = graphes[idGraphe -1 ];
+    
+    if(current == NULL)
+	return GRAPHE_INEXISTANT;
+    
+    // Les sommets sont bien compris dans les bornes ?
+    if(s1 < 1 || s1 > current->nbMaxSommets || s2 < 1 || s2 > current->nbMaxSommets)
+	return SOMMET_INVALIDE;
+    
+    // Les sommets sont bien initialisés ?
+    if(current->aretes[s1 - 1] != NULL && current->aretes[s2 -1] != NULL)
+    {
+	TypVoisins* arr1 = voisinExiste(&current->aretes[s1 -1], s2);
+	TypVoisins* arr2 = voisinExiste(&current->aretes[s2 -1], s1);
+	
+	if(arr1 == NULL && arr2 == NULL)
+	    return ARETE_INEXISTANTE;
+	
+	if((arr1 != NULL && arr2 != NULL) 
+	    && (arr1->poidsVoisin == arr2->poidsVoisin))
+	{	    
+	    return TEST_OK;
+	}
+	else
+	{
+	    if(arr1 == NULL)
+		return ARETE_INEXISTANTE;
+	    
+	    return TEST_KO;
+	}
+    }
+    else
+    {
+	return SOMMET_INEXISTANT;
+    }   
+    
+}
 
 /**
  * Choisi un des deux graphes que la librairie permet de gérer
@@ -808,7 +929,7 @@ erreur testerArete(int idGraphe, int sommetDep,	int poids,
 	    
 	}
 	else if(oriente == 'n') // Test d'existence de l'arête non-orientée
-	{
+	{	 	    
 	    TypVoisins *arc1 = voisinExiste(&current->aretes[sommetDep - 1], sommetArr);
 	    TypVoisins *arc2 = voisinExiste(&current->aretes[sommetArr - 1], sommetDep);
 	    
@@ -866,6 +987,11 @@ erreur testerArete(int idGraphe, int sommetDep,	int poids,
  */
 erreur testerSommet(int idGraphe, int sommet, int resAttendu)
 {
+    
+    // On vérifie si idGraphe est bien dans les bornes
+    if(idGraphe < 0 || idGraphe > 2)
+	return GRAPHE_INEXISTANT;
+    
     // On teste les deux graphes
     if(idGraphe == 0)
     {
@@ -934,4 +1060,194 @@ erreur testerSommet(int idGraphe, int sommet, int resAttendu)
 	    return TEST_KO;
 	}
     }
+}
+/**
+ *  Teste le degré d'un sommet dans un graphe donné
+ *  @param idGraphe : le(s) graphe(s) à tester
+ *  @param sommet : le sommet dont on veut tester le degré
+ *  @param value : le degré attendu
+ *  @param resAttendu : vrai si on s'attend à ce que le degré trouvé soit le même que le degré attendu (value)
+ *  @return TEST_OK : le résultat obtenu est conforme à ce qu'on attendait
+ *  @return TEST_KO : le résultat obtenu n'est pas conforme à ce qu'on attendait
+ *  @return GRAPHE_INEXISTANT : le(s) graphe(s) n'est (ne sont) pas présent(s) en mémoire
+ *  @return SOMMET_INVALIDE : le sommet n'est pas compris dans les bornes [1..nbMaxSommets]
+ *  @return SOMMET_INEXISTANT : le sommet n'est pas initialisé
+ */
+erreur testerDegreSommet(int idGraphe, int sommet, int value, int resAttendu )
+{
+    if(idGraphe == 0)
+    {
+	erreur gr1 = testerDegreSommet(1, sommet, value, resAttendu);
+	
+	// Si le premier test nous renvoie un résultat correct
+	if(gr1 == TEST_OK || gr1 == TEST_KO)
+	{
+	    // On teste le deuxième graphe
+	    erreur gr2 = testerDegreSommet(2, sommet, value, resAttendu);
+	    
+	    // Le second test nous renvoie un résultat correct
+	    if(gr2 == TEST_OK || gr2 == TEST_KO)
+	    {
+		// Si les deux sont ok => on renvoie ok. Si l'un des deux est ko => on renvoie ko
+		if(gr1 == TEST_OK && gr2 == TEST_OK)
+		{
+		    return TEST_OK;
+		}
+		else
+		{
+		    return TEST_KO;
+		}
+	    }
+	    else // Sinon, on renvoie l'erreur trouvée sur le graphe 2
+	    {
+		return gr2;
+	    }
+	}
+	else // Sinon, on renvoie l'erreur trouvée sur le graphe 1
+	{
+	    return gr1;
+	}
+    }
+    
+    // Permettra de stocker le renvoi de calculerDegreSommet
+    erreur err;
+    
+    // Le degré que l'on calcule pour le sommet
+    int degreCalc = 0;
+    
+    // On vérifie si idGraphe est bien dans les bornes
+    if(idGraphe < 0 || idGraphe > 2)
+	return GRAPHE_INEXISTANT;
+    
+    TypGraphe *current = graphes[idGraphe - 1];
+    
+    // On vérifie l'existence du graphe
+    if(current== NULL)
+	return GRAPHE_INEXISTANT;
+    
+    // Les sommets précisés sont bien dans les bornes ?
+    if(sommet <= 0 || sommet > current->nbMaxSommets)
+	return SOMMET_INVALIDE;    
+    
+    err = calculerDegreSommet(idGraphe, sommet, &degreCalc);
+    
+    if(err != RES_OK)
+	return err;
+        
+    // On compare le résultat obtenu et le résultat attendu et on renvoie le résultat du test
+    if((degreCalc == value && resAttendu == 1) 
+	|| (degreCalc != value && resAttendu ==0))
+    {
+	return TEST_OK;
+    }
+    else
+    {
+	return TEST_KO;
+    }
+    
+}
+
+/**
+ * Compare un sommet sur les deux graphes.
+ * Ils sont égaux si:
+ * 	- ils existent dans les deux graphes
+ * 	- ils ont les mêmes voisins
+ * @param sommet : le sommet à tester dans les deux graphes
+ * @param resAttendu : le résultat attendu du test
+ * @return TEST_OK : résultat obtenu = résultat attendu
+ * @return TEST_KO : résultat obtenu != résultat attendu
+ * @return GRAPHE_INEXISTANT : un des deux (ou les deux) graphes n'existe pas
+ * @return SOMMET_INVALIDE : sommet hors borne
+ * @return SOMMET_INEXISTANT : sommet non initialisé dans un des deux graphes (voire les deux)
+ */
+erreur compareSommet(int sommet, int resAttendu)
+{
+    int res;
+    TypGraphe *gr1 = graphes[0];
+    TypGraphe *gr2 = graphes[1];
+    
+    // Les deux graphes sont bien initialisés ?
+    if(gr1 == NULL || gr2 == NULL)
+	return GRAPHE_INEXISTANT;
+    
+    // Les deux sommets sont biens dans les bornes ?
+    if(sommet < 0 || sommet > gr1->nbMaxSommets || sommet > gr2->nbMaxSommets)
+	return SOMMET_INVALIDE;
+    
+    TypVoisins *voisinsS1 = gr1->aretes[sommet-1];
+    TypVoisins *voisinsS2 = gr2->aretes[sommet-1];
+    
+    // Les deux sommets sont bien initialisés ?
+    if(voisinsS1 == NULL || voisinsS2 == NULL)
+	return SOMMET_INEXISTANT;
+    
+    // On compare les deux listes de sommets
+    res = compareListes(&voisinsS1, &voisinsS2);
+    
+    // On traite le résultat à renvoyer en fonction de ce qui était attendu
+    if(res == resAttendu)
+    {
+	return TEST_OK;
+    }
+    else
+    {
+	return TEST_KO;
+    }
+}
+/**
+ * Compare les deux graphes.
+ * Ils sont égaux si tous leurs sommets sont égaux
+ * @param resAttendu : le résultat attendu de la comparaison
+ * @return TEST_OK : résultat obtenu = résultat attendu
+ * @return TEST_KO : résultat obtenu != résultat attendu
+ * @return GRAPHE_INEXISTANT : un des deux (ou les deux) graphes n'existe pas
+ */
+erreur compareGraphe(int resAttendu)
+{
+    erreur err;
+    int i;
+    
+    TypGraphe *gr1 = graphes[0];
+    TypGraphe *gr2 = graphes[1];
+    
+    //Test de l'existence des deux graphes
+    if(gr1 == NULL || gr2 == NULL)
+	return GRAPHE_INEXISTANT;
+    
+    // Avant d'aller plus loin : on vérifie que la taille des deux graphes est la même
+    if(gr1->nbMaxSommets != gr2->nbMaxSommets)
+	return TEST_KO;
+    
+    //On parcourt tous les sommets pour vérifier s'ils sont égaux dans les deux graphes
+    for(i = 0 ; i < gr1->nbMaxSommets ; i++)
+    {
+	err = compareSommet(i+1, 1);	
+	
+	if(err != TEST_OK)
+	{
+	    if(err == TEST_KO) // si compareSommet a renvoyé un résultat exploitable
+	    {
+		if(resAttendu ==0)
+		{
+		    return TEST_OK;
+		}
+		else
+		{
+		    return TEST_KO;
+		}
+	    }	 
+	}
+    }
+    
+    // Arrivé à ce point du programme : err = TEST_OK
+    
+    if(resAttendu == 1)
+    {
+	return TEST_OK;
+    }
+    else
+    {
+	return TEST_KO;
+    }    
+    
 }

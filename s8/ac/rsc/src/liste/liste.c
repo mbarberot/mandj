@@ -154,6 +154,51 @@ void supprimeListe(TypVoisins** l){
     free(tmp);
     tmp = next;
   }
-  
-  
 }
+  
+  /**
+   * Renvoie la taille de la liste (nb d'éléments)
+   * @param l : la liste dont on veut connaître la taille
+   * @return la taille calculée
+   */
+  int tailleListe(TypVoisins** l)
+  {
+      int res = 0;
+      TypVoisins *tmp = *l;
+      
+      while(tmp != NULL)
+      {
+	  res++;
+	  tmp = tmp->voisinSuivant;
+      }
+      return res;
+  }
+
+  /**
+   * Compare deux listes (=> les deux listes ont les mêmes éléments)
+   * @param l1 : une liste
+   * @param l2 : une autre liste
+   * @return 1 si égales, 0 sinon
+   */
+int compareListes(TypVoisins** l1, TypVoisins** l2)
+{
+    int res = 1;
+    TypVoisins *tmp1 = *l1;
+    TypVoisins *tmp2 = *l2;
+    
+    while(tmp1 != NULL && tmp2 != NULL)
+    {
+	if(tmp1->voisin != tmp2-> voisin || tmp1->poidsVoisin != tmp2->poidsVoisin)
+	    return 0;
+	
+	tmp1 = tmp1->voisinSuivant;
+	tmp2 = tmp2->voisinSuivant;
+    }
+    
+    if(tmp1!= NULL || tmp2 != NULL)
+	res = 0;
+    
+    return res;
+}
+  
+
