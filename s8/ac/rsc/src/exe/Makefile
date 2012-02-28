@@ -18,7 +18,7 @@ HDR= $(SRC:.c=.h)
 all: $(EXEC)
 
 Main : $(OBJ) main.c
-	$(CC) -o $(BIN)$@ $^ $(LDFLAGS)
+	$(CC) -o $(BIN)$@ $^ $(LDFLAGS) $(CPPFLAGS) $(LDFLAGS)
 	cp $(HDR) $(INC)
 
 %.o: %.c %.h
