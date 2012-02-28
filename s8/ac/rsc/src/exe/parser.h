@@ -12,11 +12,18 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 
-#define TAILLE_MAX 1000
+#include "graphe.h"
+#include "liste.h"
+
+#define TAILLE_MAX 2000
 
 
-char** lectureFichier(char* nom);
+char* lectureFichier(char* nom);
 void interpreteCommande(char* commande);
 
 
