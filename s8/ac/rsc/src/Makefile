@@ -26,14 +26,19 @@
 # LISTE : dossier des sources de la bibliothèque de manipulation de listes
 # GRAPHE : pareil, mais pour les graphes
 # TESTS : Fichiers sources permettant de tester les fonctions développées
+# EXEC : Les fichiers du programme principal (parser, menu, main)
 LISTE= ./liste
 GRAPHE= ./graphe
 TESTS= ./tests
+EXEC= ./exe
+
+
 BIN= ../bin
+
 #
 # Règle principale
 #
-all : liste graphe tests
+all : liste.a graphe.a tests exec
 
 liste.a:
 	make -C $(LISTE)
@@ -43,6 +48,9 @@ graphe.a: liste.a
 
 tests: graphe.a liste.a
 	make -C $(TESTS)
+
+exec: graphe.a liste.a
+	make -C $(EXEC)
 
 # 
 # Nettoyage
@@ -57,10 +65,12 @@ tests: graphe.a liste.a
 clean : 
 	make -C $(LISTE) clean
 	make -C $(GRAPHE) clean
+	make -C $(EXEC) clean
 
 reset :
 	make -C $(LISTE) reset
 	make -C $(GRAPHE) reset
+	make -C $(EXEC) reset
 
 veryclean : clean reset
 	rm $(BIN)/*

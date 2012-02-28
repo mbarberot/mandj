@@ -8,8 +8,8 @@ CC=gcc
 CFLAGS=-O4 -W -Wall -g
 CPPFLAGS=-I $(INC)
 LDFLAGS=-L $(LIBDIR) -lgraphe -lliste
-EXEC = GoListe GoGraphe GoParser
-
+EXEC = GoListe GoGraphe
+OBJ = ../exe/*.o
 
 # Regles
 all: $(EXEC)
@@ -19,8 +19,5 @@ GoListe:
 	$(CC) $@.c -o $(BIN)$@ $(CPPFLAGS) $(LDFLAGS)
 GoGraphe:
 	$(CC) $@.c -o $(BIN)$@ $(CPPFLAGS) $(LDFLAGS)
-GoParser:
-	$(CC) $@.c -o $(BIN)$@ $(CPPFLAGS) $(LDFLAGS)
-
 
 
