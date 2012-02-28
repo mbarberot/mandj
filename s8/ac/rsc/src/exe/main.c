@@ -15,4 +15,6 @@ main(int argc, char **argv){
     
     strcpy(str, lectureFichier("../exemple_accents.txt"));
     interpreteCommande(str);
+    
+    afficheGraphe(1);
 }

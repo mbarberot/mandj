@@ -61,7 +61,10 @@ char* lectureFichier(char* nom)
     return content;
     
 }
-
+/**
+ * Interprete les commandes écrites dans une chaine de caractères
+ * @param commandes : la chaine de caractères contenant les commandes à interpréter
+ */
 void interpreteCommande(char* commandes)
 {
     char *sep = {";"};
@@ -69,8 +72,46 @@ void interpreteCommande(char* commandes)
 
     ptr = strtok(commandes, sep);
     while ( ptr != NULL ) {
-      printf("token: %s\n", ptr);
+      
+      // Vérifier si premiers char => nbres
+      if(strstr(ptr, "creation") != NULL)
+	  interpreteCreation(ptr);
+      
       ptr = strtok(NULL, sep);
     }
     //printf("ligne après traitement: %s\n", commandes);
+}
+
+/**
+ * Interprete la commande "creation". Ecris le résultat obtenu dans le fichier res et génère le .dot
+ */
+void interpreteCreation(char* cmd)
+{
+    char *sep = {",()creation: "};
+    char *ptr;
+    int first = 1;
+    int numCommande;
+    int arg;
+    erreur err;
+    
+    ptr = strtok(cmd, sep);
+    
+    while(ptr != NULL)
+    {
+	// Premier token rencontré : numéro de la commande
+	if(first)
+	{	    
+	    numCommande = atoi(ptr);
+	    first = 0;
+	}
+	else // Premier argument
+	{
+	    arg = atoi(ptr);
+	}
+	ptr = strtok(NULL, sep);
+    }
+    err = creation(arg);
+
+    // Ecriture fichier resultat
+    // Ecriture graphviz
 }

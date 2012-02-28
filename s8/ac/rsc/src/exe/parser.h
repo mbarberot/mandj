@@ -20,11 +20,9 @@
 #include "graphe.h"
 #include "liste.h"
 
-#define TAILLE_MAX 2000
-
 
 char* lectureFichier(char* nom);
 void interpreteCommande(char* commande);
-
+void interpreteCreation(char* cmd);
 
 #endif
