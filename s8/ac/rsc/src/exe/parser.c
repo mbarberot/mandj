@@ -1,20 +1,54 @@
 #include "parser.h"
 
+
+/**
+ * Traite le fichier de commande dont le chemin est passé en paramètre
+ * - Recupère le contenu du fichier 
+ * - Traitement des commandes récupérées
+ * 
+ * @param path : le chemin du fichier de commande
+ * @return TRAITEMENT_FICHIER_OK : fichier de commande correctement traité
+ * @return FICHIER_COMMANDES_INEXISTANT : fichier de commande indiqué inexistant
+ */
+parserError chargerFichier(char* path)
+{
+    /* Préparation de l'ouverture du fichier de commandes */
+    entree = NULL;
+    entree = fopen(path, "r"); 
+    
+    /* Recupération des données du fichier */
+    stat(path, &entree_infos);
+    
+    if(entree != NULL)
+    {
+	/* On recupère dans une chaine les commandes*/
+	char cmd[entree_infos.st_size];
+	strcpy(cmd, lectureFichier());
+	
+	/* On peut alors fermer le fichier d'entree et ouvrir celui de résultat pour l'écriture*/
+	fclose(entree);
+	
+	/* Et on lance l'interpretation*/
+	interpreteCommande(cmd);
+	
+    }
+    else
+    {
+	return FICHIER_COMMANDES_INEXISTANT;
+    }
+    
+    return TRAITEMENT_FICHIER_OK;
+}
+
 /**
  * Lit le fichier passé en paramètre, et renvoie son contenu sous forme de chaine de caractères
  * Pour plus de lisibilité, la fonction enlève les commentaires éventuellement présents dans le fichier de commande
  * @param nom: le nom du fichier
  * @return le contenu du fichier sous forme d'une chaine de caractères
  */
-char* lectureFichier(char* nom)
-{
-    // Le fichier de commande
-    FILE * entree = NULL;
-    
-    // Recuperation de la taille du fichier
-    struct stat st;
-    stat(nom, &st);
-    int size = st.st_size;
+char* lectureFichier()
+{    
+    int size = entree_infos.st_size;
     
     // Chaine resultat
     char content[size];
@@ -24,9 +58,7 @@ char* lectureFichier(char* nom)
     
     // Indice de parcours
     int i = 0;
-    
-    entree = fopen(nom, "rt");
-    
+      
     if(entree != NULL){
 	// Initialisation du parcours
 	caractereActuel = fgetc(entree);
@@ -42,7 +74,7 @@ char* lectureFichier(char* nom)
 		    caractereActuel = fgetc(entree);
 		}
 	    }	    
-	    else if(isgraph(caractereActuel))
+	    else if(isgraph(caractereActuel)) // Supprime les espaces au passage
 	    {
 		content[i] = caractereActuel;
 		i++;		
@@ -54,9 +86,8 @@ char* lectureFichier(char* nom)
 	    }
 	    
 	}	
-	fclose(entree);
+	
     }
-    
     
     return content;
     
@@ -74,12 +105,19 @@ void interpreteCommande(char* commandes)
     while ( ptr != NULL ) {
       
       // Vérifier si premiers char => nbres
-      if(strstr(ptr, "creation") != NULL)
-	  interpreteCreation(ptr);
       
+      
+      if(strstr(ptr, "creation") != NULL)
+      {
+	  interpreteCreation(ptr);
+      }
+      
+      if(strstr(ptr, "choisirGraphe") != NULL)
+      {
+	  
+      }
       ptr = strtok(NULL, sep);
     }
-    //printf("ligne après traitement: %s\n", commandes);
 }
 
 /**
@@ -98,7 +136,8 @@ void interpreteCreation(char* cmd)
     
     while(ptr != NULL)
     {
-	// Premier token rencontré : numéro de la commande
+	// Premier token rencontré : numéro     //printf("ligne après traitement: %s\n", commandes);
+de la commande
 	if(first)
 	{	    
 	    numCommande = atoi(ptr);
