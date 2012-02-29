@@ -1,3 +1,6 @@
+#ifndef _PARSER_
+#define _PARSER_
+
 /**
  * 	Fonctions utilitaires pour la lecture et l'interprétation
  * 	des fichiers de commandes.
@@ -12,8 +15,6 @@
  * @TODO : génération des .dot et des .jpg associés 
  */
 
-#ifndef _PARSER_
-#define _PARSER_
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -55,9 +56,28 @@ struct stat entree_infos;
 FILE * res;
 
 parserError chargerFichier(char* path);
-char* lectureFichier();
+void lectureFichier(char* res);
+void ecritureResultatCommande(int numCommande, erreur res);
+
+/*
+ * Fonctions d'interpretations
+ */
 void interpreteCommande(char* commande);
 void interpreteCreation(char* cmd);
 void interpreteChoixGraphe(char* cmd);
+void interpreteModifierNbMaxSommet(char* cmd);
+void interpreteSuppressionGraphe(char* cmd);
+void interpreteInsertionSommet(char* cmd);
+void interpreteSuppressionSommet(char* cmd); //todo
+void interpreteInsertionArete(char* cmd); //todo				
+void interpreteModifierPoids(char* cmd); //todo				
+void interpreteSuppressionArete(char* cmd); //todo				
+void interpreteViderGraphe(char* cmd);	//todo			
+void interpreteViderAreteGraphe(char* cmd); //todo			
+void interpreteTesterArete(char* cmd);	//todo			
+void interpreteTesterSommet(char* cmd); //todo
+void interpreteTesterDegreSommet(char* cmd); //todo			
+void interpreteCompareGraphe(char* cmd); //todo
+void interpreteCompareSommet(char* cmd); //todo
 
 #endif

@@ -95,6 +95,10 @@ void afficheGraphe(int idGraphe)
 	    
 	    printf("\n");
 	}
+	else
+	{
+	    printf("Graphe %d inexistant \n", idGraphe);
+	}
     }
 }
 
@@ -437,6 +441,7 @@ erreur suppressionGraphe(int idGraphe)
 	    return GRAPHE_INEXISTANT;
 	}
 	
+	graphes[idGraphe -1] = NULL;
 	return RES_OK;
     }
     

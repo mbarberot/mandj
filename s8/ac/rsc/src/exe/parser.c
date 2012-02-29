@@ -22,8 +22,9 @@ parserError chargerFichier(char* path)
     if(entree != NULL)
     {
 	/* On recupère dans une chaine les commandes*/
-	char cmd[entree_infos.st_size];
-	strcpy(cmd, lectureFichier());
+	int size = entree_infos.st_size;
+	char cmd[size];
+	lectureFichier(cmd);
 	
 	/* On peut alors fermer le fichier d'entree et ouvrir celui de résultat pour l'écriture*/
 	fclose(entree);
@@ -46,12 +47,9 @@ parserError chargerFichier(char* path)
  * @param nom: le nom du fichier
  * @return le contenu du fichier sous forme d'une chaine de caractères
  */
-char* lectureFichier()
+void lectureFichier(char* content)
 {    
     int size = entree_infos.st_size;
-    
-    // Chaine resultat
-    char content[size];
     
     // Le caractere en cours
     int caractereActuel = 0;
@@ -84,14 +82,14 @@ char* lectureFichier()
 	    {
 		caractereActuel = fgetc(entree);
 	    }
-	    
+	   
 	}	
-	
+	content[i] = '\0';
     }
-    
-    return content;
-    
+
+    return content;    
 }
+
 /**
  * Interprete les commandes écrites dans une chaine de caractères
  * @param commandes : la chaine de caractères contenant les commandes à interpréter
@@ -116,9 +114,27 @@ void interpreteCommande(char* commandes)
 	}
 	
 	// Commande choixGraphe
-	if(strstr(tmp,"choixGraphe") != NULL)
+	if(strstr(tmp,"choisirGraphe") != NULL)
 	{
 	    interpreteChoixGraphe(tmp);
+	}
+	
+	// Commande modifierNbMaxSommet
+	if(strstr(tmp, "modifierNbMaxSommet") != NULL)
+	{
+	    interpreteModifierNbMaxSommet(tmp);
+	}
+	
+	// Commande suppressionGraphe
+	if(strstr(tmp, "suppressionGraphe") != NULL)
+	{
+	    interpreteSuppressionGraphe(tmp);
+	}
+	
+	// Commande insertionSommet
+	if(strstr(tmp, "insertionSommet") != NULL)
+	{
+	    interpreteInsertionSommet(tmp);
 	}
 	
 	// Réinitialisation de la copie et passage à l'instruction suivante
@@ -159,6 +175,8 @@ void interpreteCreation(char* cmd)
     err = creation(arg);
     
     // Ecriture fichier resultat
+    // ecritureResultatCommande(numCommande, err);
+    
     // Ecriture graphviz
 }
 
@@ -168,5 +186,121 @@ void interpreteCreation(char* cmd)
  */
 void interpreteChoixGraphe(char* cmd)
 {
+    char *sep = {",()choisirGraphe: "};
+    char *ptr;
+    int first = 1;
+    int numCommande;
+    int arg;
+    erreur err;
     
+    ptr = strtok(cmd, sep);
+
+    while(ptr != NULL)
+    {
+	if(first)
+	{	    
+	    numCommande = atoi(ptr);
+	    first = 0;
+	}
+	else // Premier argument
+	{
+	    arg = atoi(ptr);
+	}
+	ptr = strtok(NULL, sep);
+    }
+
+    err = choisirGraphe(arg);
+}
+/**
+ * Interprete la commande modifierNbMaxSommet(int nvMax)
+ * @param cmd : la chaine de caractere de la commande
+ */
+void interpreteModifierNbMaxSommet(char* cmd)
+{
+    char *sep = {",()modifierNbMaxSommet: "};
+    char *ptr;
+    int first = 1;
+    int numCommande;
+    int arg;
+    erreur err;
+    
+    ptr = strtok(cmd, sep);
+
+    while(ptr != NULL)
+    {
+	if(first)
+	{	    
+	    numCommande = atoi(ptr);
+	    first = 0;
+	}
+	else // Premier argument
+	{
+	    arg = atoi(ptr);
+	}
+	ptr = strtok(NULL, sep);
+    }
+    
+    err = modifierNbMaxSommet(arg);
+}
+
+/**
+ * Interprete la commande suppressionGraphe(int idGraphe)
+ * @param cmd : la chaine de caractere de la commande
+ */
+void interpreteSuppressionGraphe(char* cmd)
+{
+    char *sep = {",()suppressionGraphe: "};
+    char *ptr;
+    int first = 1;
+    int numCommande;
+    int arg;
+    erreur err;
+    
+    ptr = strtok(cmd, sep);
+
+    while(ptr != NULL)
+    {
+	if(first)
+	{	    
+	    numCommande = atoi(ptr);
+	    first = 0;
+	}
+	else // Premier argument
+	{
+	    arg = atoi(ptr);
+	}
+	ptr = strtok(NULL, sep);
+    }    
+    err = suppressionGraphe(arg);
+}
+
+/**
+ * Interprete la commande insertionSommet(int nvSommet)
+ * @param cmd : la chaine de caractere de la commande
+ */
+void interpreteInsertionSommet(char* cmd)
+{
+    char *sep = {",()insertionSommet: "};
+    char *ptr;
+    int first = 1;
+    int numCommande;
+    int arg;
+    erreur err;
+    
+    ptr = strtok(cmd, sep);
+
+    while(ptr != NULL)
+    {
+	if(first)
+	{	    
+	    numCommande = atoi(ptr);
+	    first = 0;
+	}
+	else // Premier argument
+	{
+	    arg = atoi(ptr);
+	}
+	ptr = strtok(NULL, sep);
+    }    
+    err = insertionSommet(arg);
 }

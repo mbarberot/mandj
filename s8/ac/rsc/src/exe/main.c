@@ -8,6 +8,5 @@
 main(int argc, char **argv){
     
     chargerFichier("../exemple_accents.txt");
-     
     afficheGraphe(1);
 }
