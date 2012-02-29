@@ -55,9 +55,18 @@ struct stat entree_infos;
  */
 FILE * res;
 
+/*
+ * Fonctions de manipulation des fichiers
+ */
 parserError chargerFichier(char* path);
 void lectureFichier(char* res);
-void ecritureResultatCommande(int numCommande, erreur res);
+void ecritureResultatCommande(int numCommande, erreur res); //todo
+void ecritureGraphviz(); //todo
+
+/*
+ * Fonctions utilitaires
+ */
+int verifieNbArg(char* cmd); //todo
 
 /*
  * Fonctions d'interpretations
@@ -68,12 +77,12 @@ void interpreteChoixGraphe(char* cmd);
 void interpreteModifierNbMaxSommet(char* cmd);
 void interpreteSuppressionGraphe(char* cmd);
 void interpreteInsertionSommet(char* cmd);
-void interpreteSuppressionSommet(char* cmd); //todo
+void interpreteSuppressionSommet(char* cmd);
 void interpreteInsertionArete(char* cmd); //todo				
 void interpreteModifierPoids(char* cmd); //todo				
 void interpreteSuppressionArete(char* cmd); //todo				
-void interpreteViderGraphe(char* cmd);	//todo			
-void interpreteViderAreteGraphe(char* cmd); //todo			
+void interpreteViderGraphe(char* cmd);			
+void interpreteViderAreteGraphe(char* cmd); 			
 void interpreteTesterArete(char* cmd);	//todo			
 void interpreteTesterSommet(char* cmd); //todo
 void interpreteTesterDegreSommet(char* cmd); //todo			

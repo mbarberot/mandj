@@ -85,9 +85,7 @@ void lectureFichier(char* content)
 	   
 	}	
 	content[i] = '\0';
-    }
-
-    return content;    
+    }  
 }
 
 /**
@@ -102,6 +100,8 @@ void interpreteCommande(char* commandes)
     char *bck;
     char *ptr = strtok_r(commandes, sep, &bck);    
     char *tmp = NULL;
+    
+    // TODO : gérer le cas de commande inconnue
     
     while ( ptr != NULL ) {
 	// On fait une copie de l'instruction pour pouvoir travailler dessus
@@ -137,6 +137,23 @@ void interpreteCommande(char* commandes)
 	    interpreteInsertionSommet(tmp);
 	}
 	
+	// Commande suppressionSommet
+	if(strstr(tmp, "suppressionSommet") != NULL)
+	{
+	    interpreteSuppressionSommet(tmp);
+	}
+	
+	// Commande viderGraphe
+	if(strstr(tmp,"viderGraphe") != NULL)
+	{
+	    interpreteViderGraphe(tmp);
+	}
+	
+	// Commande viderAreteGraphe
+	if(strstr(tmp, "viderAreteGraphe") != NULL)
+	{
+	    interpreteViderAreteGraphe(tmp);
+	}
 	// Réinitialisation de la copie et passage à l'instruction suivante
 	free(tmp);
 	ptr = strtok_r(NULL,sep,&bck);
@@ -152,8 +169,8 @@ void interpreteCreation(char* cmd)
     char *sep = {",()creation: "};
     char *ptr;
     int first = 1;
-    int numCommande;
-    int arg;
+    int numCommande = -1;
+    int arg = -1;
     erreur err;
     
     ptr = strtok(cmd, sep);
@@ -189,8 +206,8 @@ void interpreteChoixGraphe(char* cmd)
     char *sep = {",()choisirGraphe: "};
     char *ptr;
     int first = 1;
-    int numCommande;
-    int arg;
+    int numCommande = -1;
+    int arg = -1;
     erreur err;
     
     ptr = strtok(cmd, sep);
@@ -220,8 +237,8 @@ void interpreteModifierNbMaxSommet(char* cmd)
     char *sep = {",()modifierNbMaxSommet: "};
     char *ptr;
     int first = 1;
-    int numCommande;
-    int arg;
+    int numCommande = -1;
+    int arg = -1;
     erreur err;
     
     ptr = strtok(cmd, sep);
@@ -252,8 +269,8 @@ void interpreteSuppressionGraphe(char* cmd)
     char *sep = {",()suppressionGraphe: "};
     char *ptr;
     int first = 1;
-    int numCommande;
-    int arg;
+    int numCommande = -1;
+    int arg = -1;
     erreur err;
     
     ptr = strtok(cmd, sep);
@@ -283,8 +300,8 @@ void interpreteInsertionSommet(char* cmd)
     char *sep = {",()insertionSommet: "};
     char *ptr;
     int first = 1;
-    int numCommande;
-    int arg;
+    int numCommande = -1;
+    int arg = -1;
     erreur err;
     
     ptr = strtok(cmd, sep);
@@ -303,4 +320,59 @@ void interpreteInsertionSommet(char* cmd)
 	ptr = strtok(NULL, sep);
     }    
     err = insertionSommet(arg);
+}
+
+/**
+ * interprete la commande suppressionSommet(int sommet)
+ * @param cmd : la chaine de caracteres de la commande
+ */
+void interpreteSuppressionSommet(char* cmd)
+{
+    char *sep = {",()suppressionSommet: "};
+    char *ptr;
+    int first = 1;
+    int numCommande = -1;
+    int arg = -1;
+    erreur err;
+    
+    ptr = strtok(cmd, sep);
+
+    while(ptr != NULL)
+    {
+	if(first)
+	{	    
+	    numCommande = atoi(ptr);
+	    first = 0;
+	}
+	else // Premier argument
+	{
+	    arg = atoi(ptr);
+	}
+	ptr = strtok(NULL, sep);
+    }
+    
+    err = suppressionSommet(arg);
+}
+
+/**
+ * Interprete la commande viderGraphe()
+ * @param cmd : la chaine de caracteres de la commande
+ */
+void interpreteViderGraphe(char* cmd)
+{
+    erreur err;
+    
+    /* TODO check sur le nb d'arguments */    
+    err = viderGraphe();
+}
+
+/**
+ * Interprete la commande viderAreteGraphe()
+ * @param cmd : la chaine de caracteres de la commande
+ */
+void interpreteViderAreteGraphe(char* cmd)
+{
+    erreur err;
+    
+    err = viderAreteGraphe();
 }
