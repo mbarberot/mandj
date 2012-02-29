@@ -58,7 +58,7 @@ char* lectureFichier()
     
     // Indice de parcours
     int i = 0;
-      
+    
     if(entree != NULL){
 	// Initialisation du parcours
 	caractereActuel = fgetc(entree);
@@ -99,29 +99,37 @@ char* lectureFichier()
 void interpreteCommande(char* commandes)
 {
     char *sep = {";"};
-    char *ptr;
-
-    ptr = strtok(commandes, sep);
+    
+    // Imbrication de strtok impossible => utilisation de strtok_r, adaptée dans ce cas
+    char *bck;
+    char *ptr = strtok_r(commandes, sep, &bck);    
+    char *tmp = NULL;
+    
     while ( ptr != NULL ) {
-      
-      // Vérifier si premiers char => nbres
-      
-      
-      if(strstr(ptr, "creation") != NULL)
-      {
-	  interpreteCreation(ptr);
-      }
-      
-      if(strstr(ptr, "choisirGraphe") != NULL)
-      {
-	  
-      }
-      ptr = strtok(NULL, sep);
+	// On fait une copie de l'instruction pour pouvoir travailler dessus
+	tmp = strdup(ptr);	
+	
+	// Commande creation
+	if(strstr(tmp,"creation") != NULL)
+	{
+	   interpreteCreation(tmp);
+	}
+	
+	// Commande choixGraphe
+	if(strstr(tmp,"choixGraphe") != NULL)
+	{
+	    interpreteChoixGraphe(tmp);
+	}
+	
+	// Réinitialisation de la copie et passage à l'instruction suivante
+	free(tmp);
+	ptr = strtok_r(NULL,sep,&bck);
     }
 }
 
 /**
  * Interprete la commande "creation". Ecris le résultat obtenu dans le fichier res et génère le .dot
+ * @param cmd : la chaine de caractere de la commande
  */
 void interpreteCreation(char* cmd)
 {
@@ -133,11 +141,9 @@ void interpreteCreation(char* cmd)
     erreur err;
     
     ptr = strtok(cmd, sep);
-    
+
     while(ptr != NULL)
     {
-	// Premier token rencontré : numéro     //printf("ligne après traitement: %s\n", commandes);
-de la commande
 	if(first)
 	{	    
 	    numCommande = atoi(ptr);
@@ -149,8 +155,18 @@ de la commande
 	}
 	ptr = strtok(NULL, sep);
     }
+    
     err = creation(arg);
-
+    
     // Ecriture fichier resultat
     // Ecriture graphviz
+}
+
+/**
+ * Interprete la commande choisirGraphe(idGraphe)
+ * @param cmd : la chaine de caractere de la commande
+ */
+void interpreteChoixGraphe(char* cmd)
+{
+    
 }

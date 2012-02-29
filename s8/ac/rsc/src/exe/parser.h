@@ -28,13 +28,15 @@
 
 /*
  * Les erreurs
+ * 
  */
 typedef enum 
 {       
-	TRAITEMENT_FICHIER_OK,
-	FICHIER_COMMANDES_INEXISTANT,
-	ARGUMENTS_INCORRECTS, // => nb d'arguments invalide
-	INDICE_RETOUR_INEXISTANT // => pas d'indice précisé pour le retour de la fonction
+	TRAITEMENT_FICHIER_OK, // => afficher que l'interprétation a été un succès
+	FICHIER_COMMANDES_INEXISTANT, // => afficher que le fichier n'a pas été trouvé
+	ARGUMENTS_INCORRECTS, // => nb d'arguments invalide. Afficher la commande concernée et l'ignorer (passer à la commande suivante)
+	INDICE_RETOUR_INEXISTANT, // => pas d'indice précisé pour le retour de la fonction. Afficher la commande concernée et l'ignorer (passer à la commande suivante)
+	TRAITEMENT_CMD_OK // => commande bien interprétée
 } parserError ;
 
 /*
@@ -56,5 +58,6 @@ parserError chargerFichier(char* path);
 char* lectureFichier();
 void interpreteCommande(char* commande);
 void interpreteCreation(char* cmd);
+void interpreteChoixGraphe(char* cmd);
 
 #endif
