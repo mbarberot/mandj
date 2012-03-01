@@ -1,5 +1,28 @@
 #include "parser.h"
 
+/**
+ * Affichage des erreurs de parser
+ * @param err : le code erreur à afficher
+ * @return : l'affichage de l'erreur
+ */
+char* parserErrorToString(parserError err)
+{
+    switch(err)
+    {
+	case TRAITEMENT_FICHIER_OK:
+	    return "TRAITEMENT_FICHIER_OK";
+	case FICHIER_COMMANDES_INEXISTANT:
+	    return "FICHIER_COMMANDES_INEXISTANT";
+	case ARGUMENTS_INCORRECTS:
+	    return "ARGUMENTS_INCORRECTS";
+	case INDICE_RETOUR_INEXISTANT:
+	    return "INDICE_RETOUR_INEXISTANT";
+	case TRAITEMENT_CMD_OK:
+	    return "TRAITEMENT_CMD_OK";
+	default:
+	    return "";
+    }
+}
 
 /**
  * Traite le fichier de commande dont le chemin est passé en paramètre
@@ -48,9 +71,7 @@ parserError chargerFichier(char* path)
  * @return le contenu du fichier sous forme d'une chaine de caractères
  */
 void lectureFichier(char* content)
-{    
-    int size = entree_infos.st_size;
-    
+{        
     // Le caractere en cours
     int caractereActuel = 0;
     
@@ -82,7 +103,7 @@ void lectureFichier(char* content)
 	    {
 		caractereActuel = fgetc(entree);
 	    }
-	   
+	    
 	}	
 	content[i] = '\0';
     }  
@@ -92,7 +113,7 @@ void lectureFichier(char* content)
  * Interprete les commandes écrites dans une chaine de caractères
  * @param commandes : la chaine de caractères contenant les commandes à interpréter
  */
-void interpreteCommande(char* commandes)
+parserError interpreteCommande(char* commandes)
 {
     char *sep = {";"};
     
@@ -101,59 +122,130 @@ void interpreteCommande(char* commandes)
     char *ptr = strtok_r(commandes, sep, &bck);    
     char *tmp = NULL;
     
-    // TODO : gérer le cas de commande inconnue
-    
     while ( ptr != NULL ) {
 	// On fait une copie de l'instruction pour pouvoir travailler dessus
 	tmp = strdup(ptr);	
 	
+	// Permet de vérifier que tmp est une commande valide
+	int cmdOk = 0;
+	
 	// Commande creation
 	if(strstr(tmp,"creation") != NULL)
 	{
-	   interpreteCreation(tmp);
+	    interpreteCreation(tmp);
+	    cmdOk = 1;
 	}
 	
 	// Commande choixGraphe
 	if(strstr(tmp,"choisirGraphe") != NULL)
 	{
-	    interpreteChoixGraphe(tmp);
+	    interpreteChoisirGraphe(tmp);
+	    cmdOk = 1;
 	}
 	
 	// Commande modifierNbMaxSommet
 	if(strstr(tmp, "modifierNbMaxSommet") != NULL)
 	{
 	    interpreteModifierNbMaxSommet(tmp);
+	    cmdOk = 1;
 	}
 	
 	// Commande suppressionGraphe
 	if(strstr(tmp, "suppressionGraphe") != NULL)
 	{
 	    interpreteSuppressionGraphe(tmp);
+	    cmdOk = 1;
 	}
 	
 	// Commande insertionSommet
 	if(strstr(tmp, "insertionSommet") != NULL)
 	{
 	    interpreteInsertionSommet(tmp);
+	    cmdOk = 1;
 	}
 	
 	// Commande suppressionSommet
 	if(strstr(tmp, "suppressionSommet") != NULL)
 	{
 	    interpreteSuppressionSommet(tmp);
+	    cmdOk = 1;
 	}
 	
+	// Commande insertionArete
+	if(strstr(tmp, "insertionArete") != NULL)
+	{
+	    interpreteInsertionArete(tmp);
+	    cmdOk = 1;
+	}
+	
+	// Commande modifierPoids
+	if(strstr(tmp, "modifierPoids") != NULL)
+	{
+	    interpreteModifierPoids(tmp);
+	    cmdOk = 1;
+	}
+	
+	// Commande suppressionArete
+	if(strstr(tmp, "suppressionArete") != NULL)
+	{
+	    interpreteSuppressionArete(tmp);
+	    cmdOk = 1;
+	}
 	// Commande viderGraphe
 	if(strstr(tmp,"viderGraphe") != NULL)
 	{
 	    interpreteViderGraphe(tmp);
+	    cmdOk = 1;
 	}
 	
 	// Commande viderAreteGraphe
 	if(strstr(tmp, "viderAreteGraphe") != NULL)
 	{
 	    interpreteViderAreteGraphe(tmp);
+	    cmdOk = 1;
 	}
+	
+	// Commande testerArete
+	if(strstr(tmp,"testerArete") != NULL)
+	{
+	    interpreteTesterArete(tmp);
+	    cmdOk = 1;
+	}
+	
+	// Commande testerSommet
+	if(strstr(tmp,"testerSommet") != NULL)
+	{
+	    interpreteTesterSommet(tmp);
+	    cmdOk = 1;
+	}
+	
+	// Commande testerDegreSommet
+	if(strstr(tmp, "testerDegreSommet") != NULL)
+	{
+	    interpreteTesterDegreSommet(tmp);
+	    cmdOk = 1;
+	}
+	
+	// Commande CompareGraphe
+	if(strstr(tmp, "compareGraphe") != NULL)
+	{
+	    interpreteCompareGraphe(tmp);
+	    cmdOk = 1;
+	}
+	
+	//Commande CompareSommet
+	if(strstr(tmp, "compareSommet") != NULL)
+	{
+	    interpreteCompareSommet(tmp);
+	    cmdOk = 1;
+	}
+	
+	// Commande non interprétable
+	if(!cmdOk)
+	{
+	    printf("%s : commande inconnue \n", tmp);
+	}
+	
 	// Réinitialisation de la copie et passage à l'instruction suivante
 	free(tmp);
 	ptr = strtok_r(NULL,sep,&bck);
@@ -164,215 +256,473 @@ void interpreteCommande(char* commandes)
  * Interprete la commande "creation". Ecris le résultat obtenu dans le fichier res et génère le .dot
  * @param cmd : la chaine de caractere de la commande
  */
-void interpreteCreation(char* cmd)
+parserError interpreteCreation(char* cmd)
 {
-    char *sep = {",()creation: "};
-    char *ptr;
-    int first = 1;
-    int numCommande = -1;
-    int arg = -1;
+    int numCom;
+    int arg1;
     erreur err;
     
-    ptr = strtok(cmd, sep);
-
-    while(ptr != NULL)
+    int nbArgs = sscanf(cmd, "%d:creation(%d)", &numCom, &arg1);
+    
+    if(nbArgs == 2)
     {
-	if(first)
-	{	    
-	    numCommande = atoi(ptr);
-	    first = 0;
-	}
-	else // Premier argument
-	{
-	    arg = atoi(ptr);
-	}
-	ptr = strtok(NULL, sep);
+	err = creation(arg1);
+    }
+    else
+    {
+	return ARGUMENTS_INCORRECTS;
     }
     
-    err = creation(arg);
-    
-    // Ecriture fichier resultat
-    // ecritureResultatCommande(numCommande, err);
-    
-    // Ecriture graphviz
+    return TRAITEMENT_CMD_OK;
 }
 
 /**
  * Interprete la commande choisirGraphe(idGraphe)
  * @param cmd : la chaine de caractere de la commande
  */
-void interpreteChoixGraphe(char* cmd)
+parserError interpreteChoisirGraphe(char* cmd)
 {
-    char *sep = {",()choisirGraphe: "};
-    char *ptr;
-    int first = 1;
-    int numCommande = -1;
-    int arg = -1;
+    int numCom;
+    int arg1;
     erreur err;
     
-    ptr = strtok(cmd, sep);
-
-    while(ptr != NULL)
+    int nbArgs = sscanf(cmd, "%d:choisirGraphe(%d)", &numCom, &arg1);
+    
+    if(nbArgs == 2)
     {
-	if(first)
-	{	    
-	    numCommande = atoi(ptr);
-	    first = 0;
-	}
-	else // Premier argument
-	{
-	    arg = atoi(ptr);
-	}
-	ptr = strtok(NULL, sep);
+	err = choisirGraphe(arg1);
     }
-
-    err = choisirGraphe(arg);
+    else
+    {
+	return ARGUMENTS_INCORRECTS;
+    }
+    return TRAITEMENT_CMD_OK;
+    
 }
 /**
  * Interprete la commande modifierNbMaxSommet(int nvMax)
  * @param cmd : la chaine de caractere de la commande
  */
-void interpreteModifierNbMaxSommet(char* cmd)
+parserError interpreteModifierNbMaxSommet(char* cmd)
 {
-    char *sep = {",()modifierNbMaxSommet: "};
-    char *ptr;
-    int first = 1;
-    int numCommande = -1;
-    int arg = -1;
+    int numCom;
+    int arg1;
     erreur err;
     
-    ptr = strtok(cmd, sep);
-
-    while(ptr != NULL)
-    {
-	if(first)
-	{	    
-	    numCommande = atoi(ptr);
-	    first = 0;
-	}
-	else // Premier argument
-	{
-	    arg = atoi(ptr);
-	}
-	ptr = strtok(NULL, sep);
-    }
+    int nbArgs = sscanf(cmd, "%d:modifierNbMaxSommet(%d)", &numCom, &arg1);
     
-    err = modifierNbMaxSommet(arg);
+    if(nbArgs == 2)
+    {
+	err = modifierNbMaxSommet(arg1);
+    }
+    else
+    {
+	return ARGUMENTS_INCORRECTS;
+    }
+    return TRAITEMENT_CMD_OK;
+    
 }
 
 /**
  * Interprete la commande suppressionGraphe(int idGraphe)
  * @param cmd : la chaine de caractere de la commande
  */
-void interpreteSuppressionGraphe(char* cmd)
+parserError interpreteSuppressionGraphe(char* cmd)
 {
-    char *sep = {",()suppressionGraphe: "};
-    char *ptr;
-    int first = 1;
-    int numCommande = -1;
-    int arg = -1;
+    int numCom;
+    int arg1;
     erreur err;
     
-    ptr = strtok(cmd, sep);
-
-    while(ptr != NULL)
+    int nbArgs = sscanf(cmd, "%d:suppressionGraphe(%d)", &numCom, &arg1);
+    
+    if(nbArgs == 2)
     {
-	if(first)
-	{	    
-	    numCommande = atoi(ptr);
-	    first = 0;
-	}
-	else // Premier argument
-	{
-	    arg = atoi(ptr);
-	}
-	ptr = strtok(NULL, sep);
-    }    
-    err = suppressionGraphe(arg);
+	err = suppressionGraphe(arg1);
+    }
+    else
+    {
+	return ARGUMENTS_INCORRECTS;
+    }
+    return TRAITEMENT_CMD_OK;
+    
 }
 
 /**
  * Interprete la commande insertionSommet(int nvSommet)
  * @param cmd : la chaine de caractere de la commande
  */
-void interpreteInsertionSommet(char* cmd)
+parserError interpreteInsertionSommet(char* cmd)
 {
-    char *sep = {",()insertionSommet: "};
-    char *ptr;
-    int first = 1;
-    int numCommande = -1;
-    int arg = -1;
+    int numCom;
+    int arg1;
     erreur err;
     
-    ptr = strtok(cmd, sep);
-
-    while(ptr != NULL)
+    int nbArgs = sscanf(cmd, "%d:insertionSommet(%d)", &numCom, &arg1);
+    
+    if(nbArgs == 2)
     {
-	if(first)
-	{	    
-	    numCommande = atoi(ptr);
-	    first = 0;
-	}
-	else // Premier argument
-	{
-	    arg = atoi(ptr);
-	}
-	ptr = strtok(NULL, sep);
-    }    
-    err = insertionSommet(arg);
+	err = insertionSommet(arg1);
+    }
+    else
+    {
+	return ARGUMENTS_INCORRECTS;
+    }
+    
+    return TRAITEMENT_CMD_OK;
+    
 }
 
 /**
  * interprete la commande suppressionSommet(int sommet)
  * @param cmd : la chaine de caracteres de la commande
  */
-void interpreteSuppressionSommet(char* cmd)
+parserError interpreteSuppressionSommet(char* cmd)
 {
-    char *sep = {",()suppressionSommet: "};
-    char *ptr;
-    int first = 1;
-    int numCommande = -1;
-    int arg = -1;
+    int numCom;
+    int arg1;
     erreur err;
     
-    ptr = strtok(cmd, sep);
-
-    while(ptr != NULL)
+    int nbArgs = sscanf(cmd, "%d:suppressionSommet(%d)", &numCom, &arg1);
+    
+    if(nbArgs == 2)
     {
-	if(first)
-	{	    
-	    numCommande = atoi(ptr);
-	    first = 0;
-	}
-	else // Premier argument
-	{
-	    arg = atoi(ptr);
-	}
-	ptr = strtok(NULL, sep);
+	err = suppressionSommet(arg1);
+    }
+    else
+    {
+	return ARGUMENTS_INCORRECTS;
     }
     
-    err = suppressionSommet(arg);
+    return TRAITEMENT_CMD_OK;
+    
+}
+
+/**
+ * Interprete la commande insertionArete(
+ *		int sommetDep,
+ *		int poids,
+ *		int sommetArr,
+ *		char oriente
+ *		);
+ * @param cmd : la chaine de caracteres de la commande
+ */
+parserError interpreteInsertionArete(char* cmd)
+{
+    int numCom;
+    int arg1, arg2, arg3;
+    char arg4;
+    erreur err;
+    
+    int nbArgs = sscanf(cmd, "%d:insertionArete(%d,%d,%d,%c)", &numCom, &arg1, &arg2, &arg3, &arg4);
+    
+    if(nbArgs == 5)
+    {
+	err = insertionArete(arg1,arg2,arg3,arg4);
+    }
+    else
+    {
+	return ARGUMENTS_INCORRECTS;
+    }
+    
+    return TRAITEMENT_CMD_OK;
+    
+}
+
+/**
+ * Interprete la commande modifierPoids(int sommetDep,
+ *		int nvPoids,
+ *		int sommetArr,
+ *		char oriente
+ *		);
+ * @param cmd : la chaine de caracteres de la commande
+ */
+parserError interpreteModifierPoids(char* cmd)
+{
+    int numCom;
+    int arg1, arg2, arg3;
+    char arg4;
+    erreur err;
+    
+    int nbArgs = sscanf(cmd, "%d:modifierPoids(%d,%d,%d,%c)", &numCom, &arg1, &arg2, &arg3, &arg4);
+    
+    if(nbArgs == 5)
+    {
+	err = modifierPoids(arg1,arg2,arg3,arg4);
+    }
+    else
+    {
+	return ARGUMENTS_INCORRECTS;
+    }
+    
+    return TRAITEMENT_CMD_OK;
+    
+}
+/**
+ * Interprete la commande suppressionArete(int sommetDep,
+ *		int sommetArr,
+ *		char oriente)
+ * @param cmd : la chaine de caracteres de la commande		
+ */
+parserError interpreteSuppressionArete(char* cmd)
+{
+    int numCom;
+    int arg1, arg2;
+    char arg3;
+    erreur err;
+    
+    int nbArgs = sscanf(cmd, "%d:suppressionArete(%d,%d,%c)", &numCom, &arg1, &arg2, &arg3);
+    
+    if(nbArgs == 4)
+    {
+	err = suppressionArete(arg1,arg2,arg3);
+    }
+    else
+    {
+	return ARGUMENTS_INCORRECTS;
+    } 
+    
+    return TRAITEMENT_CMD_OK;
+    
 }
 
 /**
  * Interprete la commande viderGraphe()
  * @param cmd : la chaine de caracteres de la commande
  */
-void interpreteViderGraphe(char* cmd)
+parserError interpreteViderGraphe(char* cmd)
 {
     erreur err;
+    int numCom;
     
-    /* TODO check sur le nb d'arguments */    
-    err = viderGraphe();
+    int nbArgs = sscanf(cmd, "%d:viderGraphe()", &numCom);
+    
+    if(nbArgs == 1)
+    {
+	err = viderGraphe();
+    }
+    else
+    {
+	return ARGUMENTS_INCORRECTS;
+    }
+    
+    return TRAITEMENT_CMD_OK;
+    
+    
 }
 
 /**
  * Interprete la commande viderAreteGraphe()
  * @param cmd : la chaine de caracteres de la commande
  */
-void interpreteViderAreteGraphe(char* cmd)
+parserError interpreteViderAreteGraphe(char* cmd)
 {
     erreur err;
     
-    err = viderAreteGraphe();
+    int numCom;    
+    int nbArgs = sscanf(cmd, "%d:viderAreteGraphe()", &numCom);
+    
+    if(nbArgs ==1)
+    {
+	err = viderAreteGraphe();
+    }
+    else
+    {
+	return ARGUMENTS_INCORRECTS;
+    }
+    
+    return TRAITEMENT_CMD_OK;
+    
 }
+
+/**
+ * Interprete la commande testerArete(int idGraphe,
+ *		int sommetDep,
+ *		int poids,
+ *		int sommetArr,
+ *		char oriente,
+ *		int resAttendu);
+ *		
+ * @param cmd : la chaine de caracteres de la commande
+ */
+parserError interpreteTesterArete(char* cmd)
+{
+    int numCom;
+    int arg1, arg2, arg3,arg4;
+    char arg5;
+    char arg6[5];
+    
+    erreur err;
+    
+    int nbArgs = sscanf(cmd, "%d:testerArete(%d,%d,%d,%d,%c,%4s)", &numCom, &arg1, &arg2, &arg3, &arg4, &arg5, arg6);
+    
+    if(nbArgs == 7)
+    {
+	if(strcmp(arg6,"true") == 0)
+	{
+	    err = testerArete(arg1,arg2,arg3,arg4,arg5,1);
+	}
+	else if(strcmp(arg6,"fals") == 0)
+	{
+	    err = testerArete(arg1,arg2,arg3,arg4,arg5,0);
+	}
+	else
+	{
+	    return ARGUMENTS_INCORRECTS;
+	}
+    }
+    else
+    {
+	// Retourner erreur
+    }
+    return TRAITEMENT_CMD_OK;
+    
+}
+
+/**
+ * Interprete la commande testerSommet(int idGraphe,
+ *		int sommet,
+ *		int resAttendu);
+ * @param cmd : la chaine de caracteres de la commande
+ */
+parserError interpreteTesterSommet(char* cmd)
+{
+    int numCom;
+    int arg1, arg2;
+    char arg3[5];
+    
+    erreur err;
+    
+    int nbArgs = sscanf(cmd, "%d:testerSommet(%d,%d,%4s)", &numCom, &arg1, &arg2, arg3);
+    
+    if(nbArgs == 4)
+    {
+	if(strcmp(arg3,"true") == 0)
+	{
+	    err = testerSommet(arg1,arg2,1);
+	}
+	else if(strcmp(arg3,"fals") == 0)
+	{
+	    err = testerSommet(arg1,arg2,0);
+	}
+	else
+	{
+	    return ARGUMENTS_INCORRECTS;
+	}
+    }
+    else
+    {
+	
+	return ARGUMENTS_INCORRECTS;
+    }
+    
+    return TRAITEMENT_CMD_OK;
+    
+    
+}
+
+/**
+ * Interprete la commande testerDegreSommet(int idGraphe,
+ *                int sommet,
+ *		int value,
+ *		int resAttendu)
+ *		
+ * @param cmd : la chaine de caracteres contenant la commande
+ */
+parserError interpreteTesterDegreSommet(char* cmd)
+{
+    int numCom;
+    int arg1, arg2, arg3;
+    char arg4[5];
+    
+    erreur err;
+    
+    int nbArgs = sscanf(cmd, "%d:testerDegreSommet(%d,%d,%d,%4s)", &numCom, &arg1, &arg2, &arg3, arg4);
+    
+    if(nbArgs == 5)
+    {
+	if(strcmp(arg4,"true") == 0)
+	{
+	    err = testerDegreSommet(arg1,arg2,arg3,1);
+	}
+	else if(strcmp(arg4,"fals") == 0)
+	{
+	    err = testerDegreSommet(arg1,arg2,arg3,0);
+	}
+	else
+	{
+	    return ARGUMENTS_INCORRECTS;
+	}
+    }
+    else
+    {
+	return ARGUMENTS_INCORRECTS;
+    }
+    
+    return TRAITEMENT_CMD_OK;
+    
+}
+
+/**
+ * Interprete la commande compareGraphe(int resAttendu)
+ * @param cmd : la chaine de caracteres de la commande
+ */
+parserError interpreteCompareGraphe(char* cmd)
+{
+    int numCom;
+    int arg1;
+    
+    erreur err;
+    
+    int nbArgs = sscanf(cmd, "%d:compareGraphe(%d)", &numCom, &arg1);
+    
+    if(nbArgs == 2)
+    {
+	err = compareGraphe(arg1);
+    }
+    else
+    {
+	return ARGUMENTS_INCORRECTS;
+    }
+    
+    return TRAITEMENT_CMD_OK;
+    
+}
+
+/**
+ * Interprete la commande compareSommet(int sommet, int resAttendu)
+ * @param cmd : la chaine de caracteres de la commande
+ */
+parserError interpreteCompareSommet(char* cmd)
+{
+    int numCom;
+    int arg1;
+    char arg2[5];
+    erreur err;
+    
+    int nbArgs = sscanf(cmd, "%d:compareSommet(%d,%4s)", &numCom, &arg1, arg2);
+    
+    if(nbArgs == 3)
+    {
+	if(strcmp(arg2,"true")== 0)
+	{
+	    err = compareSommet(arg1,1);
+	}
+	else if(strcmp(arg2,"fals") == 0)
+	{
+	    err = compareSommet(arg1, 0);
+	}
+	else
+	{
+	    return ARGUMENTS_INCORRECTS;
+	}
+    }
+    else
+    {
+	return ARGUMENTS_INCORRECTS;
+    }
+    
+    return TRAITEMENT_CMD_OK;
+    
+}
+
+
