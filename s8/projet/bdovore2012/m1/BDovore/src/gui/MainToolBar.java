@@ -1,21 +1,23 @@
 package gui;
 
-import gui.action.ActionDBExplorer;
-import gui.action.ActionExit;
-import gui.action.ActionStatistic;
-import gui.action.ActionSynch;
-import gui.action.ActionUpdate;
-
+import gui.action.*;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JToolBar;
 
+/**
+ * Barre d'outils constitu√©e de boutons munis d'ic√¥nes.
+ */
 public class MainToolBar extends JToolBar{
 
 	private static final long serialVersionUID = 1L;
 	private JButton btnDBExplorer, btnStatistic, btnSynch, btnUpdate;
 	private JButton btnQuit;
 	
+        /**
+         * Constructeur <br/>
+         * Initialise les composants
+         */
 	public MainToolBar(){
 		super("BDovore");
 		
@@ -34,12 +36,12 @@ public class MainToolBar extends JToolBar{
 				null, 
 				new ImageIcon("img/update.png"), 
 				null, 
-				"Mettre ‡ jour la base de donnÈes"));
+				"Mettre √† jour la base de donn√©es"));
 		btnSynch = new JButton(new ActionSynch(
 				null,
 				new ImageIcon("img/synch.png"),
 				null,
-				"RÈcupÈrer mon menu BDovore en ligne"));
+				"R√©cup√©rer mon menu BDovore en ligne"));
 		btnQuit = new JButton(new ActionExit(
 				null,
 				new ImageIcon("img/quit.png"), 

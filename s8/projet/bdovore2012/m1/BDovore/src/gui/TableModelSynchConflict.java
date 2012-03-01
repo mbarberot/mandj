@@ -2,11 +2,16 @@ package gui;
 
 import javax.swing.table.AbstractTableModel;
 
+/**
+ * Element d'interface graphique permettant l'affichage des conflits lors de la synchronisation du logiciel avec la base de données distante.
+ * Elle permet également le choix de l'action à effectuer pour régler ces conflits.
+ * 
+ */
 public class TableModelSynchConflict extends AbstractTableModel{
 	
 	private static final long serialVersionUID = 1L;
 	
-	String[] columnNames = {"Serveur", "Local", "Rien", "Titre", "S�rie", "No. Tome", "Etat Serveur", "Etat Local"};
+	String[] columnNames = {"Serveur", "Local", "Rien", "Titre", "Série", "No. Tome", "Etat Serveur", "Etat Local"};
 	Object[][] datas = {
 			{new Boolean(false), new Boolean(false), new Boolean(true), "T1", "S1", "T1", "ES1", "EL1"},
 			{new Boolean(false), new Boolean(false), new Boolean(true), "T2", "S2", "T2", "ES2", "EL2"},

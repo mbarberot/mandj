@@ -21,19 +21,20 @@ public class Tables{
 	/**
 	 * Liste des TABLE => NULL
 	 * NULL est un tableau listant les champs d'un table,
-	 * avec <code>true<code> si une chaine vide du webservice correspond Ã  NULL.
+	 * avec <code>true<code> si une chaine vide du webservice correspond Ã  NULL
 	 */
 	public static final HashMap<String,boolean[]> nullIfEmpty = listeNullIfEmpty();
 	
 	/**
 	 * Liste des TABLE => TABLE 
-	 * avec la "valeur TABLE" devant etre mise à jour avant la "cle TABLE"
-	 * -->Pour l'instant pas utilisé car nous utilisons un tableau.
-	 * 		A voir s'il est néccessaire de l'utiliser et comment.
+	 * Avec la "valeur TABLE" devant etre mise Ã  jour avant la "cle TABLE"
 	 */
 	public static final HashMap<String,String> lstTablesDependance = listeTablesDependance();
 	
 	
+        /**
+         * Liste les tables avec leur clÃ©
+         */
 	private static HashMap<String, String> listeTables() {
 		HashMap<String, String> tables = new HashMap<String, String>();
 		tables.put("GENRE", "ID_GENRE");
@@ -43,26 +44,20 @@ public class Tables{
 		tables.put("TOME", "ID_TOME");
 		tables.put("EDITION", "ID_EDITION");
 		
-		// Inutile pour l'update
-		
-		//tables.put("TJ_TOME_AUTEUR", "ID_TOME, ID_AUTEUR, ROLE");
-		//tables.put("DETAILS_EDITION, "ID_EDITION");
-		//tables.put("DETAILS_SERIE, "ID_SERIE");
-		//tables.put("DETAILS_AUTEUR, "ID_AUTEUR");
-		
-		//tables.put("BD_USER", "ID_EDITION");
-		//tables.put("TRANSACTION", "ID_EDITION");
-		
 		return tables;
 	}
 	
+        
+        /**
+         * Liste les dÃ©pendances entre les tables
+         */
 	private static HashMap<String, String> listeTablesDependance() {
 		
 		HashMap<String, String> tables = new HashMap<String, String>();
 
 		tables.put("AUTEUR", "");
-		tables.put("EDITEUR", "AUTEUR"); // pour avoir un ordre clair de màj
-		tables.put("GENRE", "EDITEUR"); // pour avoir un ordre clair de màj
+		tables.put("EDITEUR", "AUTEUR");
+		tables.put("GENRE", "EDITEUR");
 		tables.put("SERIE", "GENRE");
 		tables.put("TOME", "SERIE");
 		tables.put("EDITION", "TOME");
@@ -73,7 +68,7 @@ public class Tables{
 	
 	/**
 	 * Liste, pour chaque table, les champs ou on doit ajouter des quotes (VARCHAR)
-	 */
+         */
 	private static HashMap<String,boolean[]> listeQuotes() {
 		
 		HashMap<String,boolean[]> quotes = new HashMap<String,boolean[]>();

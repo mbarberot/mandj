@@ -1,5 +1,6 @@
 package gui;
 
+import db.update.Updater;
 import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.FlowLayout;
@@ -7,66 +8,73 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.Proxy;
+import javax.swing.*;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+/**
+ * FenÃªtre effectuant la mise Ã  jour globale du client
+ */
+public class DialogGlobalUpdate extends JDialog {
+    private static final long serialVersionUID = 1L;
+    
+    // Element d'interface
+    private JLabel updateMsg;
+    private JButton btnStart;
+    
+    // Proxy Ã  utiliser
+    private Proxy proxy;
+    
+    // Objet utilisÃ© pour la mise Ã  jour (cf WebService & WSDL)
+    private Updater updater;
 
-import db.update.Updater;
+    /**
+     * Constructeur
+     * @param owner FenÃªtre parente
+     * @param modal
+     * @param p Proxy pour la connexion au serveur
+     * @param up Updater pour l'utilisation du webservice
+     */
+    public DialogGlobalUpdate(Window owner, Dialog.ModalityType modal, Proxy p, Updater up) {
+        super(owner, modal);
 
-public class DialogGlobalUpdate extends JDialog{
+        proxy = p;
+        updater = up;
+        updateMsg = new JLabel("Cliquer le bouton START pour commencer.");
 
-	private static final long serialVersionUID = 1L;
-	
-	private JLabel updateMsg;
-	private JButton btnStart;
-	private Proxy proxy;
-	private Updater updater;
+        btnStart = new JButton("Start", new ImageIcon("img/restore.png"));
+        btnStart.addActionListener(new ActionListener() {
 
-	public DialogGlobalUpdate(Window owner, Dialog.ModalityType modal, Proxy p, Updater up){
-		super(owner, modal);
+            public void actionPerformed(ActionEvent ev) {
+                update();
+            }
+        });
 
-		proxy = p;
-		updater = up;
-		updateMsg = new JLabel("Cliquer le bouton START pour commencer.");
-		
-		btnStart = new JButton("Start", new ImageIcon("img/restore.png"));
-		btnStart.addActionListener(new ActionListener(){
-			public void actionPerformed(ActionEvent ev){
-				update();
-			}
-		});
-		
-		JPanel ctrlPane = new JPanel(new FlowLayout());
-		ctrlPane.add(btnStart);
-		
-		JPanel contentPane = new JPanel(new BorderLayout());
-		contentPane.add(updateMsg, BorderLayout.CENTER);
-		contentPane.add(ctrlPane, BorderLayout.SOUTH);
-		setContentPane(contentPane);
-		
-		setTitle("Mise à jour globale");
-		setResizable(false);
-		pack();
-		setLocationRelativeTo(null);
-	}
-	
-	private void update(){
-		try{
-			updater.updateGlobal();
-			JOptionPane.showMessageDialog(null, "Mise à jour terminée avec succès", "Félicitation", JOptionPane.INFORMATION_MESSAGE);
-			dispose();
-		}catch(Exception ex){
-			JOptionPane.showMessageDialog(
-					null, 
-					"Vérifier votre connexion réseau ou " +
-					"le serveur est momentanément indisponible", 
-					"Mise à jour impossible", 
-					JOptionPane.ERROR_MESSAGE);
-			dispose();
-		}
-	}
+        JPanel ctrlPane = new JPanel(new FlowLayout());
+        ctrlPane.add(btnStart);
+
+        JPanel contentPane = new JPanel(new BorderLayout());
+        contentPane.add(updateMsg, BorderLayout.CENTER);
+        contentPane.add(ctrlPane, BorderLayout.SOUTH);
+        setContentPane(contentPane);
+
+        setTitle("Mise Ã  jour globale");
+        setResizable(false);
+        pack();
+        setLocationRelativeTo(null);
+    }
+
+    private void update() {
+        try {
+            updater.updateGlobal();
+            JOptionPane.showMessageDialog(null, "Mise Ã  jour terminÃ©e avec succÃ¨s", "FÃ©licitation", JOptionPane.INFORMATION_MESSAGE);
+            dispose();
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "VÃ©rifiez votre connexion rÃ©seau ou "
+                    + "le serveur est momentanÃ©ment indisponible",
+                    "Mise Ã  jour impossible",
+                    JOptionPane.ERROR_MESSAGE);
+            dispose();
+        }
+    }
 }
