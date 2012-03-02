@@ -90,5 +90,9 @@ main(int argc, char **argv){
   err = suppressionGraphe(2);
   printf("Suppression graphe %d : %s \n", err, errToString(err));
 
+  graphe2dot(999);
+  graphe2dot(15);
+  graphe2dot(2);
+
 }
 
