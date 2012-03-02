@@ -1256,3 +1256,99 @@ erreur compareGraphe(int resAttendu)
     }    
     
 }
+
+
+
+/**
+ * Exporte le graphe courant dans un fichier .dot
+ *
+ * @param idCommande - indice de la commande
+ */
+void graphe2dot(int idCommande) 
+{
+	// Le graphe à exporter en dot
+	TypGraphe *g = graphes[grapheCourant];
+
+	// Création du nom de fichier
+	// - numéro du graphe
+	char numGraphe = ((grapheCourant == 1)?'1':'2');
+	// - numéro de la commande
+	char c,d,u;
+	int tmp = idCommande;
+	c = (tmp / 100) + 48;
+	tmp = tmp % 100;
+	d = (tmp / 10) + 48;
+	tmp = tmp % 10;
+	u = tmp + 48;
+	// - nom du fichier
+	// Format du nom de fichier :
+	// exemple_GX_YYY.dot
+	// X = numéro du graphe (1 ou 2)
+	// YYY = numéro de la commande (exemple : 001)
+	char filename[18] = {
+		'e','x','e','m','p','l','e',
+		'_','G',numGraphe,'_',c,d,u,
+		'.','d','o','t'
+	};
+	
+	// Ouverture du fichier
+	FILE *fp;	
+	// Essai d'ouverture du fichier, en écriture
+	// Grâce à l'argument "w" (write) :
+	// Si le fichier existe déjà, son contenu sera écrasé
+	// Si le fichier n'existe pas, il sera créé
+	fp = fopen(filename,"w");
+	// Cas d'erreur
+	if(fp == NULL)
+	{
+		printf("Impossible d'effectuer l'exportation\n");
+	}
+	else
+	{
+		if(g == NULL)
+		{
+			printf("Impossible d'afficher le graphe");
+		}
+		else
+		{
+			// Début
+			fprintf(fp,"digraph G {\n\tedge [ arrowtail=dot, arrowhead=open ];\n");
+
+			// Les sommets
+			int nbSom = g->nbMaxSommets;
+			int i;	
+			for(i = 0; i < nbSom; i++) 
+			{
+				if(g->aretes[i] != NULL)
+				{
+					fprintf(fp,"\tA%d\n",i);
+				}
+			}
+			
+			// Les arètes
+			// Pour chaque liste du tableau
+			//	Pour chaque element de la liste
+			//		Ecrire AX -> AY [label="S"]
+			//			avec X : l'indice du tableau
+			//			     Y : la valeur de l'élément
+			//			     S : le label de l'élément
+			TypVoisins *l;
+			for(i = 0; i < nbSom; i++)
+			{
+				l = g->aretes[i];
+				while(l != NULL)
+				{
+					if(l->voisin >= 0)
+					{
+						fprintf(fp,"\tA%d -> A%d [label=\"%d\"]\n",i,l->voisin,l->poidsVoisin);
+					}
+					l = l->voisinSuivant;
+				}
+			}
+
+			// Fin
+			fprintf(fp,"}\n");
+		}
+	}
+	fclose(fp);
+}

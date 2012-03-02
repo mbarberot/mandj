@@ -85,7 +85,6 @@ erreur isNonOrientee(int idGraphe, int s1, int s2);
 /*
  * Fonctions de manipulation
  */
-
 erreur choisirGraphe(int idGraphe);
 erreur creation(int maxSommet);
 erreur modifierNbMaxSommet(int maxSommet);
@@ -136,5 +135,9 @@ erreur compareSommet(
 		int resAttendu
 		);				
 
+/*
+ * Export en .dot
+ */
+void graphe2dot(int idCommande);
 
 #endif
