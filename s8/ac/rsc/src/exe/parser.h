@@ -10,10 +10,8 @@
  */
 
 /**
- * @TODO : faire les fonctions d'interprétations de toutes les fonctions (Work in progress)
- * @TODO : gérer les cas d'erreurs !
+ * @TODO : faire les fonctions d'interprétations de chargerGraphe
  * @TODO : écriture dans le fichier résultat
- * @TODO : génération des .dot et des .jpg associés 
  */
 
 
@@ -34,6 +32,8 @@
  */
 typedef enum 
 {       
+	CREATION_RESULTAT_IMPOSSIBLE,
+	ECRITURE_IMPOSSIBLE,
 	TRAITEMENT_FICHIER_OK, // => afficher que l'interprétation a été un succès
 	FICHIER_COMMANDES_INEXISTANT, // => afficher que le fichier n'a pas été trouvé
 	ARGUMENTS_INCORRECTS, // => nb d'arguments invalide ou de mauvais type. Afficher la commande concernée et l'ignorer (passer à la commande suivante)
@@ -54,7 +54,7 @@ struct stat entree_infos;
 /*
  * Le fichier résultat (contient les retours des fonctions)
  */
-FILE * res;
+FILE * fileRes;
 
 /*
  * Fonctions utilitaires
@@ -67,12 +67,11 @@ char* parserErrorToString(parserError err);
 parserError chargerFichier(char* path);
 void lectureFichier(char* res);
 void ecritureResultatCommande(int numCommande, erreur res); //todo
-void ecritureGraphviz(); //todo
 
 /*
  * Fonctions d'interpretations
  */
-parserError interpreteCommande(char* commande);
+void interpreteCommande(char* commande);
 parserError interpreteCreation(char* cmd);
 parserError interpreteChoisirGraphe(char* cmd);
 parserError interpreteModifierNbMaxSommet(char* cmd);
