@@ -17,8 +17,6 @@ public class SearchQuery {
             + "s.ID_SERIE, s.NOM_SERIE, "
             + "g.ID_GENRE, g.NOM_GENRE, "
             + "e.ISBN";
-    
-    
     public static final String GET_MAX = "COUNT(t.ID_TOME) AS NBR";
     public static final int SEARCH_IN_ALL = 0;
     public static final int SEARCH_IN_OWNED = 1;
@@ -42,16 +40,16 @@ public class SearchQuery {
     public static final int ORDER_ASC = 0;
     public static final int ORDER_DESC = 1;
 
-    
-    
     /**
-     * Recherche sans recherche : liste les albums a la volée
-     * 
-     * @param searchIn ALL,OWNED ou MISSING
-     * @param type COUNT ou SELECT
-     * @param sortby Colonne selon laquelle on trie
-     * @param order DESC ou ASC
-     * @return 
+     * Retourne le code SQL permettant de faire une recherche sans critères pour
+     * lister tous les albums.
+     *
+     * @param searchIn Domaine de recherche (Albums possédés, manquant ou tous
+     * les albums)
+     * @param type Type de la requete (éléments ou COUNT)
+     * @param sortby Critère de tri
+     * @param order Ordre des résultats (ASC ou DESC)
+     * @return Le code SQL
      */
     public static String searchNothing(int searchIn, String type, String sortby, int order) {
 
@@ -61,25 +59,29 @@ public class SearchQuery {
         if (searchIn == SEARCH_IN_ALL) {
             return ""; // Pas de liste totale
         }
-        
-        String sql = "SELECT " + type + "\n"
-            + "FROM TOME t, SERIE s, GENRE g, EDITION e \n"
-            + "WHERE s.ID_SERIE = t.ID_SERIE \n"
-            + "AND g.ID_GENRE = s.ID_GENRE \n"
-            + "AND " + searchInJoin[searchIn] + "\n"
-            + searchInWhere[searchIn] + "\n"
-            + (type.equals(GET_MAX) ? "" : orderBy(sortby, order)) + "\n";
 
-//        String sql = "SELECT " + type + "\n"
-//                + "FROM TOME t \n"
-//                + "INNER JOIN SERIE s ON s.ID_SERIE = t.ID_SERIE \n"
-//                + "INNER JOIN GENRE g ON g.ID_GENRE = s.ID_GENRE \n"
-//                + "INNER JOIN EDITION e ON " + searchInJoin[searchIn] + "\n"
-//                + "WHERE 1" + searchInWhere[searchIn] + "\n"
-//                + (type.equals(GET_MAX) ? "" : orderBy(sortby, order)) + "\n";
+        String sql = "SELECT " + type + "\n"
+                + "FROM TOME t \n"
+                + "INNER JOIN SERIE s ON s.ID_SERIE = t.ID_SERIE \n"
+                + "INNER JOIN GENRE g ON g.ID_GENRE = s.ID_GENRE \n"
+                + "INNER JOIN EDITION e ON " + searchInJoin[searchIn] + "\n"
+                + "WHERE 1" + searchInWhere[searchIn] + "\n"
+                + (type.equals(GET_MAX) ? "" : orderBy(sortby, order)) + "\n";
+
         return sql;
     }
 
+    /**
+     * Retourne le code SQL permettant une recherche par titre.
+     *
+     * @param searchIn Domaine de recherche (Albums possédés, manquant ou tous
+     * les albums)
+     * @param search Mot(s)-clef(s) de la recherche
+     * @param type Type de la requete (éléments ou COUNT)
+     * @param sortby Critère de tri
+     * @param order Ordre des résultats (ASC ou DESC)
+     * @return Le code SQL
+     */
     public static String searchTitre(int searchIn, String search, String type, String sortby, int order) {
 
         if (searchIn < 0 && searchIn > 2) {
@@ -95,28 +97,11 @@ public class SearchQuery {
         //
         // TODO : Faire de la recherche avec plusieurs mots clef
         // Première approche, naïve : 
-        //  1/ récupérer les mots (caractère sép : espace, 
-        //  2/ faire une recherche :
-        //      mot1 mot2 =>  like '%mot1%' or like '%mot2%'
+        //  1/ récupérer les mots (caractère sép : espace, virgule)
+        //  2/ faire une recherche : mot1 mot2 =>  like '%mot1%' or like '%mot2%'
         //  3/ Voir pour gérer le symbole '+' qui remplacerai le 'or' par 'and'
         //  4/ Voir pour gérer les accents (recherche avec et sans accents)
         //
-        
-        
-        
-        //
-        // MB
-        //
-        // TODO : Se documenter sur l'optimisation des requêtes :
-        //  L'inner join est-il mieux que le from t,i where t.j = i.j ?
-        //  Est-ce toujours le cas avec des index ?
-        //
-        // Une fois cette information trouvée :
-        //  Faire une abstraction plus profonde en dédiant une fonction de génération
-        //  d'une requête de recherche, gérant plusieurs mots-clefs, laquelle sera 
-        //  ensuite utilisée dans les autres fonctions de recherche.
-        //
-        
 
         String sql = "SELECT " + type + "\n"
                 + "FROM TOME t \n"
@@ -130,6 +115,17 @@ public class SearchQuery {
         return sql;
     }
 
+    /**
+     * Retourne le code SQL permettant une recherche par série.
+     *
+     * @param searchIn Domaine de recherche (Albums possédés, manquant ou tous
+     * les albums)
+     * @param search Mot(s)-clef(s) de la recherche
+     * @param type Type de la requete (éléments ou COUNT)
+     * @param sortby Critère de tri
+     * @param order Ordre des résultats (ASC ou DESC)
+     * @return Le code SQL
+     */
     public static String searchSerie(int searchIn, String search, String type, String sortby, int order) {
 
         if (searchIn < 0 && searchIn > 2) {
@@ -152,7 +148,19 @@ public class SearchQuery {
         return sql;
     }
 
-    // Attention, cette recherche prend en compte la casse!
+    /**
+     * Retourne le code SQL permettant une recherche par auteur. Attention,
+     * cette recherche prend en compte la casse!
+     *
+     * @param searchIn Domaine de recherche (Albums possédés, manquant ou tous
+     * les albums)
+     * @param search Mot(s)-clef(s) de la recherche
+     * @param type Type de la requete (éléments ou COUNT)
+     * @param sortby Critère de tri
+     * @param order Ordre des résultats (ASC ou DESC)
+     * @return
+     * @return Le code SQL
+     */
     public static String searchAuteur(int searchIn, String search, String type, String sortby, int order) {
 
         if (searchIn < 0 && searchIn > 2) {
@@ -177,7 +185,17 @@ public class SearchQuery {
         return sql;
     }
 
-    // Attention cela ne marche pas si on recherche dans les manquants...
+    /**
+     * Retourne le code SQL permettant une recherche par ISBN.
+     *
+     * @param searchIn Domaine de recherche (Albums possédés, manquant ou tous
+     * les albums)
+     * @param search Mot(s)-clef(s) de la recherche
+     * @param type Type de la requete (éléments ou COUNT)
+     * @param sortby Critère de tri
+     * @param order Ordre des résultats (ASC ou DESC)
+     * @return Le code SQL
+     */
     public static String searchISBN(int searchIn, String search, String type, String sortby, int order) {
 
         if (searchIn < 0 && searchIn > 2) {
@@ -186,12 +204,9 @@ public class SearchQuery {
         if (search.length() < 3) {
             return "";
         }
-
-
+        
         String isbn = CodeBarre.toBDovoreISBN(escape(search));
         String ean = CodeBarre.toBDovoreEAN(escape(search));
-
-        //String eanisbn = isbn + " " + ean; // FullText prend tout
 
         String sql = "SELECT " + type + "\n"
                 + "FROM TOME t\n"
@@ -207,31 +222,10 @@ public class SearchQuery {
     }
 
     /**
-     * TODO: refaire cette fonction afin de l'adapter � la nouvelle base si
-     * n�ccessaire
-     */
-    public static String insertISBN(String search, String isPret, String isDedicace, String isAAcheter) {
-
-        String isbn = CodeBarre.toBDovoreISBN(escape(search));
-        String ean = CodeBarre.toBDovoreEAN(escape(search));
-        String eanisbn = isbn + " " + ean; // FullText prend tout
-
-        String sqlSearch = "SELECT t.ID_TOME, s.ID_SERIE, e.ID_EDITEUR, e.ID_COLLECTION, e.ID_EDITION, scenar.ID_AUTEUR, dess.ID_AUTEUR, g.ID_GENRE, '" + isPret + "', NULL, NULL, '" + isDedicace + "', e.FLG_TT, NULL, NULL, CURRENT_TIMESTAMP, '" + isAAcheter + "', NULL, NULL, 'N' \n"
-                + "FROM BD_EDITION e, FTL_SEARCH_DATA('" + eanisbn + "', 0, 0) FT \n"
-                + "INNER JOIN BD_TOME t ON t.ID_TOME = e.ID_TOME \n"
-                + "INNER JOIN BD_SERIE s ON s.ID_SERIE = t.ID_SERIE \n"
-                + "INNER JOIN BD_GENRE g ON g.ID_GENRE = t.ID_GENRE \n"
-                + "INNER JOIN BD_AUTEUR scenar ON scenar.ID_AUTEUR = t.ID_SCENAR \n"
-                + "INNER JOIN BD_AUTEUR dess ON dess.ID_AUTEUR = t.ID_DESSIN \n"
-                + "WHERE FT.TABLE='BD_EDITION' AND e.ID_EDITION = FT.KEYS[0] limit 1";
-
-        String sql = "INSERT INTO USERS_ALBUM \n" + sqlSearch;
-
-        return sql;
-    }
-
-    /**
      * Echape et transforme les caractères pour H2
+     *
+     * @param str Chaîne à traiter
+     * @return La chaîne traitée
      */
     private static String escape(String str) {
         return str.replace("'", "''").toLowerCase();
@@ -240,8 +234,8 @@ public class SearchQuery {
     /**
      * Encode la chaine avec l'algorithme MD5
      *
-     * @param str
-     * @return TODO : Bogus
+     * @param str La chaîne à traiter
+     * @return La chaîne traitée
      */
     public static String md5(String str) {
 
@@ -262,6 +256,10 @@ public class SearchQuery {
 
     /**
      * Génère la clause ORDER BY
+     *
+     * @param field Champ pour l'ordre
+     * @param order Ordre (utiliser les constantes ORDER.ASC et ORDER.DESC)
+     * @return Le clause ORDER BY en SQL
      */
     private static String orderBy(String field, int order) {
         if (order != 0 && order != 1) {
