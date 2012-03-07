@@ -33,6 +33,76 @@ int initialiseListe(TypVoisins** l){
  * @return 1 si succès, -1 sinon, 0 si le voisin est deja present dans la liste
  */
 int ajouteVoisin(TypVoisins** l, int numVoisin, int poidsVoisin, void* info){
+	
+	TypVoisins *p,
+		   *q,
+		   *new;
+
+	
+	if(l != NULL)
+	{
+		// pas de doublon
+		if(voisinExiste(l,numVoisin) != NULL)
+		{
+			return -1;
+		}
+
+		// cas du premier élément
+		// --> il faut modifier l
+		if(numVoisin < (*l)->voisin || (*l)->voisin == -1)
+		{
+			new = (TypVoisins*) malloc(sizeof(TypVoisins));
+			if(new == NULL)
+			{
+				return -1;
+			}
+			else
+			{
+				new->voisin = numVoisin;
+				new->poidsVoisin = poidsVoisin;
+				new->info = info;
+				new->voisinSuivant = *l;
+				*l = new;
+				return 1;
+			}
+		}
+
+		// cas général (milieu / fin de liste)
+		// --> il faut modifier les éléments de la liste
+		// p pointe l'élément 'courant'
+		// q pointe le précédent
+		// le nouvel élément sera placé entre p et q ( q -> new -> p )
+		q = *l;
+		p = (*l)->voisinSuivant;
+		while(p != NULL) 
+		{	
+			if(numVoisin < p->voisin || p->voisin == -1)
+			{
+				new = (TypVoisins*) malloc(sizeof(TypVoisins));
+				if(new != NULL)
+				{
+					new->voisin = numVoisin;
+					new->poidsVoisin = poidsVoisin;
+					new->info = info;
+					new->voisinSuivant = p;
+					q->voisinSuivant = new;				
+					return 1;
+				}
+				else
+				{
+					return -1;
+				}
+			}
+			q = p;
+			p = p->voisinSuivant;
+		}
+	}
+	return -1;
+/*
+ * Old version : Non ordonnée
+ *
+ *
+ *
     TypVoisins* new;
     
     if(l != NULL ){
@@ -51,8 +121,12 @@ int ajouteVoisin(TypVoisins** l, int numVoisin, int poidsVoisin, void* info){
 	    return 0;
 	}
     }
-    
     return -1;
+ *
+ *
+ *
+ *
+ */
 }
 
 /**
@@ -85,12 +159,12 @@ int supprimeVoisin(TypVoisins** l, int numVoisin){
     }
     return 1;
 }
+
 /**
  * Change le poids de l'arête l -> numVoisin
  * @param l :la liste contenant le voisin à modifier
  * @param numVoisin : le voisin à modifier
  * @param nPoids : le nouveau poids de l'arête
-
  * @return 1 si succès, -1 sinon
  */
 int modifiePoidsVoisin(TypVoisins** l, int numVoisin, int nPoids)
