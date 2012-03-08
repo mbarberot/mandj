@@ -66,7 +66,7 @@ char* parserErrorToString(parserError err);
  */
 parserError chargerFichier(char* path);
 void lectureFichier(char* res);
-void ecritureResultatCommande(int numCommande, erreur res); //todo
+void ecritureResultatCommande(int numCommande, erreur res);
 
 /*
  * Fonctions d'interpretations
@@ -89,6 +89,6 @@ parserError interpreteTesterDegreSommet(char* cmd);
 parserError interpreteCompareGraphe(char* cmd);
 parserError interpreteCompareSommet(char* cmd);
 
-parserError interpreteChargerGraphe(char* cmd); // Todo et ca va etre marrant
+parserError interpreteChargerGraphe(char* cmd);
 
 #endif

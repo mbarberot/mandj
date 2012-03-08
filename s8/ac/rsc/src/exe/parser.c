@@ -56,22 +56,25 @@ parserError chargerFichier(char* path)
 	/* On peut alors fermer le fichier d'entree ...*/
 	fclose(entree);
 	
+
+	
 	/* Et ouvrir celui de résultat pour l'écriture */
 	char file_name[150];
 	strcat(file_name,path);
 	strcat(file_name,"_RESULTAT.txt");
 	
 	fileRes = NULL;
-	fileRes = fopen(file_name, "w+");
+	fileRes = fopen(file_name, "w");
 	
-	if(fileRes == NULL)
-	  return CREATION_RESULTAT_IMPOSSIBLE;
+	/*if(fileRes == NULL)	
+	  return CREATION_RESULTAT_IMPOSSIBLE;*/
+
 	
 	/* Et on lance l'interpretation*/
 	interpreteCommande(cmd);
 	
 	/* Et on peut fermer le fichier de resultat*/
-	fclose(fileRes);
+	//fclose(fileRes);
 	
     }
     else
@@ -110,7 +113,17 @@ void lectureFichier(char* content)
 		{
 		    caractereActuel = fgetc(entree);
 		}
-	    }	    
+	    }
+	    /*else if (caractereActuel == '{') // On lit la fonction "chargergraphe"
+	    {
+	      
+	      while(caractereActuel != '}' && caractereActuel != EOF)
+	      {
+		content[i] = caractereActuel;
+		i++;
+		caractereActuel = fgetc(entree);
+	      }
+	    }*/
 	    else if(isgraph(caractereActuel)) // Supprime les espaces au passage
 	    {
 		content[i] = caractereActuel;
@@ -134,10 +147,9 @@ void lectureFichier(char* content)
  */
 void ecritureResultatCommande(int numCommande, erreur res)
 {
-
-  printf("%s \n", errToString(res));
+  /*
   if(fileRes != NULL)
-    fprintf(fileRes, "%d : %s \n", numCommande, errToString(res));
+    fprintf(fileRes, "%d : %s \n", numCommande, errToString(res));*/
 }
 
 /**
@@ -146,6 +158,7 @@ void ecritureResultatCommande(int numCommande, erreur res)
  */
 void interpreteCommande(char* commandes)
 {
+  
     char *sep = {";"};
     
     // Imbrication de strtok impossible => utilisation de strtok_r, adaptée dans ce cas
@@ -155,18 +168,17 @@ void interpreteCommande(char* commandes)
     
     while ( ptr != NULL ) {
 	// On fait une copie de l'instruction pour pouvoir travailler dessus
-	tmp = strdup(ptr);	
+	tmp = strdup(ptr);
 	
 	if(!isdigit(tmp[0]))
 	{
 	    printf("Commande \"%s\" : %s \n", tmp, parserErrorToString(INDICE_RETOUR_INEXISTANT));
 	}
 	else
-	{
-	    
+	{	    
 	    // Permet de vérifier que tmp est une commande valide
 	    int cmdOk = 0;
-	    parserError res;
+	    parserError res = -1;	   
 	    
 	    // Commande creation
 	    if(strstr(tmp,"creation") != NULL)
@@ -181,7 +193,7 @@ void interpreteCommande(char* commandes)
 	    // Commande choixGraphe
 	    if(strstr(tmp,"choisirGraphe") != NULL)
 	    {
-		interpreteChoisirGraphe(tmp);
+		res = interpreteChoisirGraphe(tmp);
 		cmdOk = 1;
 		
 		if(res != TRAITEMENT_CMD_OK)
@@ -191,7 +203,7 @@ void interpreteCommande(char* commandes)
 	    // Commande modifierNbMaxSommet
 	    if(strstr(tmp, "modifierNbMaxSommet") != NULL)
 	    {
-		interpreteModifierNbMaxSommet(tmp);
+		res = interpreteModifierNbMaxSommet(tmp);
 		cmdOk = 1;
 		
 		if(res != TRAITEMENT_CMD_OK)
@@ -201,7 +213,7 @@ void interpreteCommande(char* commandes)
 	    // Commande suppressionGraphe
 	    if(strstr(tmp, "suppressionGraphe") != NULL)
 	    {
-		interpreteSuppressionGraphe(tmp);
+		res = interpreteSuppressionGraphe(tmp);
 		cmdOk = 1;
 		
 		if(res != TRAITEMENT_CMD_OK)
@@ -211,7 +223,7 @@ void interpreteCommande(char* commandes)
 	    // Commande insertionSommet
 	    if(strstr(tmp, "insertionSommet") != NULL)
 	    {
-		interpreteInsertionSommet(tmp);
+		res = interpreteInsertionSommet(tmp);
 		cmdOk = 1;
 		
 		if(res != TRAITEMENT_CMD_OK)
@@ -221,7 +233,7 @@ void interpreteCommande(char* commandes)
 	    // Commande suppressionSommet
 	    if(strstr(tmp, "suppressionSommet") != NULL)
 	    {
-		interpreteSuppressionSommet(tmp);
+		res = interpreteSuppressionSommet(tmp);
 		cmdOk = 1;
 		
 		if(res != TRAITEMENT_CMD_OK)
@@ -231,7 +243,7 @@ void interpreteCommande(char* commandes)
 	    // Commande insertionArete
 	    if(strstr(tmp, "insertionArete") != NULL)
 	    {
-		interpreteInsertionArete(tmp);
+		res = interpreteInsertionArete(tmp);
 		cmdOk = 1;
 		
 		if(res != TRAITEMENT_CMD_OK)
@@ -241,7 +253,7 @@ void interpreteCommande(char* commandes)
 	    // Commande modifierPoids
 	    if(strstr(tmp, "modifierPoids") != NULL)
 	    {
-		interpreteModifierPoids(tmp);
+		res = interpreteModifierPoids(tmp);
 		cmdOk = 1;
 		
 		if(res != TRAITEMENT_CMD_OK)
@@ -251,7 +263,7 @@ void interpreteCommande(char* commandes)
 	    // Commande suppressionArete
 	    if(strstr(tmp, "suppressionArete") != NULL)
 	    {
-		interpreteSuppressionArete(tmp);
+		res = interpreteSuppressionArete(tmp);
 		cmdOk = 1;
 		
 		if(res != TRAITEMENT_CMD_OK)
@@ -260,7 +272,7 @@ void interpreteCommande(char* commandes)
 	    // Commande viderGraphe
 	    if(strstr(tmp,"viderGraphe") != NULL)
 	    {
-		interpreteViderGraphe(tmp);
+		res = interpreteViderGraphe(tmp);
 		cmdOk = 1;
 		
 		if(res != TRAITEMENT_CMD_OK)
@@ -270,7 +282,7 @@ void interpreteCommande(char* commandes)
 	    // Commande viderAreteGraphe
 	    if(strstr(tmp, "viderAreteGraphe") != NULL)
 	    {
-		interpreteViderAreteGraphe(tmp);
+		res = interpreteViderAreteGraphe(tmp);
 		cmdOk = 1;
 		if(res != TRAITEMENT_CMD_OK)
 		    printf("Commande \"%s\" : %s \n", tmp, parserErrorToString(res));
@@ -279,7 +291,7 @@ void interpreteCommande(char* commandes)
 	    // Commande testerArete
 	    if(strstr(tmp,"testerArete") != NULL)
 	    {
-		interpreteTesterArete(tmp);
+		res = interpreteTesterArete(tmp);
 		cmdOk = 1;
 		if(res != TRAITEMENT_CMD_OK)
 		    printf("Commande \"%s\" : %s \n", tmp, parserErrorToString(res));
@@ -288,7 +300,7 @@ void interpreteCommande(char* commandes)
 	    // Commande testerSommet
 	    if(strstr(tmp,"testerSommet") != NULL)
 	    {
-		interpreteTesterSommet(tmp);
+		res = interpreteTesterSommet(tmp);
 		cmdOk = 1;
 		if(res != TRAITEMENT_CMD_OK)
 		    printf("Commande \"%s\" : %s \n", tmp, parserErrorToString(res));
@@ -297,7 +309,7 @@ void interpreteCommande(char* commandes)
 	    // Commande testerDegreSommet
 	    if(strstr(tmp, "testerDegreSommet") != NULL)
 	    {
-		interpreteTesterDegreSommet(tmp);
+		res = interpreteTesterDegreSommet(tmp);
 		cmdOk = 1;
 		if(res != TRAITEMENT_CMD_OK)
 		    printf("Commande \"%s\" : %s \n", tmp, parserErrorToString(res));
@@ -306,7 +318,7 @@ void interpreteCommande(char* commandes)
 	    // Commande CompareGraphe
 	    if(strstr(tmp, "compareGraphe") != NULL)
 	    {
-		interpreteCompareGraphe(tmp);
+		res = interpreteCompareGraphe(tmp);
 		cmdOk = 1;
 		if(res != TRAITEMENT_CMD_OK)
 		    printf("Commande \"%s\" : %s \n", tmp, parserErrorToString(res));
@@ -315,17 +327,26 @@ void interpreteCommande(char* commandes)
 	    //Commande CompareSommet
 	    if(strstr(tmp, "compareSommet") != NULL)
 	    {
-		interpreteCompareSommet(tmp);
+		res = interpreteCompareSommet(tmp);
 		cmdOk = 1;
 		if(res != TRAITEMENT_CMD_OK)
 		    printf("Commande \"%s\" : %s \n", tmp, parserErrorToString(res));
 	    }
 	    
+	    // Commande chargerGraphe
+	    if(strstr(tmp,"chargerGraphe") != NULL)
+	    {
+	      res = interpreteChargerGraphe(tmp);
+	      cmdOk = 1;
+	      if(res != TRAITEMENT_CMD_OK)
+		printf("Commande \"%s\" : %s \n", tmp, parserErrorToString(res));
+	      
+	    }
+	    
 	    // Commande non interprétable
 	    if(!cmdOk)
 	    {
-		printf("Commande \"%s\" : %s \n", tmp, errToString(COMMANDE_INVALIDE));
-		// Ecrire dans le fichier => COMMANDE_INVALIDE
+	      
 	    }
 	}
 	// Réinitialisation de la copie et passage à l'instruction suivante
@@ -584,7 +605,14 @@ parserError interpreteSuppressionArete(char* cmd)
 parserError interpreteViderGraphe(char* cmd)
 {
     erreur err;
-    int numCom;
+    int numCom;char *sep = {":\n(),"};  
+  char *ptr = strtok(cmd, sep);
+  
+  while(ptr != NULL)
+  {
+    printf("%s\n", ptr); 
+    ptr = strtok(NULL, sep);
+  }
     
     int nbArgs = sscanf(cmd, "%d:viderGraphe()", &numCom);
     
@@ -828,4 +856,57 @@ parserError interpreteCompareSommet(char* cmd)
     
 }
 
+/**
+* Interprete la commande chargerGraphe
+*/
+parserError interpreteChargerGraphe(char* cmd)
+{
+  int numCom;
+  int argSommet;
+  char args[strlen(cmd)];
+  erreur err;
+  
+  int nbArgs = sscanf(cmd,"%d:chargerGraphe{%d%[^}]", &numCom, &argSommet, args);
+  
+  if(nbArgs == 3)
+  {
+    // Créer le graphe en cours
+    err = creation(argSommet);
+    
+    if(err != RES_OK)
+      return TRAITEMENT_CMD_OK;
+    
+    // Scanne les paramètres et créer les sommets
+    char *sep = {"S:(),"};
+    char *ptr = strtok(args, sep);
+    erreur err = RES_OK;
+    
+    // Tant que les arguments ne sont pas tous traités et tant qu'on a pas d'erreurs
+    while(ptr != NULL && err == RES_OK)
+    {
+      int sommet, voisin, poids;
+      int args;
 
+      if((args = sscanf(ptr, "%d/%d", &voisin, &poids)) == 2)
+      {
+	err = insertionArete(sommet,poids,voisin,'o');
+      }
+      else if((args = sscanf(ptr, "%d", &sommet)) == 1)
+      {
+	err = insertionSommet(sommet);
+      }
+      
+      ptr = strtok(NULL, sep);
+    }    
+    
+  }
+  else
+  {
+    return ARGUMENTS_INCORRECTS;
+  }
+  
+  // Ecriture du résultat dans le fichier
+  ecritureResultatCommande(numCom, err);
+  
+  return TRAITEMENT_CMD_OK;
+}
