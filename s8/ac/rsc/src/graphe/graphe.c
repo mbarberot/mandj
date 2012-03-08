@@ -203,7 +203,7 @@ erreur isNonOrientee(int idGraphe, int s1, int s2)
     // Les sommets sont bien initialisés ?
     if(current->aretes[s1 - 1] != NULL && current->aretes[s2 -1] != NULL)
     {
-	TypVoisins *arr1 = rechercheVoisin(&current->aretes[s1-1],s2);
+	TypVoisins *arr1 = rechercheVoisin(&current->aretes[s1-1],s2),
 		   *arr2 = rechercheVoisin(&current->aretes[s2-1],s1);
 	
 
@@ -1294,7 +1294,7 @@ erreur compareGraphe(int resAttendu)
  *
  * @param idCommande - indice de la commande
  */
-void graphe2dot(int idCommande) 
+void graphe2dot(int idCommande, char *path) 
 {
     // Le graphe à exporter en dot
     TypGraphe *g = graphes[grapheCourant];
@@ -1315,11 +1315,14 @@ void graphe2dot(int idCommande)
     // exemple_GX_YYY.dot
     // X = numéro du graphe (1 ou 2)
     // YYY = numéro de la commande (exemple : 001)
-    char filename[19] = {
-	'e','x','e','m','p','l','e',
+    char suffix[12] = {
 	'_','G',numGraphe,'_',c,d,u,
 	'.','d','o','t','\0'
     };
+    
+    char* filename = malloc((12 + strlen(path)) * sizeof(char));
+    strcat(filename,path);
+    strcat(filename,suffix);
 
     // Ouverture du fichier
     FILE *fp;	

@@ -138,6 +138,6 @@ erreur compareSommet(
 /*
  * Export en .dot
  */
-void graphe2dot(int idCommande);
+void graphe2dot(int idCommande, char* path);
 
 #endif

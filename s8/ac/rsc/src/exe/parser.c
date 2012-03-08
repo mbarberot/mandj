@@ -40,6 +40,10 @@ char* parserErrorToString(parserError err)
  */
 parserError chargerFichier(char* path)
 {
+  
+    /* On mémorise le path du fichier d'entrée */
+    entree_path = path;
+    
     /* Préparation de l'ouverture du fichier de commandes */
     entree = NULL;
     entree = fopen(path, "r"); 
@@ -369,6 +373,8 @@ parserError interpreteCreation(char* cmd)
 	return ARGUMENTS_INCORRECTS;
     }
     
+    // Creation des .dot
+    graphe2dot(numCom, entree_path);
     
     return TRAITEMENT_CMD_OK;
 }
@@ -420,6 +426,10 @@ parserError interpreteModifierNbMaxSommet(char* cmd)
 	ecritureResultatCommande(numCom, COMMANDE_INVALIDE);
 	return ARGUMENTS_INCORRECTS;
     }
+    
+    // Génération des .dot
+    graphe2dot(numCom, entree_path);
+    
     return TRAITEMENT_CMD_OK;
     
 }
@@ -473,6 +483,9 @@ parserError interpreteInsertionSommet(char* cmd)
 	return ARGUMENTS_INCORRECTS;
     }
     
+    // Génération des .dot
+    graphe2dot(numCom, entree_path);
+    
     return TRAITEMENT_CMD_OK;
     
 }
@@ -499,6 +512,9 @@ parserError interpreteSuppressionSommet(char* cmd)
 	ecritureResultatCommande(numCom, COMMANDE_INVALIDE);
 	return ARGUMENTS_INCORRECTS;
     }
+    
+    // Génération des .dot
+    graphe2dot(numCom, entree_path);
     
     return TRAITEMENT_CMD_OK;
     
@@ -533,6 +549,9 @@ parserError interpreteInsertionArete(char* cmd)
 	return ARGUMENTS_INCORRECTS;
     }
     
+    // Génération des .dot
+    graphe2dot(numCom, entree_path);
+    
     return TRAITEMENT_CMD_OK;
     
 }
@@ -565,6 +584,9 @@ parserError interpreteModifierPoids(char* cmd)
 	return ARGUMENTS_INCORRECTS;
     }
     
+    // Génération des .dot
+    graphe2dot(numCom, entree_path);
+    
     return TRAITEMENT_CMD_OK;
     
 }
@@ -594,6 +616,9 @@ parserError interpreteSuppressionArete(char* cmd)
 	return ARGUMENTS_INCORRECTS;
     } 
     
+    // Génération des .dot
+    graphe2dot(numCom, entree_path);
+    
     return TRAITEMENT_CMD_OK;
     
 }
@@ -618,6 +643,9 @@ parserError interpreteViderGraphe(char* cmd)
 	ecritureResultatCommande(numCom, COMMANDE_INVALIDE);
 	return ARGUMENTS_INCORRECTS;
     }
+    
+    // Génération des .dot
+    graphe2dot(numCom, entree_path);
     
     return TRAITEMENT_CMD_OK;
     
@@ -645,6 +673,9 @@ parserError interpreteViderAreteGraphe(char* cmd)
 	ecritureResultatCommande(numCom, COMMANDE_INVALIDE);
 	return ARGUMENTS_INCORRECTS;
     }
+    
+    // Génération des .dot
+    graphe2dot(numCom, entree_path);
     
     return TRAITEMENT_CMD_OK;
     
@@ -913,6 +944,9 @@ parserError interpreteChargerGraphe(char* cmd)
   
   // Ecriture du résultat dans le fichier
   ecritureResultatCommande(numCom, err);
+  
+  // Génération des .dot
+  graphe2dot(numCom, entree_path);
   
   return TRAITEMENT_CMD_OK;
 }

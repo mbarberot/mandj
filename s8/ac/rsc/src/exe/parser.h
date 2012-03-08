@@ -46,6 +46,11 @@ typedef enum
 FILE * entree;
 
 /*
+* Le path du fichier de commande
+*/
+char* entree_path;
+
+/*
  * Infos fichier d'entrée
  */
 struct stat entree_infos;
