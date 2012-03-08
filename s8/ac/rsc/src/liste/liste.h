@@ -18,7 +18,7 @@ int ajouteVoisin(TypVoisins** l, int numVoisin, int poidsVoisin, void* info);
 int supprimeVoisin(TypVoisins** l, int numVoisin);
 int modifiePoidsVoisin(TypVoisins** l, int numVoisin, int nPoids);
 void afficheVoisins(TypVoisins** l);
-TypVoisins* voisinExiste(TypVoisins** l, int numVoisin);
+TypVoisins* rechercheVoisin(TypVoisins** l, int numVoisin);
 void supprimeListe(TypVoisins** l);
 int tailleListe(TypVoisins**l);
 int compareListes(TypVoisins** l1, TypVoisins** l2);

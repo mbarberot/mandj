@@ -42,7 +42,7 @@ int ajouteVoisin(TypVoisins** l, int numVoisin, int poidsVoisin, void* info){
 	if(l != NULL)
 	{
 		// pas de doublon
-		if(voisinExiste(l,numVoisin) != NULL)
+		if(rechercheVoisin(l,numVoisin) != NULL)
 		{
 			return -1;
 		}
@@ -98,35 +98,6 @@ int ajouteVoisin(TypVoisins** l, int numVoisin, int poidsVoisin, void* info){
 		}
 	}
 	return -1;
-/*
- * Old version : Non ordonnée
- *
- *
- *
-    TypVoisins* new;
-    
-    if(l != NULL ){
-	if(voisinExiste(l,numVoisin) == NULL){
-	    if((new = (TypVoisins*)malloc(sizeof(TypVoisins))) != NULL){
-		new->voisin = numVoisin;
-		new->poidsVoisin = poidsVoisin;
-		new->info = info;
-		new->voisinSuivant = *l;
-		*l = new;      
-		return 1;
-	    }else{
-		return -1;
-	    }
-	}else{
-	    return 0;
-	}
-    }
-    return -1;
- *
- *
- *
- *
- */
 }
 
 /**
@@ -140,7 +111,7 @@ int supprimeVoisin(TypVoisins** l, int numVoisin){
     TypVoisins* prec;
     
     if(l != NULL){
-	if(voisinExiste(l,numVoisin) == NULL ){	    
+	if(rechercheVoisin(l,numVoisin) == NULL ){	    
 	    return -1;
 	}else{
 	    // Le maillon à supprimer est le premier 
@@ -169,7 +140,7 @@ int supprimeVoisin(TypVoisins** l, int numVoisin){
  */
 int modifiePoidsVoisin(TypVoisins** l, int numVoisin, int nPoids)
 {
-    TypVoisins* toModify = voisinExiste(l,numVoisin);
+    TypVoisins* toModify = rechercheVoisin(l,numVoisin);
     
     if(toModify != NULL)
     {
@@ -196,22 +167,28 @@ void afficheVoisins(TypVoisins** l){
     printf("[= \n");  
 }
 
+
 /**
- * Vérifie l'existence du voisin numVoisin dans la liste
- * @param l : la liste a traiter
- * @param numVoisin : l'id du voisin dont on veut vérifier l'existence
- * @return le voisin s'il est trouvé, NULL sinon
+ * Recherche un élément, dont l'id est spécifié, dans la liste donnée
+ *
+ * @param l		La liste
+ * @param numVoisin	L'id du voisin à trouver
+ * @return		Le voisin s'il est trouvé ou NULL sinon
  */
-TypVoisins* voisinExiste(TypVoisins** l , int numVoisin){
-    TypVoisins* tmp = *l;
-    
-    while(tmp != NULL){
-	if(tmp->voisin == numVoisin){
-	    return tmp;
+TypVoisins* rechercheVoisin(TypVoisins** l, int numVoisin)
+{
+    TypVoisins *tmp;
+
+    if(l != NULL)
+    {
+	tmp = *l;
+	while(tmp != NULL)
+	{
+	    if(tmp->voisin == numVoisin)
+		return tmp;
+	    tmp = tmp->voisinSuivant;
 	}
-	tmp = tmp->voisinSuivant;
     }
-    
     return NULL;
 }
 

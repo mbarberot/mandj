@@ -72,19 +72,17 @@ char* errToString(erreur err)
  * Affichage d'un graphe (désigné par idGraphe) en mode texte.
  * @param idGraphe : un entier désignant un des deux graphes
  */
-
 void afficheGraphe(int idGraphe)
 {
-    int i;
-    
+    int i; 
     if(idGraphe > 0 && idGraphe <= NB_GRAPHES)
     {
 	TypGraphe* current = graphes[idGraphe - 1];
-	
+
 	if(current != NULL){
-	    
+
 	    printf("Affichage du graphe %d \n", idGraphe);
-	    
+
 	    for(i = 0; i < current->nbMaxSommets ; i++){	
 		printf("Sommet : %d : \n",i+1); 
 		if(current->aretes[i] != NULL)
@@ -92,7 +90,7 @@ void afficheGraphe(int idGraphe)
 		    afficheVoisins(&current->aretes[i]);
 		}	
 	    }
-	    
+
 	    printf("\n");
 	}
 	else
@@ -118,27 +116,29 @@ erreur calculerDegreSommet(int idGraphe, int sommet, int *degre)
 {
     int res = 0;
     int i;
-    
+    TypVoisins *p;
+
     // Vérifications sur le graphe
     if(idGraphe < 1)
 	return NUMERO_GRAPHE_TROP_PETIT;
-    
+
     if(idGraphe > 2)
 	return NUMERO_GRAPHE_INVALIDE;    
-    
-    TypGraphe* current = graphes[idGraphe -1 ];
-    
+
+    TypGraphe* current = graphes[idGraphe -1];
+
     if(current == NULL)
 	return GRAPHE_INEXISTANT;
-    
+
     // Les sommets sont bien compris dans les bornes ?
     if(sommet < 1 || sommet > current->nbMaxSommets)
 	return SOMMET_INVALIDE;
-    
+
     // Le sommet est initialisé ? (=> il existe ?)
     if(current->aretes[sommet-1] == NULL)
 	return SOMMET_INEXISTANT;
-	
+
+
     // On parcourt toutes les arêtes.
     for(i = 0 ; i < current -> nbMaxSommets ; i++)
     {
@@ -150,19 +150,24 @@ erreur calculerDegreSommet(int idGraphe, int sommet, int *degre)
 	    }
 	    else
 	    {
-		// On incrémente le compteur si l'arête est orientée (si non-orientée => on la compte déjà dans le if précédent)
-		if(isNonOrientee(idGraphe, i+1, sommet) == TEST_KO)
-		{		   
-		    res++;
+		p = current->aretes[i];
+		while(p != NULL)
+		{	
+		    if(sommet == p->voisin)
+		    {
+			res++;
+		    }
+		    p = p->voisinSuivant;
 		}
 	    }
-	    
+
 	}	
     }
-    
+
     *degre = res;
     return RES_OK;
 }
+
 
 /**
  * Vérifie si l'arête précisée par s1 et s2 est une arête non-orientée du graphe idGraphe
@@ -178,51 +183,74 @@ erreur calculerDegreSommet(int idGraphe, int sommet, int *degre)
  */
 erreur isNonOrientee(int idGraphe, int s1, int s2)
 {
-    
+
     // Vérifications sur le graphe
     if(idGraphe < 1)
 	return NUMERO_GRAPHE_TROP_PETIT;
-    
+
     if(idGraphe > 2)
 	return NUMERO_GRAPHE_INVALIDE;    
-    
+
     TypGraphe* current = graphes[idGraphe -1 ];
-    
+
     if(current == NULL)
 	return GRAPHE_INEXISTANT;
-    
+
     // Les sommets sont bien compris dans les bornes ?
     if(s1 < 1 || s1 > current->nbMaxSommets || s2 < 1 || s2 > current->nbMaxSommets)
 	return SOMMET_INVALIDE;
-    
+
     // Les sommets sont bien initialisés ?
     if(current->aretes[s1 - 1] != NULL && current->aretes[s2 -1] != NULL)
     {
-	TypVoisins* arr1 = voisinExiste(&current->aretes[s1 -1], s2);
-	TypVoisins* arr2 = voisinExiste(&current->aretes[s2 -1], s1);
+	TypVoisins *arr1 = rechercheVoisin(&current->aretes[s1-1],s2);
+		   *arr2 = rechercheVoisin(&current->aretes[s2-1],s1);
 	
-	if(arr1 == NULL && arr2 == NULL)
-	    return ARETE_INEXISTANTE;
-	
-	if((arr1 != NULL && arr2 != NULL) 
-	    && (arr1->poidsVoisin == arr2->poidsVoisin))
-	{	    
-	    return TEST_OK;
+
+	if(arr1 == NULL)
+	{
+	    // Pas d'arête s1 -> s2
+	    if(arr2 == NULL)
+	    {
+		// Pas d'arete s1 -> s2
+		// Pas d'arete s2 -> s1
+		return ARETE_INEXISTANTE;
+	    }
+	    else
+	    {
+		// Arete s2 -> s1 seulement
+		// => Orienté
+		return TEST_KO;
+	    }
 	}
 	else
 	{
-	    if(arr1 == NULL)
-		return ARETE_INEXISTANTE;
-	    
-	    return TEST_KO;
-	}
+	    // Arete s1 -> s2
+	    arr2 = rechercheVoisin(&current->aretes[s2-1],s1);
+	    if(arr2 == NULL)
+	    {
+		// Arete s1 -> s2
+		// Pas d'arete s1 -> s2
+		// => Orienté
+		return TEST_KO;
+	    }
+	    else
+	    {
+		// Arete s1 -> s2
+		// Arete s2 -> s1
+		return TEST_OK;
+	    }
+	}		
     }
     else
     {
+	// L'un ou les deux sommets ne sont pas initialisés
 	return SOMMET_INEXISTANT;
-    }   
-    
+    }
 }
+
+
+
 
 /**
  * Choisi un des deux graphes que la librairie permet de gérer
@@ -280,19 +308,19 @@ erreur creation(int nbSommet)
 		// On instancie la structure
 		g->nbMaxSommets = nbSommet;
 		g->aretes = (TypVoisins**)malloc(g->nbMaxSommets * sizeof(TypVoisins*));
-		
+
 		if(g->aretes == NULL)
 		    return PROBLEME_MEMOIRE;
-		
+
 		// Initialisation de la liste des sommets
 		for( i = 0 ; i < g->nbMaxSommets ; i++){
 		    g->aretes[i] = NULL;
 		}
-		
+
 		// On place la structure dans le tableau à
 		//  l'indice courant
 		graphes[grapheCourant] = g;
-		
+
 		// Tout s'est bien passé :
 		return RES_OK;
 	    }
@@ -323,61 +351,61 @@ erreur creation(int nbSommet)
  */
 erreur modifierNbMaxSommet(int maxSommet)
 {
-    
+
     TypGraphe *current = graphes[grapheCourant];
     TypGraphe *new;
     int i;
     int lim;
-    
+
     // Le graphe courant est-il bien défini en mémoire ?
     if(current != NULL){
-	
+
 	// On vérifie que le paramètre est correct
 	if(maxSommet < 1 ) 
 	    return MAX_SOMMET_INVALIDE;
-	
+
 	// Permet de fixer une limite pour la recopie des éléments du graphe
 	lim = (maxSommet > current->nbMaxSommets)? current->nbMaxSommets : maxSommet;  
-	
+
 	new = (TypGraphe*) malloc(sizeof(TypGraphe));
-	
+
 	// L'allocation du graphe a réussi ?
 	if(new != NULL) 
 	{
 	    new->nbMaxSommets = maxSommet;
 	    new->aretes = (TypVoisins**)malloc(new->nbMaxSommets * sizeof(TypVoisins*));
-	    
+
 	    if(new->aretes == NULL)
 		return PROBLEME_MEMOIRE;
-	    
+
 	    // On effectue la recopie de l'ancien graphe dans le nouveau
-		for(i = 0 ; i < lim ; i++)
-		{
-		    new->aretes[i] = NULL;
-		    
-		    // Copie des éléments de la liste
-		    TypVoisins* tmp = current->aretes[i];
-		    
-		    while(tmp != NULL){
-			// tmp->voisin < lim : on évite de rajouter des sommets supprimés
-			if(tmp->voisin < lim)
-			{ 
-			    ajouteVoisin(&new->aretes[i], tmp->voisin , tmp->poidsVoisin, tmp->info);		
-			}
-			tmp = tmp -> voisinSuivant;
+	    for(i = 0 ; i < lim ; i++)
+	    {
+		new->aretes[i] = NULL;
+
+		// Copie des éléments de la liste
+		TypVoisins* tmp = current->aretes[i];
+
+		while(tmp != NULL){
+		    // tmp->voisin < lim : on évite de rajouter des sommets supprimés
+		    if(tmp->voisin < lim)
+		    { 
+			ajouteVoisin(&new->aretes[i], tmp->voisin , tmp->poidsVoisin, tmp->info);		
 		    }
-		    
+		    tmp = tmp -> voisinSuivant;
 		}
-		
-		// Si le nouveau nombre max de sommets et supérieur : on initialise les sommets en plus
-		if(lim == current -> nbMaxSommets){
-		    for(i = lim ; i < maxSommet ; i++) new->aretes[i] = NULL;
-		}
-		// supprimer le graphe courant
-		suppressionGraphe(grapheCourant);
-		
-		// On assigne le nouveau graphe
-		graphes[grapheCourant] = new;
+
+	    }
+
+	    // Si le nouveau nombre max de sommets et supérieur : on initialise les sommets en plus
+	    if(lim == current -> nbMaxSommets){
+		for(i = lim ; i < maxSommet ; i++) new->aretes[i] = NULL;
+	    }
+	    // supprimer le graphe courant
+	    suppressionGraphe(grapheCourant);
+
+	    // On assigne le nouveau graphe
+	    graphes[grapheCourant] = new;
 	}
 	else
 	{
@@ -388,7 +416,7 @@ erreur modifierNbMaxSommet(int maxSommet)
     {
 	return GRAPHE_INEXISTANT;
     }
-    
+
     return RES_OK;
 }
 
@@ -406,21 +434,21 @@ erreur suppressionGraphe(int idGraphe)
 {
     if(idGraphe > 2)    
 	return NUMERO_GRAPHE_INVALIDE;
-    
+
     if (idGraphe < 0)
 	return NUMERO_GRAPHE_TROP_PETIT;
-    
+
     if(idGraphe == 0)
     {
 	int err1, err2;
 	err1 = suppressionGraphe(1);
 	err2 = suppressionGraphe(2);
-	
+
 	if(err1 != RES_OK)
 	    return err1;
 	if(err2 != RES_OK)
 	    return err2;
-	
+
 	return RES_OK;
     }
     else
@@ -440,11 +468,11 @@ erreur suppressionGraphe(int idGraphe)
 	{
 	    return GRAPHE_INEXISTANT;
 	}
-	
+
 	graphes[idGraphe -1] = NULL;
 	return RES_OK;
     }
-    
+
 }
 
 /**
@@ -461,10 +489,10 @@ erreur insertionSommet(int nvSommet)
 {
     TypGraphe *current = graphes[grapheCourant];    
     int toAdd = nvSommet - 1;
-    
+
     if(current == NULL)
 	return GRAPHE_INEXISTANT;
-    
+
     if(toAdd >= 0 && toAdd < graphes[grapheCourant]->nbMaxSommets)
     {
 	if(current->aretes[toAdd] == NULL)
@@ -481,7 +509,7 @@ erreur insertionSommet(int nvSommet)
     {
 	return SOMMET_INVALIDE;
     }
-    
+
     return RES_OK;
 }
 
@@ -499,13 +527,13 @@ erreur suppressionSommet(int sommet)
     int i;
     int toDel = sommet - 1 ;
     TypGraphe *current = graphes[grapheCourant];
-    
+
     if(current == NULL)
 	return GRAPHE_INEXISTANT;
-    
+
     if(toDel < 0 || toDel >= current-> nbMaxSommets)
 	return SOMMET_INVALIDE;
-    
+
     if(current->aretes[toDel] != NULL)
     {
 	for(i = 0 ; i < current->nbMaxSommets ; i++ )
@@ -525,7 +553,7 @@ erreur suppressionSommet(int sommet)
     {
 	return SOMMET_INEXISTANT;
     }
-    
+
     return RES_OK;
 }
 
@@ -549,27 +577,27 @@ erreur suppressionSommet(int sommet)
 erreur insertionArete(int sommetDep,int poids,int sommetArr,char oriente)
 {
     TypGraphe *current = graphes[grapheCourant];
-    
-    
+
+
     // Le graphe courant existe
     if(current == NULL)
 	return GRAPHE_INEXISTANT;
-    
+
     // Les numéros des sommets sont valides
     if(sommetDep <= 0 || sommetDep > current->nbMaxSommets || sommetArr <= 0 || sommetArr >current->nbMaxSommets)
 	return SOMMET_INVALIDE;
-    
+
     // Le poids est valide?
     if(poids < 0)
 	return POIDS_INVALIDE;
-    
+
     // On vérifie si les sommets existent, et on effectue la création de l'arête
     if(&current->aretes[sommetDep-1] != NULL && &current->aretes[sommetArr -1] != NULL){
 	if(oriente == 'o')
 	{
 	    int err;
 	    err = ajouteVoisin(&current->aretes[sommetDep-1], sommetArr, poids, NULL);
-	    
+
 	    // Cas d'erreur
 	    if(err == 0)
 	    {
@@ -579,15 +607,15 @@ erreur insertionArete(int sommetDep,int poids,int sommetArr,char oriente)
 	    {
 		return PROBLEME_MEMOIRE;
 	    }
-	    
+
 	}	
 	else if(oriente == 'n')
 	{
-	    
+
 	    // On vérifie si l'arête n'existe pas déjà
-	    if(voisinExiste(&current->aretes[sommetDep-1], sommetArr) == NULL
-		&& voisinExiste(&current->aretes[sommetArr-1], sommetDep) == NULL
-	    )
+	    if(rechercheVoisin(&current->aretes[sommetDep-1], sommetArr) == NULL
+		    && rechercheVoisin(&current->aretes[sommetArr-1], sommetDep) == NULL
+	      )
 	    {		
 		int err1 = 0, err2 = 0;
 		err1 = ajouteVoisin(&current->aretes[sommetDep-1], sommetArr, poids, NULL);
@@ -595,7 +623,7 @@ erreur insertionArete(int sommetDep,int poids,int sommetArr,char oriente)
 		// (et provoquer une erreur)
 		if(sommetDep != sommetArr)
 		    err2 = ajouteVoisin(&current->aretes[sommetArr-1], sommetDep, poids, NULL);
-		
+
 		// Pas de problèmes mémoire ?
 		if(err1 == -1 || err2 == -1)
 		    return PROBLEME_MEMOIRE;
@@ -604,8 +632,8 @@ erreur insertionArete(int sommetDep,int poids,int sommetArr,char oriente)
 	    {
 		return ARETE_DEJA_EXISTANTE;
 	    }
-	  
-	   
+
+
 	}
 	else
 	{
@@ -616,7 +644,7 @@ erreur insertionArete(int sommetDep,int poids,int sommetArr,char oriente)
     {
 	return SOMMET_INEXISTANT;
     }
-    
+
     return RES_OK;
 }
 /**
@@ -638,19 +666,19 @@ erreur insertionArete(int sommetDep,int poids,int sommetArr,char oriente)
 erreur modifierPoids(int sommetDep, int nvPoids,int sommetArr,char oriente)
 {
     TypGraphe *current = graphes[grapheCourant];
-    
+
     // Le graphe existe ?
     if(current == NULL)
 	return GRAPHE_INEXISTANT;
-    
+
     // Le poids est valide ?
     if(nvPoids < 0)
 	return POIDS_INVALIDE;
-    
+
     // Les sommets précisés sont bien dans les bornes ?
     if(sommetDep <= 0 || sommetDep > current->nbMaxSommets || sommetArr <= 0 || sommetArr > current->nbMaxSommets)
 	return SOMMET_INVALIDE;
-    
+
     // Les sommets sont-ils initialisés ?
     if(current->aretes[sommetDep - 1] != NULL && current->aretes[sommetArr - 1] != NULL)
     {
@@ -664,11 +692,11 @@ erreur modifierPoids(int sommetDep, int nvPoids,int sommetArr,char oriente)
 	else if(oriente == 'n')
 	{
 	    // On vérifie que l'arête existe avant de faire toute modification
-	    if(voisinExiste(&current->aretes[sommetDep - 1] , sommetArr) != NULL
-		&& voisinExiste(&current->aretes[sommetArr - 1], sommetDep) != NULL)	    
+	    if(rechercheVoisin(&current->aretes[sommetDep - 1] , sommetArr) != NULL
+		    && rechercheVoisin(&current->aretes[sommetArr - 1], sommetDep) != NULL)	    
 	    {
 		modifiePoidsVoisin(&current->aretes[sommetDep-1], sommetArr, nvPoids);
-		
+
 		// Arête non-orientée + sommetDep == sommetArr => meme traitement qu'une arete orientée
 		if(sommetDep != sommetArr)
 		    modifiePoidsVoisin(&current->aretes[sommetArr-1], sommetDep, nvPoids);
@@ -687,7 +715,7 @@ erreur modifierPoids(int sommetDep, int nvPoids,int sommetArr,char oriente)
     {
 	return SOMMET_INEXISTANT;
     }
-    
+
     return RES_OK;
 }
 /**
@@ -705,7 +733,7 @@ erreur modifierPoids(int sommetDep, int nvPoids,int sommetArr,char oriente)
 erreur suppressionArete(int sommetDep,int sommetArr,char oriente)
 {
     TypGraphe *current = graphes[grapheCourant];
-    
+
     // Le graphe existe ?
     if(current == NULL)
 	return GRAPHE_INEXISTANT;
@@ -713,7 +741,7 @@ erreur suppressionArete(int sommetDep,int sommetArr,char oriente)
     // Les sommets précisés sont bien dans les bornes ?
     if(sommetDep <= 0 || sommetDep > current->nbMaxSommets || sommetArr <= 0 || sommetArr > current->nbMaxSommets)
 	return SOMMET_INVALIDE;
-    
+
     // Les sommets sont ils bien initialisés ?
     if(current->aretes[sommetDep - 1] != NULL && current->aretes[sommetArr - 1] != NULL)
     {
@@ -721,18 +749,18 @@ erreur suppressionArete(int sommetDep,int sommetArr,char oriente)
 	{
 	    int err;
 	    err = supprimeVoisin(&current->aretes[sommetDep - 1], sommetArr);
-	    
+
 	    if(err != 1)
 		return ARETE_INEXISTANTE;
 	}
 	else if(oriente == 'n')
 	{
 	    // On vérifie que l'arête existe avant de faire toute modification
-	    if(voisinExiste(&current->aretes[sommetDep - 1] , sommetArr) != NULL
-		&& voisinExiste(&current->aretes[sommetArr - 1], sommetDep) != NULL)	    
+	    if(rechercheVoisin(&current->aretes[sommetDep - 1] , sommetArr) != NULL
+		    && rechercheVoisin(&current->aretes[sommetArr - 1], sommetDep) != NULL)	    
 	    {
 		supprimeVoisin(&current->aretes[sommetDep-1], sommetArr);
-		
+
 		// Arête non-orientée + sommetDep == sommetArr => meme traitement qu'une arete orientée
 		if(sommetDep != sommetArr)
 		    supprimeVoisin(&current->aretes[sommetArr-1], sommetDep);
@@ -751,7 +779,7 @@ erreur suppressionArete(int sommetDep,int sommetArr,char oriente)
     {
 	return SOMMET_INEXISTANT;
     }
-    
+
     return RES_OK;
 }
 
@@ -765,12 +793,12 @@ erreur viderGraphe()
 {
     TypGraphe *current;
     int i;
-    
+
     current = graphes[grapheCourant];
-    
+
     if(current == NULL)
 	return GRAPHE_INEXISTANT;
-    
+
     for(i = 0 ; i < current -> nbMaxSommets ; i++)
     {
 	if(current -> aretes[i] != NULL)
@@ -779,7 +807,7 @@ erreur viderGraphe()
 	    current->aretes[i] = NULL;
 	}
     }
-    
+
     return RES_OK;
 }
 
@@ -795,21 +823,21 @@ erreur viderAreteGraphe()
     int i;
     TypVoisins* next;
     TypVoisins* tmp;
-    
+
     if(current == NULL)
 	return GRAPHE_INEXISTANT;
-    
+
     for(i = 0 ; i < current->nbMaxSommets ; i++)
     {
-	
+
 	if(current -> aretes[i] != NULL)
 	{
 	    tmp = current->aretes[i];
-	    
+
 	    while(tmp != NULL)
 	    {
 		next = tmp->voisinSuivant;
-		
+
 		if(tmp->voisin != -1)
 		{
 		    free(tmp);
@@ -823,9 +851,9 @@ erreur viderAreteGraphe()
 	    }
 
 	}
-	
+
     }
-    
+
     return RES_OK;   
 }
 
@@ -849,18 +877,18 @@ erreur viderAreteGraphe()
  * @return COMMANDE_INVALIDE : oriente est différent de 'o' ou 'n'
  */
 erreur testerArete(int idGraphe, int sommetDep,	int poids, 
-		   int sommetArr, char oriente, int resAttendu)
+	int sommetArr, char oriente, int resAttendu)
 {
-    
+
     if(idGraphe == 0)
     {
 	erreur gr1 = testerArete(1, sommetDep, poids, sommetArr, oriente, resAttendu);
-	
+
 	// On vérifie si on a un résultat valide pour le graphe 1. Si c'est le cas, on teste maintenant le graphe 2
 	if(gr1 == TEST_OK || gr1 == TEST_KO)
 	{
 	    erreur gr2 = testerArete(2, sommetDep, poids, sommetArr, oriente, resAttendu);
-	    
+
 	    // On vérifie si on a un résultat valide pour le graphe 2. On peut alors faire "le bilan" des deux tests
 	    if(gr2 == TEST_OK || gr2 == TEST_KO)
 	    {
@@ -883,23 +911,23 @@ erreur testerArete(int idGraphe, int sommetDep,	int poids,
 	    return gr1;
 	}
     }
-    
+
     TypGraphe *current = graphes[idGraphe - 1];
-    
+
     // On vérifie l'existence du graphe
     if(current== NULL)
 	return GRAPHE_INEXISTANT;
-    
+
     // Les sommets précisés sont bien dans les bornes ?
     if(sommetDep <= 0 || sommetDep > current->nbMaxSommets || sommetArr <= 0 || sommetArr > current->nbMaxSommets)
 	return SOMMET_INVALIDE;
-    
+
     // Les sommets précisés sont bien initialisés ?
     if(current->aretes[sommetDep - 1] != NULL && current->aretes[sommetArr - 1] != NULL)
     {
 	if(oriente == 'o')
 	{
-	    TypVoisins *arete = voisinExiste(&current->aretes[sommetDep - 1], sommetArr);	    
+	    TypVoisins *arete = rechercheVoisin(&current->aretes[sommetDep - 1], sommetArr);	    
 	    // Si l'arête n'existe pas ... 
 	    if(arete == NULL)
 	    {
@@ -931,13 +959,13 @@ erreur testerArete(int idGraphe, int sommetDep,	int poids,
 		    }
 		}
 	    }
-	    
+
 	}
 	else if(oriente == 'n') // Test d'existence de l'arête non-orientée
 	{	 	    
-	    TypVoisins *arc1 = voisinExiste(&current->aretes[sommetDep - 1], sommetArr);
-	    TypVoisins *arc2 = voisinExiste(&current->aretes[sommetArr - 1], sommetDep);
-	    
+	    TypVoisins *arc1 = rechercheVoisin(&current->aretes[sommetDep - 1], sommetArr);
+	    TypVoisins *arc2 = rechercheVoisin(&current->aretes[sommetArr - 1], sommetDep);
+
 	    // Si les deux arcs existent => l'arete existe
 	    if(arc1 != NULL || arc2 != NULL)
 	    {
@@ -992,22 +1020,22 @@ erreur testerArete(int idGraphe, int sommetDep,	int poids,
  */
 erreur testerSommet(int idGraphe, int sommet, int resAttendu)
 {
-    
+
     // On vérifie si idGraphe est bien dans les bornes
     if(idGraphe < 0 || idGraphe > 2)
 	return GRAPHE_INEXISTANT;
-    
+
     // On teste les deux graphes
     if(idGraphe == 0)
     {
 	erreur gr1 = testerSommet(1, sommet, resAttendu);
-	
+
 	// Si le premier test nous renvoie un résultat correct
 	if(gr1 == TEST_OK || gr1 == TEST_KO)
 	{
 	    // On teste le deuxième graphe
 	    erreur gr2 = testerSommet(2, sommet, resAttendu);
-	    
+
 	    // Le second test nous renvoie un résultat correct
 	    if(gr2 == TEST_OK || gr2 == TEST_KO)
 	    {
@@ -1031,17 +1059,17 @@ erreur testerSommet(int idGraphe, int sommet, int resAttendu)
 	    return gr1;
 	}
     }
-    
+
     TypGraphe *current = graphes[idGraphe - 1];
-    
+
     // On vérifie l'existence du graphe
     if(current== NULL)
 	return GRAPHE_INEXISTANT;
-    
+
     // Les sommets précisés sont bien dans les bornes ?
     if(sommet <= 0 || sommet > current->nbMaxSommets)
 	return SOMMET_INVALIDE;
-    
+
     // On teste l'existence du sommet
     if(current->aretes[sommet -1] != NULL)
     {
@@ -1083,13 +1111,13 @@ erreur testerDegreSommet(int idGraphe, int sommet, int value, int resAttendu )
     if(idGraphe == 0)
     {
 	erreur gr1 = testerDegreSommet(1, sommet, value, resAttendu);
-	
+
 	// Si le premier test nous renvoie un résultat correct
 	if(gr1 == TEST_OK || gr1 == TEST_KO)
 	{
 	    // On teste le deuxième graphe
 	    erreur gr2 = testerDegreSommet(2, sommet, value, resAttendu);
-	    
+
 	    // Le second test nous renvoie un résultat correct
 	    if(gr2 == TEST_OK || gr2 == TEST_KO)
 	    {
@@ -1113,35 +1141,35 @@ erreur testerDegreSommet(int idGraphe, int sommet, int value, int resAttendu )
 	    return gr1;
 	}
     }
-    
+
     // Permettra de stocker le renvoi de calculerDegreSommet
     erreur err;
-    
+
     // Le degré que l'on calcule pour le sommet
     int degreCalc = 0;
-    
+
     // On vérifie si idGraphe est bien dans les bornes
     if(idGraphe < 0 || idGraphe > 2)
 	return GRAPHE_INEXISTANT;
-    
+
     TypGraphe *current = graphes[idGraphe - 1];
-    
+
     // On vérifie l'existence du graphe
     if(current== NULL)
 	return GRAPHE_INEXISTANT;
-    
+
     // Les sommets précisés sont bien dans les bornes ?
     if(sommet <= 0 || sommet > current->nbMaxSommets)
 	return SOMMET_INVALIDE;    
-    
+
     err = calculerDegreSommet(idGraphe, sommet, &degreCalc);
-    
+
     if(err != RES_OK)
 	return err;
-        
+
     // On compare le résultat obtenu et le résultat attendu et on renvoie le résultat du test
     if((degreCalc == value && resAttendu == 1) 
-	|| (degreCalc != value && resAttendu ==0))
+	    || (degreCalc != value && resAttendu ==0))
     {
 	return TEST_OK;
     }
@@ -1149,7 +1177,7 @@ erreur testerDegreSommet(int idGraphe, int sommet, int value, int resAttendu )
     {
 	return TEST_KO;
     }
-    
+
 }
 
 /**
@@ -1170,25 +1198,25 @@ erreur compareSommet(int sommet, int resAttendu)
     int res;
     TypGraphe *gr1 = graphes[0];
     TypGraphe *gr2 = graphes[1];
-    
+
     // Les deux graphes sont bien initialisés ?
     if(gr1 == NULL || gr2 == NULL)
 	return GRAPHE_INEXISTANT;
-    
+
     // Les deux sommets sont biens dans les bornes ?
     if(sommet < 0 || sommet > gr1->nbMaxSommets || sommet > gr2->nbMaxSommets)
 	return SOMMET_INVALIDE;
-    
+
     TypVoisins *voisinsS1 = gr1->aretes[sommet-1];
     TypVoisins *voisinsS2 = gr2->aretes[sommet-1];
-    
+
     // Les deux sommets sont bien initialisés ?
     if(voisinsS1 == NULL || voisinsS2 == NULL)
 	return SOMMET_INEXISTANT;
-    
+
     // On compare les deux listes de sommets
     res = compareListes(&voisinsS1, &voisinsS2);
-    
+
     // On traite le résultat à renvoyer en fonction de ce qui était attendu
     if(res == resAttendu)
     {
@@ -1199,6 +1227,8 @@ erreur compareSommet(int sommet, int resAttendu)
 	return TEST_KO;
     }
 }
+
+
 /**
  * Compare les deux graphes.
  * Ils sont égaux si tous leurs sommets sont égaux
@@ -1211,23 +1241,23 @@ erreur compareGraphe(int resAttendu)
 {
     erreur err;
     int i;
-    
+
     TypGraphe *gr1 = graphes[0];
     TypGraphe *gr2 = graphes[1];
-    
+
     //Test de l'existence des deux graphes
     if(gr1 == NULL || gr2 == NULL)
 	return GRAPHE_INEXISTANT;
-    
+
     // Avant d'aller plus loin : on vérifie que la taille des deux graphes est la même
     if(gr1->nbMaxSommets != gr2->nbMaxSommets)
 	return TEST_KO;
-    
+
     //On parcourt tous les sommets pour vérifier s'ils sont égaux dans les deux graphes
     for(i = 0 ; i < gr1->nbMaxSommets ; i++)
     {
 	err = compareSommet(i+1, 1);	
-	
+
 	if(err != TEST_OK)
 	{
 	    if(err == TEST_KO) // si compareSommet a renvoyé un résultat exploitable
@@ -1243,9 +1273,9 @@ erreur compareGraphe(int resAttendu)
 	    }	 
 	}
     }
-    
+
     // Arrivé à ce point du programme : err = TEST_OK
-    
+
     if(resAttendu == 1)
     {
 	return TEST_OK;
@@ -1254,7 +1284,7 @@ erreur compareGraphe(int resAttendu)
     {
 	return TEST_KO;
     }    
-    
+
 }
 
 
@@ -1266,89 +1296,89 @@ erreur compareGraphe(int resAttendu)
  */
 void graphe2dot(int idCommande) 
 {
-	// Le graphe à exporter en dot
-	TypGraphe *g = graphes[grapheCourant];
+    // Le graphe à exporter en dot
+    TypGraphe *g = graphes[grapheCourant];
 
-	// Création du nom de fichier
-	// - numéro du graphe
-	char numGraphe = ((grapheCourant == 1)?'1':'2');
-	// - numéro de la commande
-	char c,d,u;
-	int tmp = idCommande;
-	c = (tmp / 100) + 48;
-	tmp = tmp % 100;
-	d = (tmp / 10) + 48;
-	tmp = tmp % 10;
-	u = tmp + 48;
-	// - nom du fichier
-	// Format du nom de fichier :
-	// exemple_GX_YYY.dot
-	// X = numéro du graphe (1 ou 2)
-	// YYY = numéro de la commande (exemple : 001)
-	char filename[18] = {
-		'e','x','e','m','p','l','e',
-		'_','G',numGraphe,'_',c,d,u,
-		'.','d','o','t'
-	};
-	
-	// Ouverture du fichier
-	FILE *fp;	
-	// Essai d'ouverture du fichier, en écriture
-	// Grâce à l'argument "w" (write) :
-	// Si le fichier existe déjà, son contenu sera écrasé
-	// Si le fichier n'existe pas, il sera créé
-	fp = fopen(filename,"w");
-	// Cas d'erreur
-	if(fp == NULL)
+    // Création du nom de fichier
+    // - numéro du graphe
+    char numGraphe = ((grapheCourant == 1)?'1':'2');
+    // - numéro de la commande
+    char c,d,u;
+    int tmp = idCommande;
+    c = (tmp / 100) + 48;
+    tmp = tmp % 100;
+    d = (tmp / 10) + 48;
+    tmp = tmp % 10;
+    u = tmp + 48;
+    // - nom du fichier
+    // Format du nom de fichier :
+    // exemple_GX_YYY.dot
+    // X = numéro du graphe (1 ou 2)
+    // YYY = numéro de la commande (exemple : 001)
+    char filename[19] = {
+	'e','x','e','m','p','l','e',
+	'_','G',numGraphe,'_',c,d,u,
+	'.','d','o','t','\0'
+    };
+
+    // Ouverture du fichier
+    FILE *fp;	
+    // Essai d'ouverture du fichier, en écriture
+    // Grâce à l'argument "w" (write) :
+    // Si le fichier existe déjà, son contenu sera écrasé
+    // Si le fichier n'existe pas, il sera créé
+    fp = fopen(filename,"w");
+    // Cas d'erreur
+    if(fp == NULL)
+    {
+	printf("Impossible d'effectuer l'exportation\n");
+    }
+    else
+    {
+	if(g == NULL)
 	{
-		printf("Impossible d'effectuer l'exportation\n");
+	    printf("Impossible d'afficher le graphe");
 	}
 	else
 	{
-		if(g == NULL)
-		{
-			printf("Impossible d'afficher le graphe");
-		}
-		else
-		{
-			// Début
-			fprintf(fp,"digraph G {\n\tedge [ arrowtail=dot, arrowhead=open ];\n");
+	    // Début
+	    fprintf(fp,"digraph G {\n\tedge [ arrowtail=dot, arrowhead=open ];\n");
 
-			// Les sommets
-			int nbSom = g->nbMaxSommets;
-			int i;	
-			for(i = 0; i < nbSom; i++) 
-			{
-				if(g->aretes[i] != NULL)
-				{
-					fprintf(fp,"\tA%d\n",i);
-				}
-			}
-			
-			// Les arètes
-			// Pour chaque liste du tableau
-			//	Pour chaque element de la liste
-			//		Ecrire AX -> AY [label="S"]
-			//			avec X : l'indice du tableau
-			//			     Y : la valeur de l'élément
-			//			     S : le label de l'élément
-			TypVoisins *l;
-			for(i = 0; i < nbSom; i++)
-			{
-				l = g->aretes[i];
-				while(l != NULL)
-				{
-					if(l->voisin >= 0)
-					{
-						fprintf(fp,"\tA%d -> A%d [label=\"%d\"]\n",i,l->voisin,l->poidsVoisin);
-					}
-					l = l->voisinSuivant;
-				}
-			}
-
-			// Fin
-			fprintf(fp,"}\n");
+	    // Les sommets
+	    int nbSom = g->nbMaxSommets;
+	    int i;	
+	    for(i = 0; i < nbSom; i++) 
+	    {
+		if(g->aretes[i] != NULL)
+		{
+		    fprintf(fp,"\tA%d\n",i+1);
 		}
+	    }
+
+	    // Les arètes
+	    // Pour chaque liste du tableau
+	    //	Pour chaque element de la liste
+	    //		Ecrire AX -> AY [label="S"]
+	    //			avec X : l'indice du tableau
+	    //			     Y : la valeur de l'élément
+	    //			     S : le label de l'élément
+	    TypVoisins *l;
+	    for(i = 0; i < nbSom; i++)
+	    {
+		l = g->aretes[i];
+		while(l != NULL)
+		{
+		    if(l->voisin >= 0)
+		    {
+			fprintf(fp,"\tA%d -> A%d [label=\"%d\"]\n",i+1,l->voisin,l->poidsVoisin);
+		    }
+		    l = l->voisinSuivant;
+		}
+	    }
+
+	    // Fin
+	    fprintf(fp,"}\n");
 	}
-	fclose(fp);
+    }
+    fclose(fp);
 }

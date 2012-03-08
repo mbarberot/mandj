@@ -60,6 +60,7 @@ main(int argc, char **argv){
   insertionSommet(3);
   insertionSommet(7);
   insertionSommet(8);
+  insertionSommet(5);
   
   
   // Quelques arêtes
@@ -76,13 +77,22 @@ main(int argc, char **argv){
   err = insertionArete(3,15,7,'o');
   printf("Creation arete 3 7 %d : %s \n", err, errToString(err));
   // arete 7<->8
-  /*err = insertionArete(7,10,8,'n');
-  printf("Creation arete 7 8 %d : %s \n", err, errToString(err));*/
+  err = insertionArete(7,10,8,'n');
+  printf("Creation arete 7 8 %d : %s \n", err, errToString(err));
+  
   
   afficheGraphe(1);
   printf("\n");
   afficheGraphe(2);
-  
+ 
+
+  // Test du degré
+  int d;
+  int s = 5;
+  err = calculerDegreSommet(1,s,&d);
+  printf("Degré du sommet %d : %d -> [%d -- %s]\n",s,d,err,errToString(err));
+
+  // Comparaison des deux graphes
   err = compareGraphe(0);
   printf("Deux graphes egaux : %d : %s \n", err, errToString(err));
   
@@ -91,8 +101,5 @@ main(int argc, char **argv){
   printf("Suppression graphe %d : %s \n", err, errToString(err));
 
   graphe2dot(999);
-  graphe2dot(15);
-  graphe2dot(2);
-
 }
 
