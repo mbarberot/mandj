@@ -36,6 +36,7 @@ char* parserErrorToString(parserError err)
  * @param path : le chemin du fichier de commande
  * @return TRAITEMENT_FICHIER_OK : fichier de commande correctement traité
  * @return FICHIER_COMMANDES_INEXISTANT : fichier de commande indiqué inexistant
+ * @return CREATION_RESULTAT_IMPOSSIBLE : impossible de créer un fichier résultat
  */
 parserError chargerFichier(char* path)
 {
@@ -56,25 +57,23 @@ parserError chargerFichier(char* path)
 	/* On peut alors fermer le fichier d'entree ...*/
 	fclose(entree);
 	
-
-	
 	/* Et ouvrir celui de résultat pour l'écriture */
-	char file_name[150];
+	char file_name[RES_MAX_LENGTH] = "";
 	strcat(file_name,path);
 	strcat(file_name,"_RESULTAT.txt");
 	
 	fileRes = NULL;
-	fileRes = fopen(file_name, "w");
-	
-	/*if(fileRes == NULL)	
-	  return CREATION_RESULTAT_IMPOSSIBLE;*/
+	fileRes = fopen(file_name, "w+");
+
+	if(fileRes == NULL)
+	  return CREATION_RESULTAT_IMPOSSIBLE;
 
 	
 	/* Et on lance l'interpretation*/
 	interpreteCommande(cmd);
 	
 	/* Et on peut fermer le fichier de resultat*/
-	//fclose(fileRes);
+	fclose(fileRes);
 	
     }
     else
@@ -114,16 +113,6 @@ void lectureFichier(char* content)
 		    caractereActuel = fgetc(entree);
 		}
 	    }
-	    /*else if (caractereActuel == '{') // On lit la fonction "chargergraphe"
-	    {
-	      
-	      while(caractereActuel != '}' && caractereActuel != EOF)
-	      {
-		content[i] = caractereActuel;
-		i++;
-		caractereActuel = fgetc(entree);
-	      }
-	    }*/
 	    else if(isgraph(caractereActuel)) // Supprime les espaces au passage
 	    {
 		content[i] = caractereActuel;
@@ -147,9 +136,9 @@ void lectureFichier(char* content)
  */
 void ecritureResultatCommande(int numCommande, erreur res)
 {
-  /*
+
   if(fileRes != NULL)
-    fprintf(fileRes, "%d : %s \n", numCommande, errToString(res));*/
+    fprintf(fileRes, "%d : %s \n", numCommande, errToString(res));
 }
 
 /**
@@ -346,7 +335,9 @@ void interpreteCommande(char* commandes)
 	    // Commande non interprétable
 	    if(!cmdOk)
 	    {
-	      
+	      int numCom;
+	      sscanf(tmp, "%d", &numCom);
+	      ecritureResultatCommande(numCom, COMMANDE_INVALIDE);
 	    }
 	}
 	// Réinitialisation de la copie et passage à l'instruction suivante
@@ -374,6 +365,7 @@ parserError interpreteCreation(char* cmd)
     }
     else
     {
+	ecritureResultatCommande(numCom, COMMANDE_INVALIDE);
 	return ARGUMENTS_INCORRECTS;
     }
     
@@ -400,6 +392,7 @@ parserError interpreteChoisirGraphe(char* cmd)
     }
     else
     {
+	ecritureResultatCommande(numCom, COMMANDE_INVALIDE);
 	return ARGUMENTS_INCORRECTS;
     }
     return TRAITEMENT_CMD_OK;
@@ -424,6 +417,7 @@ parserError interpreteModifierNbMaxSommet(char* cmd)
     }
     else
     {
+	ecritureResultatCommande(numCom, COMMANDE_INVALIDE);
 	return ARGUMENTS_INCORRECTS;
     }
     return TRAITEMENT_CMD_OK;
@@ -449,6 +443,7 @@ parserError interpreteSuppressionGraphe(char* cmd)
     }
     else
     {
+	ecritureResultatCommande(numCom, COMMANDE_INVALIDE);
 	return ARGUMENTS_INCORRECTS;
     }
     return TRAITEMENT_CMD_OK;
@@ -474,6 +469,7 @@ parserError interpreteInsertionSommet(char* cmd)
     }
     else
     {
+	ecritureResultatCommande(numCom, COMMANDE_INVALIDE);
 	return ARGUMENTS_INCORRECTS;
     }
     
@@ -500,6 +496,7 @@ parserError interpreteSuppressionSommet(char* cmd)
     }
     else
     {
+	ecritureResultatCommande(numCom, COMMANDE_INVALIDE);
 	return ARGUMENTS_INCORRECTS;
     }
     
@@ -532,6 +529,7 @@ parserError interpreteInsertionArete(char* cmd)
     }
     else
     {
+	ecritureResultatCommande(numCom, COMMANDE_INVALIDE);
 	return ARGUMENTS_INCORRECTS;
     }
     
@@ -563,6 +561,7 @@ parserError interpreteModifierPoids(char* cmd)
     }
     else
     {
+	ecritureResultatCommande(numCom, COMMANDE_INVALIDE);
 	return ARGUMENTS_INCORRECTS;
     }
     
@@ -591,6 +590,7 @@ parserError interpreteSuppressionArete(char* cmd)
     }
     else
     {
+	ecritureResultatCommande(numCom, COMMANDE_INVALIDE);
 	return ARGUMENTS_INCORRECTS;
     } 
     
@@ -605,15 +605,7 @@ parserError interpreteSuppressionArete(char* cmd)
 parserError interpreteViderGraphe(char* cmd)
 {
     erreur err;
-    int numCom;char *sep = {":\n(),"};  
-  char *ptr = strtok(cmd, sep);
-  
-  while(ptr != NULL)
-  {
-    printf("%s\n", ptr); 
-    ptr = strtok(NULL, sep);
-  }
-    
+    int numCom;
     int nbArgs = sscanf(cmd, "%d:viderGraphe()", &numCom);
     
     if(nbArgs == 1)
@@ -623,6 +615,7 @@ parserError interpreteViderGraphe(char* cmd)
     }
     else
     {
+	ecritureResultatCommande(numCom, COMMANDE_INVALIDE);
 	return ARGUMENTS_INCORRECTS;
     }
     
@@ -649,6 +642,7 @@ parserError interpreteViderAreteGraphe(char* cmd)
     }
     else
     {
+	ecritureResultatCommande(numCom, COMMANDE_INVALIDE);
 	return ARGUMENTS_INCORRECTS;
     }
     
@@ -679,24 +673,24 @@ parserError interpreteTesterArete(char* cmd)
     
     if(nbArgs == 7)
     {
-	if(strcmp(arg6,"true") == 0)
+	if(strcmp(arg6,"True") == 0)
 	{
-	    err = testerArete(arg1,arg2,arg3,arg4,arg5,1);
-	    ecritureResultatCommande(numCom, err);
+	    err = testerArete(arg1,arg2,arg3,arg4,arg5,1);	    
 	}
-	else if(strcmp(arg6,"fals") == 0)
+	else if(strcmp(arg6,"Fals") == 0)
 	{
 	    err = testerArete(arg1,arg2,arg3,arg4,arg5,0);
-	    ecritureResultatCommande(numCom, err);
 	}
 	else
 	{
-	    return ARGUMENTS_INCORRECTS;
+	    err = COMMANDE_INVALIDE;
 	}
+	ecritureResultatCommande(numCom, err);
     }
     else
     {
-	// Retourner erreur
+       ecritureResultatCommande(numCom, COMMANDE_INVALIDE);
+       return ARGUMENTS_INCORRECTS;
     }
     return TRAITEMENT_CMD_OK;
     
@@ -717,23 +711,23 @@ parserError interpreteTesterSommet(char* cmd)
     erreur err;
     
     int nbArgs = sscanf(cmd, "%d:testerSommet(%d,%d,%4s)", &numCom, &arg1, &arg2, arg3);
-    
+
     if(nbArgs == 4)
     {
-	if(strcmp(arg3,"true") == 0)
+	if(strcmp(arg3,"True") == 0)
 	{
 	    err = testerSommet(arg1,arg2,1);
-	    ecritureResultatCommande(numCom, err);
 	}
-	else if(strcmp(arg3,"fals") == 0)
+	else if(strcmp(arg3,"Fals") == 0)
 	{
-	    err = testerSommet(arg1,arg2,0);
-	    ecritureResultatCommande(numCom, err);
+	    err = testerSommet(arg1,arg2,0);	    
 	}
 	else
 	{
-	    return ARGUMENTS_INCORRECTS;
+	    err = COMMANDE_INVALIDE;
 	}
+	
+	ecritureResultatCommande(numCom, err);
     }
     else
     {
@@ -763,23 +757,22 @@ parserError interpreteTesterDegreSommet(char* cmd)
     erreur err;
     
     int nbArgs = sscanf(cmd, "%d:testerDegreSommet(%d,%d,%d,%4s)", &numCom, &arg1, &arg2, &arg3, arg4);
-    
+
     if(nbArgs == 5)
     {
-	if(strcmp(arg4,"true") == 0)
+	if(strcmp(arg4,"True") == 0)
 	{
-	    err = testerDegreSommet(arg1,arg2,arg3,1);
-	    ecritureResultatCommande(numCom, err);
+	    err = testerDegreSommet(arg1,arg2,arg3,1);	    
 	}
-	else if(strcmp(arg4,"fals") == 0)
+	else if(strcmp(arg4,"Fals") == 0)
 	{
 	    err = testerDegreSommet(arg1,arg2,arg3,0);
-	    ecritureResultatCommande(numCom, err);
 	}
 	else
 	{
-	    return ARGUMENTS_INCORRECTS;
+	    err = COMMANDE_INVALIDE;
 	}
+	ecritureResultatCommande(numCom, err);
     }
     else
     {
@@ -797,15 +790,28 @@ parserError interpreteTesterDegreSommet(char* cmd)
 parserError interpreteCompareGraphe(char* cmd)
 {
     int numCom;
-    int arg1;
+    char arg1[5];
     
     erreur err;
     
-    int nbArgs = sscanf(cmd, "%d:compareGraphe(%d)", &numCom, &arg1);
+    int nbArgs = sscanf(cmd, "%d:compareGraphe(%4s)", &numCom, arg1);
+
     
     if(nbArgs == 2)
     {
-	err = compareGraphe(arg1);
+      if(strcmp(arg1, "True") == 0)
+      {
+	err = compareGraphe(1);
+      }
+      else if(strcmp(arg1, "Fals") == 0)
+      {
+	err = compareGraphe(0);
+      }
+      else
+      {
+	err = COMMANDE_INVALIDE;
+      }
+	
 	ecritureResultatCommande(numCom, err);
     }
     else
@@ -829,23 +835,23 @@ parserError interpreteCompareSommet(char* cmd)
     erreur err;
     
     int nbArgs = sscanf(cmd, "%d:compareSommet(%d,%4s)", &numCom, &arg1, arg2);
+
     
     if(nbArgs == 3)
     {
-	if(strcmp(arg2,"true")== 0)
+	if(strcmp(arg2,"True")== 0)
 	{
-	    err = compareSommet(arg1,1);
-	    ecritureResultatCommande(numCom, err);
+	    err = compareSommet(arg1,1);	   
 	}
-	else if(strcmp(arg2,"fals") == 0)
+	else if(strcmp(arg2,"Fals") == 0)
 	{
-	    err = compareSommet(arg1, 0);
-	    ecritureResultatCommande(numCom, err);
+	    err = compareSommet(arg1, 0);	    
 	}
 	else
 	{
-	    return ARGUMENTS_INCORRECTS;
+	    err = COMMANDE_INVALIDE;
 	}
+	ecritureResultatCommande(numCom, err);
     }
     else
     {

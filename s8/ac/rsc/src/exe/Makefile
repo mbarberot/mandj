@@ -11,7 +11,7 @@ LDFLAGS=-L $(LIBDIR) -lgraphe -lliste
 EXEC = Main
 
 # Sources necessaires
-SRC= parser.c
+SRC= parser.c menu.c
 OBJ= $(SRC:.c=.o)
 HDR= $(SRC:.c=.h)
 
@@ -28,7 +28,7 @@ clean:
 	rm *.o
 
 reset:
-	rm $(INC)$(HDR)
+	rm $(INC)parser.h $(INC)menu.h
 
 veryclean: clean reset
 	

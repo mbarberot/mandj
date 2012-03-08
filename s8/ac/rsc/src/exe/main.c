@@ -4,9 +4,8 @@
 
 #include "parser.h"
 #include "graphe.h"
+#include "menu.h"
 
 main(int argc, char **argv){
-    
-    chargerFichier("../exemple_accents");
-    afficheGraphe(1);
+   afficheMenu(); 
 }

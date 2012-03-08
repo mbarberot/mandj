@@ -9,10 +9,6 @@
  * 	@author Joan RACENET
  */
 
-/**
- * @TODO : faire les fonctions d'interprétations de chargerGraphe
- * @TODO : écriture dans le fichier résultat
- */
 
 
 #include <stdlib.h>
@@ -26,6 +22,9 @@
 #include "graphe.h"
 #include "liste.h"
 
+
+#define ENTREE_MAX_LENGTH 150
+#define RES_MAX_LENGTH 170
 /*
  * Les erreurs
  * 
