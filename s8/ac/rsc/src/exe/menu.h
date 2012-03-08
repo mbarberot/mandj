@@ -11,11 +11,9 @@
 #define NETTOYER 4
 #define QUITTER 5
 
-
 void afficheMenu();
-
 void actionQuitter();
-void actionChargerFichier();
-void actionRecharger();
-void actionNettoyer();
-void actionSauvegarder();
+void actionChargerFichier(char *fileLoaded);
+void actionRecharger(char *fileLoaded);
+void actionNettoyer(char *fileLoaded);
+void actionSauvegarder(char *fileLoaded);
