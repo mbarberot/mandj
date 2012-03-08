@@ -1319,8 +1319,8 @@ void graphe2dot(int idCommande, char *path)
 	'_','G',numGraphe,'_',c,d,u,
 	'.','d','o','t','\0'
     };
-    
-    char* filename = malloc((12 + strlen(path)) * sizeof(char));
+
+    char filename[300] = "";
     strcat(filename,path);
     strcat(filename,suffix);
 
@@ -1384,4 +1384,5 @@ void graphe2dot(int idCommande, char *path)
 	}
     }
     fclose(fp);
+
 }
