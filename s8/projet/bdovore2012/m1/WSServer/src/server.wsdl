@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<definitions name='BDovore' targetNamespace='server.wsdl'
+	xmlns:tns='server.wsdl' xmlns:xsd='http://www.w3.org/2001/XMLSchema'
+	xmlns:soap='http://schemas.xmlsoap.org/wsdl/soap/' xmlns:soapenc='http://schemas.xmlsoap.org/soap/encoding/'
+	xmlns:wsdl='http://schemas.xmlsoap.org/wsdl/' xmlns='http://schemas.xmlsoap.org/wsdl/'>
+
+	<wsdl:message name='getBibliothequeRequest'>
+		<wsdl:part name="userName" type="xsd:string"></wsdl:part>
+		<wsdl:part name="userPass" type="xsd:string"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name='getBibliothequeResponse'>
+		<wsdl:part name='bibliotheque' type='xsd:string' />
+	</wsdl:message>
+
+	<portType name='BDovore_PortType'>
+		<wsdl:operation name='getBibliotheque'>
+			<wsdl:input message='tns:getBibliothequeRequest' />
+			<wsdl:output message='tns:getBibliothequeResponse' />
+		</wsdl:operation>
+	</portType>
+
+	<binding name='BDovore_Binding' type='tns:BDovore_PortType'>
+		<soap:binding style='rpc'
+			transport='http://schemas.xmlsoap.org/soap/http' />
+
+		<wsdl:operation name='getBibliotheque'>
+			<soap:operation soapAction='getBibliotheque' />
+			<wsdl:input>
+				<soap:body use='literal' namespace='namespace_adress' />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use='literal' namespace='namespace_adress' />
+			</wsdl:output>
+		</wsdl:operation>
+	</binding>
+
+	<service name='BDovore'>
+		<documentation>Webservice BDovore</documentation>
+		<port name='BDovore_Port' binding='tns:BDovore_Binding'>
+			<soap:address location='http://localhost/bdovore/webservice/server.php' />
+		</port>
+	</service>
+
+</definitions> 
