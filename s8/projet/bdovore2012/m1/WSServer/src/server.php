@@ -1,9 +1,10 @@
 <?php
-// On désactive la mise en cache du wsdl (pour le test)
+// On dï¿½sactive la mise en cache du wsdl (pour le test)
 ini_set('soap.wsdl_cache_enabled', 0);
 
-// Inclusion de la classe contenant l'implémentation des fonctions du Service Web
+// Inclusion de la classe contenant l'implï¿½mentation des fonctions du Service Web
 include('BDovore.class.php');
+include('data/Edition.php');
 
 // Tentative d'instanciation du serveur SOAP
 try {
@@ -16,13 +17,13 @@ catch (Exception $e) {
 	exit();
 }
 
-// Appel du Service Web (requête POST uniquement autorisée)
+// Appel du Service Web (requï¿½te POST uniquement autorisï¿½e)
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-	// Ouverture de la connexion à la base de données MySQL
+	// Ouverture de la connexion ï¿½ la base de donnï¿½es MySQL
 	$db = getMySQLConnection();
-	// Prise en charge de la requête
+	// Prise en charge de la requï¿½te
 	$server -> handle();
-	// Fermeture de la connexion une fois les opérations terminées
+	// Fermeture de la connexion une fois les opï¿½rations terminï¿½es
 	closeMySQLConnection($db);
 }
 // Sinon, on affiche la liste des fonctions du serveur SOAP et un lien vers le WSDL
@@ -38,20 +39,20 @@ else {
 }
 
 /**
- * Ouverture de la connexion à la BDD locale.
- * Changer les paramètres de mysql_connect et mysql_select_db pour adapter la fonction à votre BDD.
- * @throws SoapFault
+ * Ouverture de la connexion Ã  la BDD locale.
+ * Changer les paramÃ¨tres de mysql_connect et mysql_select_db pour adapter la fonction Ã  votre BDD.
+ * @throws SoapFault erreur Ã©ventuelle de connexion
  */
 function getMySQLConnection()
 {
-	// Création de la connexion à la BDD
+	// Crï¿½ation de la connexion ï¿½ la BDD
 	$db = mysql_connect('Localhost', 'root', '');
 	if(!$db)
 	{
 		throw new SoapFault("CONNEXION_IMPOSSIBLE", $errors['CONNEXION_IMPOSSIBLE']);
 	}
 
-	// On sélectionne la base
+	// On sÃ©lectionne la base
 	mysql_select_db('bdovore',$db);
 
 	return $db;

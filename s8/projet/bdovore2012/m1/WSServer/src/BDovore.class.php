@@ -1,42 +1,42 @@
 <?php
 /**
- * Fonctions du Webservice, décrites par server.wsdl
+ * Fonctions du Webservice, dÃ©crites par server.wsdl
  */
 
 class BDovore {
 
 	/**
 	 * Tableau associatif code_erreur => descriptif
-	 * Permet de spécifier les erreurs rencontrées lors de l'exécution des fonctions du service web
+	 * Permet de spÃ©cifier les erreurs rencontrï¿½es lors de l'exÃ©cution des fonctions du service web
 	 */
 	public static $errors = Array(
-			"CONNEXION_IMPOSSIBLE" => "La connexion à la base de données a échoué",
+			"CONNEXION_IMPOSSIBLE" => "La connexion Ã  la base de donnÃ©es a Ã©chouÃ©",
 			"IDENTIFICATION_KO" => "Les identifiants sont incorrects",
-			"ERREUR_REQUETE" => "La requête a échoué");
+			"ERREUR_REQUETE" => "La requÃªte a Ã©chouÃ©");
 
 	/**
-	 * Renvoie (sous forme de String), les ouvrages en possession de l'utilisateur passé en paramètre
+	 * Renvoie (sous forme de String), les ouvrages en possession de l'utilisateur passï¿½ en paramï¿½tre
 	 * @param String $userName : le login de l'utilisateur
 	 * @param String $userPass : son mot de passe
-	 * @throws SoapFault : exception levée en cas d'erreur
+	 * @throws SoapFault : exception levÃ©e en cas d'erreur
 	 */
 	public function getBibliotheque($userName, $userPass) {
 
-		// On récupère l'identifiant de l'utilisateur
+		// On rÃ©cupÃ¨re l'identifiant de l'utilisateur
 		$sqlGetUser = "SELECT ID_USER FROM user WHERE USERNAME = '{$userName}' AND PASSWORD =  '{$userPass}'";
 		$reqGetUser = mysql_query($sqlGetUser);
 
-		// On vérifie que la requete est bien effectuée
+		// On vÃ©rifie que la requete est bien effectuï¿½e
 		if(!$reqGetUser) {
 			throw  new SoapFault("ERREUR_REQUETE", $errors["ERREUR_REQUETE"]);
 		}
 
-		// On vérifie l'identification et renvoie une erreur si elle est mauvaise
+		// On vÃ©rifie l'identification et renvoie une erreur si elle est mauvaise
 		if(mysql_num_rows($reqGetUser) != 1) {
 			throw new SoapFault("IDENTIFICATION_KO", $errors["IDENTIFICATION_KO"]);
 		}
 
-		// On récupère l'identifiant
+		// On rÃ©cupÃ¨re l'identifiant
 		$dataUser = mysql_fetch_assoc($reqGetUser);
 		$idUser = $dataUser['ID_USER'];
 
@@ -58,6 +58,55 @@ class BDovore {
 		return $res;
 	}
 
+	/**
+	 * RÃ©cupÃ¨re les dÃ©tails d'une Ã©dition
+	 * @param $idEdition : l'identifiant de l'Ã©dition
+	 * @return les dÃ©tails de l'Ã©dition
+	 */
+	public function getDetailsEdition($idEdition, $userName, $userPass){
+			
+		// On rÃ©cupÃ¨re l'identifiant de l'utilisateur
+		$sqlGetUser = "SELECT ID_USER FROM user WHERE USERNAME = '{$userName}' AND PASSWORD =  '{$userPass}'";
+		$reqGetUser = mysql_query($sqlGetUser);
+
+		// On vÃ©rifie que la requete est bien effectuï¿½e
+		if(!$reqGetUser) {
+			throw  new SoapFault("ERREUR_REQUETE", $errors["ERREUR_REQUETE"]);
+		}
+
+		// On vÃ©rifie l'identification et renvoie une erreur si elle est mauvaise
+		if(mysql_num_rows($reqGetUser) != 1) {
+			throw new SoapFault("IDENTIFICATION_KO", $errors["IDENTIFICATION_KO"]);
+		}
+
+		// On rÃ©cupÃ¨re l'identifiant
+		$dataUser = mysql_fetch_assoc($reqGetUser);
+		$idUser = $dataUser['ID_USER'];
+		
+		// PrÃ©paration de la requÃªte sql
+		$sqlGetDetailsEdition = "SELECT ID_VOLUME, FLG_PRET, FLG_DEDICACE, FLG_ACHAT, DATE_AJOUT, IMG_COUV, ISBN, DTE_PARUTION, ID_EDITEUR, FLG_DEFAULT
+		FROM us_edition, bd_edition, ed_collection
+		WHERE us_edition.ID_USER = {$idUser} AND
+		us_edition.ID_EDITION = {$idEdition} AND 
+		us_edition.ID_EDITION = bd_edition.ID_EDITION AND 
+		bd_edition.ID_COLLECTION = ed_collection.ID_COLLECTION";
+		
+		$reqGetDetailsEdition = mysql_query($sqlGetDetailsEdition);
+		if(!$reqGetDetailsEdition) {
+			throw  new SoapFault("ERREUR_REQUETE", $errors["ERREUR_REQUETE"]);
+		}
+		$dataDetails = mysql_fetch_assoc($reqGetDetailsEdition);
+		
+		// CrÃ©ation de l'objet contenant toutes les infos
+		$res = new Edition($idEdition,$dataDetails["ID_VOLUME"], $dataDetails["FLG_PRET"], $dataDetails["FLG_DEDICACE"], 
+		$dataDetails["FLG_ACHAT"], $dataDetails["DATE_AJOUT"], $dataDetails["IMG_COUV"], $dataDetails["ISBN"], $dataDetails["DATE_PARUTION"], 
+		$dataDetails["ID_EDITEUR"], $dataDetails["FLG_DEFAULT"]);
+		
+		return $res;
+	}
+	
+	
+	
 }
 
 
