@@ -104,9 +104,54 @@ class BDovore {
 		
 		return $res;
 	}
+		
+	/**
+	 * Récupère les détails d'un tome
+	 * @param int $idTome
+	 */
+	public function getDetailsTome($idTome){
+
+		// Préparation de la requête SQL
+		$sqlDetailsTome = 
+		"SELECT VOLUME, ID_SERIE, NUM_TOME 
+		FROM bd_volume
+		WHERE ID_VOLUME = {$idTome}";
+		
+		$reqDetailsTome = mysql_query($sqlDetailsTome);
+		if(!$reqDetailsTome) {
+			throw  new SoapFault("ERREUR_REQUETE", $errors["ERREUR_REQUETE"]);
+		}
+		$dataDetails = mysql_fetch_assoc($reqDetailsTome);
+		
+		// Création de l'objet contenant toutes les infos
+		$res = new Volume($idTome, $dataDetails["VOLUME"], $dataDetails["ID_SERIE"], $dataDetails["NUM_TOME"]);
+
+		return $res;
+	}
 	
+	public function getScenaristesTome($idTome){
+		
+	}
 	
+	public function getDessinateursTome($idTome){
+		
+	}
 	
+	public function getDetailsAuteur($idAuteur){
+		
+	}
+	
+	public function getDetailsSerie($idSerie){
+		
+	}
+	
+	public function getDetailsEditeur($idEditeur){
+		
+	}
+	
+	public function getGenre($idGenre){
+		
+	}
 }
 
 

@@ -273,7 +273,7 @@
 	<service name='BDovore'>
 		<documentation>Webservice BDovore</documentation>
 		<port name='BDovore_Port' binding='tns:BDovore_Binding'>
-			<soap:address location='http://localhost/bdovore/webservice/server.php' />
+			<soap:address location='http://localhost/webservice/server.php' />
 		</port>
 	</service>
 

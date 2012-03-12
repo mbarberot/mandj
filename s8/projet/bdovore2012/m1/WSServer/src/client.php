@@ -6,6 +6,8 @@ ini_set('soap.wsdl_cache_enabled', 0);
 
 // Inclusion des classes
 include('data/Edition.php');
+include('data/Volume.php');
+include('data/Auteur.php');
 
 try	{
 	// Instanciation du client SOAP
@@ -16,14 +18,13 @@ try	{
 					//'proxy_port'=>8080, // si vous utilisez un proxy...
 					'trace'=> 1,
 					'soap_version'=> SOAP_1_1,
-					'classmap' => array('detailsEdition' => 'Edition')
+					'classmap' => array('detailsEdition' => 'Edition',
+										'detailsVolume' => 'Volume')
 			)
 	);
 
 	try{
-
-		$res = $client->getDetailsEdition(78, "latruffe", "bdovore");
-		
+		$res = $client->getDetailsTome(8);	
 		var_dump($res);
 	}catch (SoapFault $e)
 	{

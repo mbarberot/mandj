@@ -4,7 +4,11 @@ ini_set('soap.wsdl_cache_enabled', 0);
 
 // Inclusion de la classe contenant l'impl�mentation des fonctions du Service Web
 include('BDovore.class.php');
+
+// Et  des objets retour
 include('data/Edition.php');
+include('data/Volume.php');
+include('data/Auteur.php');
 
 // Tentative d'instanciation du serveur SOAP
 try {
