@@ -4,6 +4,9 @@ import db.CodeBarre;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+/**
+ * Classe décrivant un album.
+ */
 public class Album {
 
     private int id;
@@ -18,7 +21,7 @@ public class Album {
     private ArrayList<Auteur> coloristes; // empty-able
     private boolean integrale, coffret;
     private ArrayList<Edition> editions; // empty-able
-    // Uniquement utile pour affichage en liste (avant d'avoir tout)
+    
     private String defaultISBN;
     private String defaultEAN;
 
@@ -32,25 +35,24 @@ public class Album {
         this.idGenre = idGenre;
         this.genre = genre;
 
-        // TODO : Gestion avec flg_type dans la V2
-        this.integrale = false;/*
-         * (integrale.equals("O") || !integrale.equals("N"));
-         */
-        this.coffret = false;/*
-         * flg_type == 1;
-         */
+        // TODO : Gestion avec flg_type dans la V2 -> Le rajouter?
+        this.integrale = false; /* (integrale.equals("O") || !integrale.equals("N")); */
+        this.coffret = false; /* flg_type == 1; */
 
         this.defaultISBN = "";
         this.defaultEAN = "";
 
-        // Si l'isbn r�cup�r� est un code ISBN10, on le converti pour avoir aussi le 13
-        if (CodeBarre.isCodeEAN10(isbn)) {
-            System.out.println("isbn 10");
+        
+        if (CodeBarre.isCodeEAN10(isbn)) 
+        {
+            // Si l'isbn récupéré est un code ISBN10, on le convertit pour avoir aussi le 13
             this.defaultISBN = isbn;
             this.defaultEAN = CodeBarre.toBDovoreEAN(isbn);
+        
+        } 
+        else if (CodeBarre.isCodeEAN13(isbn)) 
+        {
             // Sinon si c'est un code ISBN13, on garde le 13
-        } else if (CodeBarre.isCodeEAN13(isbn)) {
-            System.out.println("isbn 13");
             this.defaultEAN = isbn;
         }
 
