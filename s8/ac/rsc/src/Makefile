@@ -52,7 +52,7 @@ tests: graphe.a liste.a
 exec: graphe.a liste.a
 	make -C $(EXEC)
 
-postierChinois:
+postierChinois: graphe.a liste.a
 	make -C $(POSTIER_CHINOIS)
 
 # 

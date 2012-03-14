@@ -1,34 +1,112 @@
-# Chemins utilises a la compilation
-BIN= ../../bin/
-LIBDIR=../../lib/
-INC=../../include/
+#
+# Makefile pour compiler la librairie de manipulation des graphes
+# 
+# Détails :
+#	Ce fichier doit être placé dans un dossier contenant les sources (.c et .h)
+#	Le dossier parent à celui des sources doit contenir un dossier "include" et "lib"
+#	La règle principale effectue :
+#		- la compilation des .c et .h en .o
+#		- la construction du .a
+#		- la copie des .h dans le dossier "include"
+#		- la copie des .a dans le dossier "lib"
+#
+#
+#
+# Barberot Mathieu
+# Cours d'Algorithmique Combinatoire (AC)
+# Master 1 Informatique
+# 19 janvier 2012
+# 
+# -----------------------------------------------------------------------
 
-# Commandes de compilation
+
+#
+# Variables pour la compilation
+# CC : Le compilateur des sources
+# CFLAGS : Les options de compilations
+# 	-O4 -W -Wall : Compilation rigoureuse (tous les warnings sont affichés) 
+#	-g : Permet d'utiliser le débogueur
+# CPPFLAGS : ?
+# LDFLGAD : Les librairies à utiliser lors de la compilation
+#	- m : ?
+# AR : La commande construisant les .a
+#
 CC=gcc
 CFLAGS=-O4 -W -Wall -g
 CPPFLAGS=-I $(INC)
-LDFLAGS=-L $(LIBDIR) -lgraphe -lliste
-EXEC = postierChinois
+LDFLAGS=-L $(LIB) -lliste
+AR=ar -q
 
-# Sources necessaires
-SRC= $(EXEC).c
-OBJ= $(SRC:.c=.o)
-HDR= $(SRC:.c=.h)
+#
+# EXE : Le fichier à créer
+# SRC : Les fichiers .c
+# HDR : Les fichiers .h
+# OBJ : Les fichiers .o
+#
+EXE=libpostier.a
+SRC=$(wildcard *.c)
+HDR=$(wildcard *.h)
+OBJ=$(SRC:.c=.o)
 
-all: $(EXEC)
+#
+# Dossiers utiles
+# INC : dossier contenant les .h (généralement appelé "include")
+# LIB : dossier contenant les .a/.so (généralement appelé "lib")
+#
+INC=../../include/
+LIB=../../lib/
 
-$(EXEC): $(OBJ)
-	$(CC) -o $(BIN)$@ $^ $(LDFLAGS) $(CPPFLAGS) $(LDFLAGS)
+LISTE= ../liste/
+GRAPHE= ../graphe/
+
+
+#
+# Règle principale
+#
+all : liste graphe $(EXE)
+
+
+liste :
+	make -C $(LISTE)
+graphe:
+	make -C $(GRAPHE)
+
+
+
+#
+# 1/ Construction de l'archive
+# 2/ Copie des .h dans le dossier "include"
+# 3/ Copie des .a dans le dossier "lib"
+#
+$(EXE) : $(OBJ)
+	$(AR) $(LIB)$@ $^
 	cp $(HDR) $(INC)
+	
 
-%.o: %.c %.h
-	$(CC) -o $@ -c $< $(CFLAGS) $(LDFLAGS) $(CPPFLAGS)
+#
+# Compilation de tous les .c et .h en .o
+#
+%.o : %.c %.h
+	$(CC) $(CFLAGS) $(CPPFLAGS) -o $@ -c $< $(LDFLAGS)
 
-clean:
+
+# 
+# Nettoyage
+#	clean : supprime les .o
+#	reset : supprime le fichier généré
+#	veryclean : effectue les deux commandes précédentes
+#	mrproper : 
+#		1/ nettoye le dossier courant avec veryclean 
+#		2/ supprime les fichiers .h du dossier "include" 
+#		3/ supprime les fichier .a du dossier "lib"
+#
+clean : 
 	rm *.o
 
-reset:
-	rm $(INC)parser.h $(INC)menu.h
+reset :
+	rm $(INC)$(HDR)
+	rm $(LIB)$(EXE)
 
-veryclean: clean reset
+veryclean : clean reset
 	
+

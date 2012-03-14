@@ -8,3 +8,17 @@
  *
  */
 
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "postierChinois.h"
+
+
+erreur dupliqueArete(int s1, int s2)
+{
+
+
+
+}
+
+
