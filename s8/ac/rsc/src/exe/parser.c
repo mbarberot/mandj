@@ -336,6 +336,25 @@ void interpreteCommande(char* commandes)
 	      
 	    }
 	    
+	    // Commande chargerCycleEulerienn
+	    if(strstr(tmp,"calculCycleEulerien") != NULL)
+	    {
+		res = interpreteCalculCycleEulerien(tmp);
+		cmdOk = 1;
+		
+		if(res != TRAITEMENT_CMD_OK)
+		    printf("Commande \"%s\" : %s \n", tmp, parserErrorToString(res));
+	    }
+	    
+	    // Commande afficherCycleEulerien
+	    if(strstr(tmp, "afficheCycleEulerien") != NULL)
+	    {
+		res = interpreteAfficheCycleEulerien(tmp);
+		cmdOk = 1;
+		
+		if(res != TRAITEMENT_CMD_OK)
+		    printf("Commande \"%s\" : %s \n", tmp, parserErrorToString(res));
+	    }
 	    // Commande non interprétable
 	    if(!cmdOk)
 	    {
@@ -663,7 +682,7 @@ parserError interpreteViderAreteGraphe(char* cmd)
     int numCom;    
     int nbArgs = sscanf(cmd, "%d:viderAreteGraphe()", &numCom);
     
-    if(nbArgs ==1)
+    if(nbArgs == 1)
     {
 	err = viderAreteGraphe();
 	ecritureResultatCommande(numCom, err);
@@ -949,4 +968,66 @@ parserError interpreteChargerGraphe(char* cmd)
   graphe2dot(numCom, entree_path);
   
   return TRAITEMENT_CMD_OK;
+  
+}
+/*
+*	INTERPRETATION DES FONCTIONS DU TP4
+*
+*
+*/
+
+/**
+* Interprète la commande calculCycleEulerien(G,H) : G -> le graphe, H -> l'heuristique
+*/
+parserError interpreteCalculCycleEulerien(char* cmd)
+{
+    int numCom;
+    int arg1, arg2;
+    
+    erreur err;
+    
+    int nbArgs = sscanf(cmd, "%d:calculCycleEulerien(%d,%d)", &numCom, &arg1, &arg2);
+    
+    if(numCom == 3)
+    {
+	/*err = calculCycleEulerien(arg1, arg2);
+	ecritureResultatCommande(numCom, err);*/
+    }
+    else
+    {
+	ecritureResultatCommande(COMMANDE_INVALIDE, err);
+	return ARGUMENTS_INCORRECTS;
+    }
+    
+    // Ecriture en .dot ?
+    
+    return TRAITEMENT_CMD_OK;
+}
+
+/**
+* Interprète la commande afficheCycleEulerien(G,H) : G -> Le graphe, H -> l'heuristique
+*/
+parserError interpreteAfficheCycleEulerien(char* cmd)
+{
+    int numCom;
+    int arg1, arg2;
+    
+    erreur err;
+    
+    int nbArgs = sscanf(cmd, "%d:afficheCycleEulerien(%d,%d)", &numCom, &arg1, &arg2);
+    
+    if(numCom == 3)
+    {
+	/*err = afficheCycleEulerien(arg1, arg2);
+	ecritureResultatCommande(numCom, err);*/
+    }
+    else
+    {
+	ecritureResultatCommande(COMMANDE_INVALIDE, err);
+	return ARGUMENTS_INCORRECTS;
+    }
+    
+    // Ecriture en .dot ?
+    
+    return TRAITEMENT_CMD_OK;
 }
