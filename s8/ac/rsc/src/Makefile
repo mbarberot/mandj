@@ -31,14 +31,14 @@ LISTE= ./liste
 GRAPHE= ./graphe
 TESTS= ./tests
 EXEC= ./exe
-
+POSTIER_CHINOIS= ./postierChinois
 
 BIN= ../bin
 
 #
 # Règle principale
 #
-all : liste.a graphe.a tests exec
+all : liste.a graphe.a tests exec postierChinois
 
 liste.a:
 	make -C $(LISTE)
@@ -51,6 +51,9 @@ tests: graphe.a liste.a
 
 exec: graphe.a liste.a
 	make -C $(EXEC)
+
+postierChinois:
+	make -C $(POSTIER_CHINOIS)
 
 # 
 # Nettoyage
@@ -66,11 +69,13 @@ clean :
 	make -C $(LISTE) clean
 	make -C $(GRAPHE) clean
 	make -C $(EXEC) clean
+	make -C $(POSTIER_CHINOIS) clean
 
 reset :
 	make -C $(LISTE) reset
 	make -C $(GRAPHE) reset
 	make -C $(EXEC) reset
+	make -C $(POSTIER_CHINOIS) reset
 
 veryclean : clean reset
 	rm $(BIN)/*
