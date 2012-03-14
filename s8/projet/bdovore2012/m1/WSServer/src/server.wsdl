@@ -12,19 +12,16 @@
 					<xsd:element name="idEdition" type="xsd:int"></xsd:element>
 					<xsd:element name="idTome" type="xsd:int"></xsd:element>
 					<xsd:element name="flag_pret" type="xsd:boolean"></xsd:element>
-					<xsd:element name="flag_dedicace"
-						type="xsd:boolean">
+					<xsd:element name="flag_dedicace" type="xsd:boolean">
 					</xsd:element>
-					<xsd:element name="flag_aAcheter"
-						type="xsd:boolean">
+					<xsd:element name="flag_aAcheter" type="xsd:boolean">
 					</xsd:element>
-					<xsd:element name="date_ajout" type="xsd:date"></xsd:element>
+					<xsd:element name="date_ajout" type="xsd:string"></xsd:element>
 					<xsd:element name="img_couv" type="xsd:string"></xsd:element>
 					<xsd:element name="isbn" type="xsd:string"></xsd:element>
-					<xsd:element name="date_parution" type="xsd:date"></xsd:element>
+					<xsd:element name="date_parution" type="xsd:string"></xsd:element>
 					<xsd:element name="idEditeur" type="xsd:int"></xsd:element>
-					<xsd:element name="flag_default"
-						type="xsd:boolean">
+					<xsd:element name="flag_default" type="xsd:boolean">
 					</xsd:element>
 				</xsd:sequence>
 			</xsd:complexType>
@@ -42,19 +39,14 @@
 					<xsd:element name="pseudo" type="xsd:string"></xsd:element>
 					<xsd:element name="nom" type="xsd:string"></xsd:element>
 					<xsd:element name="prenom" type="xsd:string"></xsd:element>
-
-					<xsd:element name="date_naissance"
-						type="xsd:string">
-					</xsd:element>
+					<xsd:element name="date_naissance" type="xsd:string"></xsd:element>
 					<xsd:element name="date_deces" type="xsd:string"></xsd:element>
-					<xsd:element name="nationalite" type="xsd:string"></xsd:element>
 				</xsd:sequence>
 			</xsd:complexType>
 			<xsd:complexType name="detailsSerie">
 				<xsd:sequence>
 					<xsd:element name="idSerie" type="xsd:int"></xsd:element>
-					<xsd:element name="nomSerie" type="xsd:string"></xsd:element>
-					<xsd:element name="idGenre" type="xsd:int"></xsd:element>
+					<xsd:element name="nomSerie" type="xsd:string"></xsd:element>
 					<xsd:element name="nbTomes" type="xsd:int"></xsd:element>
 					<xsd:element name="flgFini" type="xsd:int"></xsd:element>
 					<xsd:element name="histoire" type="xsd:string"></xsd:element>
@@ -105,10 +97,10 @@
 	<wsdl:message name="getScenaristesTomeResponse">
 		<wsdl:part name="scenaristes" type="xsd:string"></wsdl:part>
 	</wsdl:message>
-	<wsdl:message name="getDessinateursTomeRequest">
+	<wsdl:message name="getDessinateursTomeRequest">
 		<wsdl:part name="idTome" type="xsd:string"></wsdl:part>
 	</wsdl:message>
-	<wsdl:message name="getDessinateursTomeResponse">
+	<wsdl:message name="getDessinateursTomeResponse">
 		<wsdl:part name="dessinateurs" type="xsd:string"></wsdl:part>
 	</wsdl:message>
 	<wsdl:message name="getDetailsAuteurRequest">
@@ -135,11 +127,17 @@
 	<wsdl:message name="getGenreResponse">
 		<wsdl:part name="nomGenre" type="xsd:string"></wsdl:part>
 	</wsdl:message>
+	<wsdl:message name="getColoristesTomeRequest">
+		<wsdl:part name="idTome" type="xsd:int"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getColoristesTomeResponse">
+		<wsdl:part name="coloristes" type="xsd:string"></wsdl:part>
+	</wsdl:message>
 	<portType name='BDovore_PortType'>
 		<wsdl:operation name='getBibliotheque'>
 			<wsdl:input message='tns:getBibliothequeRequest' />
 			<wsdl:output message='tns:getBibliothequeResponse' />
-		</wsdl:operation>
+		</wsdl:operation>
 		<wsdl:operation name="getDetailsEdition">
 			<wsdl:input message="tns:getDetailsEditionRequest"></wsdl:input>
 			<wsdl:output message="tns:getDetailsEditionResponse"></wsdl:output>
@@ -172,6 +170,10 @@
 			<wsdl:input message="tns:getGenreRequest"></wsdl:input>
 			<wsdl:output message="tns:getGenreResponse"></wsdl:output>
 		</wsdl:operation>
+		<wsdl:operation name="getColoristesTome">
+			<wsdl:input message="tns:getColoristesTomeRequest"></wsdl:input>
+			<wsdl:output message="tns:getColoristesTomeResponse"></wsdl:output>
+		</wsdl:operation>
 	</portType>
 
 	<binding name='BDovore_Binding' type='tns:BDovore_PortType'>
@@ -187,7 +189,7 @@
 				<soap:body use='literal' namespace='namespace_adress' />
 			</wsdl:output>
 		</wsdl:operation>
-		
+
 		<wsdl:operation name='getDetailsEdition'>
 			<soap:operation soapAction='getDetailsEdition' />
 			<wsdl:input>
@@ -197,7 +199,7 @@
 				<soap:body use='literal' namespace='namespace_adress' />
 			</wsdl:output>
 		</wsdl:operation>
-		
+
 		<wsdl:operation name='getDetailsTome'>
 			<soap:operation soapAction='getDetailsTome' />
 			<wsdl:input>
@@ -207,7 +209,7 @@
 				<soap:body use='literal' namespace='namespace_adress' />
 			</wsdl:output>
 		</wsdl:operation>
-		
+
 		<wsdl:operation name='getScenaristesTome'>
 			<soap:operation soapAction='getScenaristesTome' />
 			<wsdl:input>
@@ -217,7 +219,7 @@
 				<soap:body use='literal' namespace='namespace_adress' />
 			</wsdl:output>
 		</wsdl:operation>
-		
+
 		<wsdl:operation name='getDessinateursTome'>
 			<soap:operation soapAction='getDessinateursTome' />
 			<wsdl:input>
@@ -227,7 +229,17 @@
 				<soap:body use='literal' namespace='namespace_adress' />
 			</wsdl:output>
 		</wsdl:operation>
-		
+
+		<wsdl:operation name='getColoristesTome'>
+			<soap:operation soapAction='getColoristesTome' />
+			<wsdl:input>
+				<soap:body use='literal' namespace='namespace_adress' />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use='literal' namespace='namespace_adress' />
+			</wsdl:output>
+		</wsdl:operation>
+
 		<wsdl:operation name='getDetailsAuteur'>
 			<soap:operation soapAction='getDetailsAuteur' />
 			<wsdl:input>
@@ -237,7 +249,7 @@
 				<soap:body use='literal' namespace='namespace_adress' />
 			</wsdl:output>
 		</wsdl:operation>
-		
+
 		<wsdl:operation name='getDetailsSerie'>
 			<soap:operation soapAction='getDetailsSerie' />
 			<wsdl:input>
@@ -247,7 +259,7 @@
 				<soap:body use='literal' namespace='namespace_adress' />
 			</wsdl:output>
 		</wsdl:operation>
-		
+
 		<wsdl:operation name='getDetailsEditeur'>
 			<soap:operation soapAction='getDetailsEditeur' />
 			<wsdl:input>
@@ -257,7 +269,7 @@
 				<soap:body use='literal' namespace='namespace_adress' />
 			</wsdl:output>
 		</wsdl:operation>
-		
+
 		<wsdl:operation name='getGenre'>
 			<soap:operation soapAction='getGenre' />
 			<wsdl:input>
@@ -267,7 +279,7 @@
 				<soap:body use='literal' namespace='namespace_adress' />
 			</wsdl:output>
 		</wsdl:operation>
-		
+
 	</binding>
 
 	<service name='BDovore'>

@@ -8,6 +8,8 @@ ini_set('soap.wsdl_cache_enabled', 0);
 include('data/Edition.php');
 include('data/Volume.php');
 include('data/Auteur.php');
+include('data/Serie.php');
+include('data/Editeur.php');
 
 try	{
 	// Instanciation du client SOAP
@@ -19,12 +21,14 @@ try	{
 					'trace'=> 1,
 					'soap_version'=> SOAP_1_1,
 					'classmap' => array('detailsEdition' => 'Edition',
-										'detailsVolume' => 'Volume')
+										'detailsVolume' => 'Volume',
+										'detailsSerie' => 'Serie',
+										'detailsEditeur' => 'Editeur')
 			)
 	);
 
 	try{
-		$res = $client->getDetailsTome(8);	
+		$res = $client->getDetailsTome(74303);
 		var_dump($res);
 	}catch (SoapFault $e)
 	{

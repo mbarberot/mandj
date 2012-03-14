@@ -16,7 +16,7 @@
 			$this->idTome = $nIdTome;
 			$this->titre = $nTitre;
 			$this->idSerie = $nIdSerie;
-			$this->numTome = $nNumTome;
+			($nNumTome == NULL)? $this->numTome = -1 : $this->numTome = $nNumTome;
 		}
 	}
 ?>

@@ -9,6 +9,8 @@ include('BDovore.class.php');
 include('data/Edition.php');
 include('data/Volume.php');
 include('data/Auteur.php');
+include('data/Serie.php');
+include('data/Editeur.php');
 
 // Tentative d'instanciation du serveur SOAP
 try {

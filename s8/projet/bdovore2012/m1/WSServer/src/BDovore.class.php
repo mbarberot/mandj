@@ -121,6 +121,7 @@ class BDovore {
 		if(!$reqDetailsTome) {
 			throw  new SoapFault("ERREUR_REQUETE", $errors["ERREUR_REQUETE"]);
 		}
+		
 		$dataDetails = mysql_fetch_assoc($reqDetailsTome);
 		
 		// Création de l'objet contenant toutes les infos
@@ -129,28 +130,170 @@ class BDovore {
 		return $res;
 	}
 	
+	/**
+	 * Récupère les scénaristes d'un tome
+	 * @param int $idTome
+	 * @return une chaine contenant tous les scénaristes (séparés par un point-virgule)
+	 */
 	public function getScenaristesTome($idTome){
 		
+		// Préparation de la requête SQL
+		$sqlScenaristes = 
+		"SELECT ID_AUTEUR 
+		FROM bd_volume_auteur
+		WHERE ID_VOLUME = {$idTome}
+		AND ID_ROLE = 1";
+		
+		$reqScenaristes = mysql_query($sqlScenaristes);
+		
+		if(!$reqScenaristes) {
+			throw new SoapFault("ERREUR_REQUETE", $errors["ERREUR_REQUETE"]);
+		}
+		
+		while($data = mysql_fetch_assoc($reqScenaristes)){
+			$res = $data["ID_AUTEUR"].';'.$res;
+		}
+		
+		return $res;
 	}
 	
+	/**
+	 * Récupère les dessinateurs d'un tome
+	 * @param int $idTome
+	 * @return une chaine contenant tous les dessinateurs (séparés par un point-virgule)
+	 */
 	public function getDessinateursTome($idTome){
+		$sqlDessinateurs = 
+		"SELECT ID_AUTEUR 
+		FROM bd_volume_auteur
+		WHERE ID_VOLUME = {$idTome}
+		AND ID_ROLE = 2";
+		
+		$reqDessinateurs = mysql_query($sqlDessinateurs);
+		
+		if(!$reqDessinateurs) {
+			throw new SoapFault("ERREUR_REQUETE", $errors["ERREUR_REQUETE"]);
+		}
+		
+		while($data = mysql_fetch_assoc($reqScenaristes)){
+			$res = $data["ID_AUTEUR"].';'.$res;
+		}
+		
+		return $res;		
 		
 	}
 	
+	/**
+	 * Récupère les coloristes d'un tome
+	 * @param int $idTome
+	 * @return une chaine contenant tous les coloristes (séparés par un point-virgule)
+	 */
+	public function getColoristesTome($idTome){
+		$sqlColoristes = 
+		"SELECT ID_AUTEUR 
+		FROM bd_volume_auteur
+		WHERE ID_VOLUME = {$idTome}
+		AND ID_ROLE = 3";
+		
+		$reqColoristes = mysql_query($sqlColoristes);
+		
+		if(!$reqColoristes) {
+			throw new SoapFault("ERREUR_REQUETE", $errors["ERREUR_REQUETE"]);
+		}
+		
+		while($data = mysql_fetch_assoc($reqScenaristes)){
+			$res = $data["ID_AUTEUR"].';'.$res;
+		}
+		
+		return $res;
+		
+	}
+	
+	/**
+	 * Récupère les détails d'un auteur
+	 * (cf. Auteur.php pour ces détails)
+	 */
 	public function getDetailsAuteur($idAuteur){
+		$sqlDetailsAuteur = "SELECT PSEUDO, NOM, PRENOM, DATE_NAISS, DATE_DECES
+		FROM auteur
+		WHERE auteur.ID_AUTEUR = {$idAuteur}";
 		
+		$reqDetailsAuteur = mysql_query($sqlDetailsAuteur);
+		
+		if(!$reqDetailsAuteur) {
+			throw new SoapFault("ERREUR_REQUETE", $errors["ERREUR_REQUETE"]);
+		}
+		
+		$dataDetails = mysql_fetch_assoc($reqDetailsAuteur);
+		
+		// Création de l'objet contenant les infos
+		$res = new Auteur($idAuteur, $dataDetails["PSEUDO"], $dataDetails["NOM"], $dataDetails["PRENOM"]
+		, $dataDetails["DATE_NAISS"], $dataDetails["DATE_DECES"]);
+		
+		return $res;
 	}
 	
+	/**
+	 * Récupère les détails d'une série
+	 * (cf Serie.php pour ces détails)
+	 */
 	public function getDetailsSerie($idSerie){
+		$sqlDetailsSerie = "SELECT SERIE, NB_TOME, FLG_FINI, HISTOIRE_SERIE
+		FROM bd_serie
+		WHERE ID_SERIE = {$idSerie}";
 		
+		$reqDetailsSerie = mysql_query($sqlDetailsSerie);
+		
+		if(!$reqDetailsSerie){
+			throw new SoapFault("ERREUR_REQUETE", $errors["ERREUR_REQUETE"]);
+		}
+		
+		$dataDetails = mysql_fetch_assoc($reqDetailsSerie);
+		
+		// Création de l'objet contenant les infos
+		$res = new Serie($idSerie, $dataDetails["SERIE"],$dataDetails["NB_TOME"], $dataDetails["FLG_FINI"], $dataDetails["HISTOIRE_SERIE"]);
+
+		return $res;
 	}
 	
+	/**
+	 * Récupère les détails d'un éditeur
+	 * (cf Editeur.php pour ces détails)
+	 */
 	public function getDetailsEditeur($idEditeur){
+		$sqlDetailsEditeur = "SELECT EDITEUR, URL_SITE FROM ed_editeur WHERE ID_EDITEUR = {$idEditeur}";
 		
+		$reqDetailsEditeur = mysql_query($sqlDetailsEditeur);
+		
+		if(!$reqDetailsEditeur){
+			throw new SoapFault("ERREUR_REQUETE", $errors["ERREUR_REQUETE"]);
+		}
+		
+		$dataDetails = mysql_fetch_assoc($reqDetailsEditeur);
+		
+		// Création de l'objet contenant les infos
+		$res = new Editeur($idEditeur, $dataDetails["EDITEUR"], $dataDetails["URL_SITE"]);
+		
+		return $res;
 	}
 	
+	/**
+	 * Récupère l'intitulé d'un genre
+	 * @param int $idGenre
+	 * @return String l'intitulé
+	 */
 	public function getGenre($idGenre){
+		$sqlGenre = "SELECT GENRE FROM vo_genre WHERE ID_GENRE = {$idGenre}";
+		$reqGenre = mysql_query($sqlGenre);
 		
+		if(!$reqGenre){
+			throw new SoapFault("ERREUR_REQUETE", $errors["ERREUR_REQUETE"]);
+		}
+		
+		$dataDetails = mysql_fetch_assoc($reqGenre);
+		$res = $dataDetails["GENRE"];
+		
+		return $res;		
 	}
 }
 
