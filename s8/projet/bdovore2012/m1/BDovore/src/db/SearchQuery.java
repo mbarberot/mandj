@@ -1,7 +1,10 @@
 package db;
 
+import gui.FrameMain;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.Statement;
 
 /**
  * Génère une requête de recherche en fonction des paramètres. On peut chercher
@@ -39,7 +42,7 @@ public class SearchQuery {
     };
     public static final int ORDER_ASC = 0;
     public static final int ORDER_DESC = 1;
-
+    
     /**
      * Retourne le code SQL permettant de faire une recherche sans critères pour
      * lister tous les albums.
@@ -70,7 +73,7 @@ public class SearchQuery {
 
         return sql;
     }
-
+    
     /**
      * Retourne le code SQL permettant une recherche par titre.
      *
@@ -88,12 +91,14 @@ public class SearchQuery {
             return "";
         }
 
-        if (search.length() < 3) {
-            return "";
-        }
-
+        // Ce bloc d'instruction, une fois décommenté
+        // désactive la recherche "sans critères"
+        // Utile dans les cas d'une grosse BDthèque.
         //
-        // MB
+        //if (search.length() < 3) {
+        //    return "";
+        //}
+
         //
         // TODO : Faire de la recherche avec plusieurs mots clef
         // Première approche, naïve : 
@@ -158,7 +163,6 @@ public class SearchQuery {
      * @param type Type de la requete (éléments ou COUNT)
      * @param sortby Critère de tri
      * @param order Ordre des résultats (ASC ou DESC)
-     * @return
      * @return Le code SQL
      */
     public static String searchAuteur(int searchIn, String search, String type, String sortby, int order) {
@@ -180,8 +184,10 @@ public class SearchQuery {
                 + "INNER JOIN AUTEUR a ON a.ID_AUTEUR = tj.ID_AUTEUR \n"
                 + "WHERE a.PSEUDO LIKE '%" + search + "%' \n"
                 + searchInWhere[searchIn] + "\n"
+                + "GROUP BY t.ID_TOME \n"
                 + (type.equals(GET_MAX) ? "" : orderBy(sortby, order)) + "\n";
-
+       
+        
         return sql;
     }
 

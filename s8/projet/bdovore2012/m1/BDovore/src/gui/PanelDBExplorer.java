@@ -115,7 +115,7 @@ public class PanelDBExplorer extends JPanel {
         rbtGroup.add(radMissing);
 
         // Création de la liste dérouleur
-        String[] criterias = {"par Titre", "par Série", "par Code barre / ISBN"};
+        String[] criterias = {"par Titre", "par Auteur", "par Série", "par Code barre / ISBN"};
         lstCriterias = new JComboBox(criterias);
 
         // Création du champ de recherche
@@ -186,7 +186,6 @@ public class PanelDBExplorer extends JPanel {
                 if (ev.getClickCount() == 2) {
                     JTable source = (JTable) ev.getSource();
                     RowSorter<?> sorter = source.getRowSorter();
-                    //System.out.println("row:" + sorter.convertRowIndexToModel(source.getSelectedRow()));
                     showAlbumDetails(sorter.convertRowIndexToModel(source.getSelectedRow()));
                 }
             }
@@ -291,7 +290,7 @@ public class PanelDBExplorer extends JPanel {
         }
 
         // Consultation des critères du menu déroulant :
-        // Par titre, par série, par ISBN
+        // Par titre, par auteur, par série, par ISBN
         // + les requêtes
         switch (lstCriterias.getSelectedIndex()) {
             case 0:
@@ -299,10 +298,14 @@ public class PanelDBExplorer extends JPanel {
                 getCountQuery = SearchQuery.searchTitre(searchIn, keywords, SearchQuery.GET_MAX, "t.TITRE", SearchQuery.ORDER_ASC);
                 break;
             case 1:
+                getResultQuery = SearchQuery.searchAuteur(searchIn, keywords, SearchQuery.GET_FIELDS, "t.TITRE", SearchQuery.ORDER_ASC);
+                getCountQuery = SearchQuery.searchAuteur(searchIn, keywords, SearchQuery.GET_MAX, "t.TITRE", SearchQuery.ORDER_ASC);
+                break;
+            case 2:
                 getResultQuery = SearchQuery.searchSerie(searchIn, keywords, SearchQuery.GET_FIELDS, "t.TITRE", SearchQuery.ORDER_ASC);
                 getCountQuery = SearchQuery.searchSerie(searchIn, keywords, SearchQuery.GET_MAX, "t.TITRE", SearchQuery.ORDER_ASC);
                 break;
-            case 2:
+            case 3:
                 getResultQuery = SearchQuery.searchISBN(searchIn, keywords, SearchQuery.GET_FIELDS, "t.TITRE", SearchQuery.ORDER_ASC);
                 getCountQuery = SearchQuery.searchISBN(searchIn, keywords, SearchQuery.GET_MAX, "t.TITRE", SearchQuery.ORDER_ASC);
                 break;
