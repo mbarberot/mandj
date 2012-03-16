@@ -1,10 +1,7 @@
 package db;
 
-import gui.FrameMain;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
-import java.sql.Statement;
 
 /**
  * Génère une requête de recherche en fonction des paramètres. On peut chercher
@@ -224,6 +221,39 @@ public class SearchQuery {
                 + "OR e.ISBN like '%" + ean + "%')\n"
                 + searchInWhere[searchIn] + "\n"
                 + (type.equals(GET_MAX) ? "" : orderBy(sortby, order)) + "\n";
+        return sql;
+    }
+ 
+    /**
+     * Retourne le code SQL permettant l'insertion d'un album dans la bibliothèque avec son ISBN
+     * 
+     * @param search
+     * @param isPret
+     * @param isDedicace
+     * @param isAAcheter
+     * @return 
+     */
+    public static String insertISBN(String search, String isPret, String isDedicace, String isAAcheter) {
+
+        String isbn = CodeBarre.toBDovoreISBN(escape(search));
+        String ean = CodeBarre.toBDovoreEAN(escape(search));
+        String eanisbn = isbn + " " + ean; // FullText prend tout                                                                                               
+
+        //
+        // TODO : Utiliser la nouvelle DB 
+        //
+        
+        String sqlSearch = "SELECT t.ID_TOME, s.ID_SERIE, e.ID_EDITEUR, e.ID_COLLECTION, e.ID_EDITION, scenar.ID_AUTEUR, dess.ID_AUTEUR, g.ID_GENRE, '" + isPret + "', NULL, NULL, '" + isDedicace + "', e.FLG_TT, NULL, NULL, CURRENT_TIMESTAMP, '" + isAAcheter + "', NULL, NULL, 'N' \n"
+                + "FROM BD_EDITION e, FTL_SEARCH_DATA('" + eanisbn + "', 0, 0) FT \n"
+                + "INNER JOIN BD_TOME t ON t.ID_TOME = e.ID_TOME \n"
+                + "INNER JOIN BD_SERIE s ON s.ID_SERIE = t.ID_SERIE \n"
+                + "INNER JOIN BD_GENRE g ON g.ID_GENRE = t.ID_GENRE \n"
+                + "INNER JOIN BD_AUTEUR scenar ON scenar.ID_AUTEUR = t.ID_SCENAR \n"
+                + "INNER JOIN BD_AUTEUR dess ON dess.ID_AUTEUR = t.ID_DESSIN \n"
+                + "WHERE FT.TABLE='BD_EDITION' AND e.ID_EDITION = FT.KEYS[0] limit 1";
+
+        String sql = "INSERT INTO USERS_ALBUM \n" + sqlSearch;
+
         return sql;
     }
 

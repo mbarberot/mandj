@@ -26,7 +26,7 @@ public class ClientTest {
 				System.out.println("Titre du volume : " + tome.getTitre() + "\n");
 
 			} catch (RemoteException e1) {
-				e1.printStackTrace();
+				e1.printStackTrace();   
 			}
 		} catch (ServiceException e) {
 			e.printStackTrace();
