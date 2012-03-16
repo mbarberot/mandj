@@ -1,25 +1,26 @@
 # Chemins utilises a la compilation
-BIN= ../../bin/
-LIBDIR=../../lib/
-INC=../../include/
+BIN= bin/
+LIBDIR=lib/
+INC=include/
+SRCDIR=src/
 
 # Commandes de compilation
 CC=gcc
 CFLAGS=-O4 -W -Wall -g
 CPPFLAGS=-I $(INC)
-LDFLAGS=-L $(LIBDIR) -lgraphe -lliste
-EXEC = Main
+LDFLAGS=-L $(LIBDIR) -lsocket
+EXEC = client
 
 # Sources necessaires
-SRC= parser.c menu.c
+SRC= $(wildcard $(SRCDIR)*.c) 
 OBJ= $(SRC:.c=.o)
 HDR= $(SRC:.c=.h)
 
-all: $(EXEC)
 
-Main : $(OBJ) main.c
-	$(CC) -o $(BIN)$@ $^ $(LDFLAGS) $(CPPFLAGS) $(LDFLAGS)
-	cp $(HDR) $(INC)
+all: $(EXEC) 
+
+$(EXEC): $(OBJ)
+	$(CC) -o $(BIN)$@ $^ $(CPPFLAGS) $(LDFLAGS)
 
 %.o: %.c %.h
 	$(CC) -o $@ -c $< $(CFLAGS) $(LDFLAGS) $(CPPFLAGS)
@@ -28,7 +29,6 @@ clean:
 	rm *.o
 
 reset:
-	rm $(INC)parser.h $(INC)menu.h
+	rm $(BIN)$(EXEC) 
 
 veryclean: clean reset
-	
