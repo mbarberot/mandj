@@ -59,5 +59,9 @@ State demandePartie(
 	int *adversaire
 	);
 
+State calculCoup(
+	int sockArbitre,
+	TypBooleen premier
+	);
 
 #endif

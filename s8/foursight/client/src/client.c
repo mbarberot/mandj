@@ -8,54 +8,68 @@
  * Racenet Joan
  * 
  */
-
+#include <time.h>
 #include "client.h"
 
-//
-// TODO : 
-//	- Implémenter la gestion des coups
-//	- Placer des mallocs/free dans la boucle while?
-//	- Inclure une boucle pour les parties ?
-//	- Stopper le moteur IA dans les libérations
-//
 
-State calculCoup(int sockArbitre, TypBooleen premier)
+
+/**
+ * Calcul un coup aléatoirement.
+ *
+ * Détails :
+ *	- 
+ *  Pas de prise en compte des cases déjà occupées
+ *  Pas de prise en compte des pions restants
+ *	+
+ *  Ne choisis pas de case en dehors du tableau
+ *  Graine aléatoire générée via le timestamp time(NULL)
+ *
+ * Testée : OK
+ *
+ * @param coupReq   Un coup vide (la mémoire doit être allouée).
+ *		    Sera remplit dans la fonction
+ */
+void IA(TypCoupReq *coupReq)
 {
-    int err,
-	partieFinie;
-    State state;
-    TypCoupReq *coupReq;
-    TypCoupRep *coupRep;
+    // Les variables aléatoires
+    int aleaPiece,
+	aleaCoup,
+	aleaRow,
+	aleaCol;
 
-    partieFinie = 0;
-    state = ST_KO;
-    coupReq = (TypCoupReq*) malloc(sizeof(TypCoupReq));
-    coupRep = (TypCoupRep*) malloc(sizeof(TypCoupRep));
-    
-    if(premier == FAUX)
-    {
-	// On commence par attendre le coup de l'adversaire
-    }
+    // La case
+    TypPosition *pos = (TypPosition*) malloc(sizeof(TypPosition));
 
-    while(partieFinie == 0)
-    {
-	// On construit une requête
-	// On met à jour 'partieFinie' (si notre coup est le dernier)
-	// On l'envoie à l'arbitre
-	// On attend la réponse de l'arbitre
-	//  - KO : On a perdu
-	//  - OK : On continue
-	// On attend le coup de l'adversaire
-	// On met à jour 'partieFinie' (si son coup est le dernier)
-	// 
-	// On recommence !
-    }
+    // Des tableaux de correspondances nb aleatoire <-> valeur
+    TypPiece	piece[3]    = { BLANC, ROUGE, JAUNE } ;
+    TypPropCoup	coup[4]	    = { POSE, GAGNE, PERD, NULLE } ;
+    TypLigne	col[4]	    = { CO_ZERO, CO_UN, CO_DEUX, CO_TROIS } ;
+    TypColonne	row[4]	    = { LI_ZERO, LI_UN, LI_DEUX, LI_TROIS } ;
 
-    free(coupReq);
-    free(coupRep);
-    
-    return state;
+    // Graine
+    srand(time(NULL));
+
+    // Tirage aléatoire
+    aleaPiece = rand()%3;
+    aleaCoup = rand()%4;
+    aleaRow = rand()%4;
+    aleaCol = rand()%4;
+
+    // Création de la case 
+    pos->ligne = row[aleaRow];
+    pos->colonne = col[aleaCol];
+
+    // Remplissage du coup
+    coupReq->propCoup = coup[aleaCoup] ;
+    coupReq->typePiece = piece[aleaPiece] ;
+    coupReq->caseArrivee = *pos;
+
+    // Affichage Tmp
+    printf("%d - %d - %d - %d\n",aleaPiece,aleaCoup,aleaRow,aleaCol);
+
 }
+
+
 
 
 int main (int argc, char **argv)
@@ -93,7 +107,6 @@ int main (int argc, char **argv)
     // Initialisations
     state = ST_KO;
 
-
     // Connexion à l'arbitre
     // + contrôle des erreurs
     sockArbitre = socketClient(machine,port);
@@ -109,20 +122,26 @@ int main (int argc, char **argv)
 	state = demandeIdentification(sockArbitre,login,&joueur);
     }
 
+
     if(state == ST_PARTIE)
     {
 	state = demandePartie(sockArbitre,joueur,&finTournoi,&premier,&adversaire);
     }
 
+    printf("---------piou ---------\n");
+
     if(state == ST_COUP)
     {
+	state = calculCoup(sockArbitre,premier);
     }
+
 
     //
     // Arrêt de la connexion avec l'arbitre
     //
     shutdown(sockArbitre,2);
     close(sockArbitre);
+
 
     return 0;
 }
@@ -292,3 +311,127 @@ State demandePartie(int sockArbitre, int joueur, TypBooleen *finTournoi, TypBool
     return state;
 }
 
+/**
+ * Cette fonction gère le déroulement des coups :
+ *  - demande de calcul à l'IA, envoi d'un coup à l'arbitre, attente de sa réponse
+ *  - attente de la validation du coup adverse et attente du coup adverse
+ *
+ * @param sockArbitre	Socket de l'arbitre
+ * @param premier	VRAI si c'est le tour du joueur, FAUX si c'est celui de l'adversaire
+ * @return ST_KO	Echec durant le déroulement de la partie
+ * @return ST_PARTIE	La partie s'est terminée, on demande une nouvelle partie
+ */
+State calculCoup(int sockArbitre, TypBooleen premier)
+{
+    int err,		    // Variable pour le contrôle des erreurs
+	partieFinie,	    // Flag de sortie de la boucle while
+	noTour;		    // Numéro du tour/coup
+
+    TypBooleen tourJoueur;  // VRAI = tour de l'adversaire, FAUX = tour du joueur
+
+    State state;	    // Etat 
+
+    TypCoupReq *coupReq;    // Un coup (du joueur ou de l'adversaire)
+    TypCoupRep *coupRep;    // Réponse de l'arbitre au coup proposé
+
+    // Initialisations
+    partieFinie = 0;
+    noTour = 0;
+    tourJoueur = premier;
+    state = ST_KO;
+
+    while(partieFinie == 0)
+    {
+	// Allocation de la mémoire
+	coupReq = (TypCoupReq*) malloc(sizeof(TypCoupReq));
+	coupRep = (TypCoupRep*) malloc(sizeof(TypCoupRep));
+
+	if(coupReq == NULL || coupRep == NULL)
+	{
+	    printf("[Erreur]Impossible d'allouer la mémoire pour les coups\n");
+	    break;
+	}
+
+	// Tour du joueur
+	if(tourJoueur == VRAI)
+	{	    
+	    // Calcul d'un coup
+	    coupReq->idRequest = COUP;
+	    coupReq->numeroDuCoup = noTour;
+	    IA(coupReq);
+	    // Soumission du coup à l'arbitre
+	    err = send(sockArbitre,coupReq,sizeof(TypCoupReq),0);
+	    if(err < 0) { perror("[Erreur]Echec de l'envoi du coup à l'arbitre"); break; }
+	    else 
+	    { 
+		printf("Coup envoyé !\n"); 
+
+		// Réception du message de l'arbitre
+		err = recv(sockArbitre,coupRep,sizeof(TypCoupRep),0);
+		if(err < 0) { perror("[Erreur]Echec de la réception de la réponse de l'arbitre au coup du joueur"); break; }
+		else
+		{
+		    if(coupRep->err != ERR_OK) { printf("Erreur dans la requête d'envoi du coup\n"); break; }
+		    else if(coupRep->validCoup != VALID) 
+		    { 
+			printf("[Erreur]Coup invalide !\n");
+			break;
+		    } 
+		}
+	    }
+
+	    //
+	    // TODO :
+	    // Mise à jour du plateau du jeu avec le nouveau pion
+	    //
+
+	    // Mise à jour du tour
+	    tourJoueur = FAUX;
+	}
+	else
+	{
+	    // Réception de la validation du coup de l'adversaire
+	    err = recv(sockArbitre,coupRep,sizeof(TypCoupRep),0);
+	    if(err < 0) { perror("[Erreur]Echec de la réception du coup de l'adversaire"); break; }
+	    else
+	    {
+		// Reception du coup de l'adversaire
+		// + contrôle des erreurs
+		err = recv(sockArbitre,coupReq,sizeof(TypCoupReq),0);
+		if(err < 0) { perror("[Erreur]Echec de la réception du coup de l'adversaire"); break; }
+		else
+		{
+		    // Inspection du coup de l'adversaire
+		    if(coupReq->propCoup != POSE)
+		    {
+			// Mise à jour du flag de sortie de boucle
+			partieFinie = 1;
+		    }
+
+		    //
+		    // TODO :
+		    // Mise à jour du plateau du foursight
+		    // pour ajouter le pion placé par l'adversaire
+		    //
+
+		}
+	    }
+
+	    // Mise à jour du tour
+	    tourJoueur = VRAI;
+	}
+	//Incrémentation du compteur de tour
+	noTour++;
+	// Libération de la mémoire allouée
+	free(coupReq);
+	free(coupRep);
+
+    }
+
+    if(partieFinie == 1)
+    {
+	state = ST_PARTIE;
+    }
+
+    return state;
+}

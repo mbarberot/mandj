@@ -1,0 +1,53 @@
+Liste des tâches restantes 
+-------------------------------------
+
+Bilan (17 mars)
+    Makefile opérationel
+    Une première version du client est opérationnelle
+    
+    Pour tester :
+	lancer l'arbitre sans validation sur le port 5555
+	lancer deux clients avec ./run.sh
+
+
+TODO :
+    - Ne plus passer le login par les arguments
+    - Implémenter la mise à jour du jeu à chaque coup joué
+    - Implémenter le dialogue Client -> IA (IA.c)
+    - Implémenter le main (joueur.c)
+    - Implémenter la couche Java
+    - Implémenter l'IA en prolog
+
+
+Schéma de dev :
+
+
+-----------
+| Arbitre |
+-----------
+	|
+	| Identification
+	| Partie
+	| Coup
+	|
+	|
+	|
+    ---------------------------------------------------------------------
+    | Foursight |							|
+    -------------							|
+    |									|
+    |	-------------------------  coup joué	    ---------------	|
+    |	| Client (client.c)	|------------------>| Jeu (jeu.c) |	|
+    |	|			|<------------------|		  |	|
+    |	-------------------------	plateau	    ---------------	|
+    |	    |plateau   /|\						|
+    |	   \|/		|nouveau coup					|
+    |	-----------------------------					|
+    |	| IA (IA.c - Java - PROLOG) |					|
+    |	-----------------------------					|
+    |									|
+    ---------------------------------------------------------------------
+
+
+
+
