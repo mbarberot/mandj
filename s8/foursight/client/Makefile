@@ -17,7 +17,7 @@ OBJ= $(SRC:.c=.o)
 HDR= $(SRC:.c=.h)
 
 
-all: $(EXEC) 
+all:$(EXEC)
 
 $(EXEC): $(OBJ)
 	$(CC) -o $(BIN)$@ $^ $(CPPFLAGS) $(LDFLAGS)
