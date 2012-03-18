@@ -9,12 +9,43 @@ Bilan (17 mars)
 	lancer l'arbitre sans validation sur le port 5555
 	lancer deux clients avec ./run.sh
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Bilan (18 mars)
+    Revue de l'architecture du client
+    Création des fichiers ia.c et ia.h
+    Création des fichiers jeu.c et jeu.h
+    Création du fichier main.c
+    Réécriture du fichier client.h
+
+    Architecture :
+client.c/h : Implémentent les fonction de communication avec l'arbitre :
+    - connexion,
+    - identification,
+    - demande de partie,
+    - envoi de coup,
+    - attent du coup de l'adversaire
+
+jeu.c/h : Implémentent la structure de donnée et ses méthodes de manipulation pour le jeu :
+    - le plateau
+    - les joueurs
+    - initialiser le plateau et les joueurs
+    - ajouter un coup
+    - afficher le plateau
+    - ...
+
+ia.c/h : A terme, elle implémentera des fonctions pour intéragir avec le Java/PROLOG.
+    Actuellement, une fonction calculeCoup permet le calcul aléatoire d'un coup.
+    En théorie (car non testé) on pourra lancer 2 fois le client (pour avoir les 2joueurs) et
+	il joueront jusqu'à 16coups.
+	La limitation est que chaque coup est envoyé comme "POSE" (et jamais GAGNE/PERD ou NULL)
+	Avec validation, le coup qui devrait avoir GAGNE/PERD/NULL et ayant POSE sera considéré comme TRICHE.
+	Au mieux (si pas de séquence de 4 à le suite) ce sera le 16e coup
 
 TODO :
-    - Ne plus passer le login par les arguments
-    - Implémenter la mise à jour du jeu à chaque coup joué
-    - Implémenter le dialogue Client -> IA (IA.c)
-    - Implémenter le main (joueur.c)
+    - Ré-implémenter client.c avec le nouveau client.h
+    - Finir le main
+    - Tester le jeu avec la fonction aléatoire
     - Implémenter la couche Java
     - Implémenter l'IA en prolog
 
@@ -22,22 +53,28 @@ TODO :
 Schéma de dev :
 
 
------------
-| Arbitre |
------------
-	|
-	| Identification
-	| Partie
-	| Coup
-	|
-	|
-	|
-    ---------------------------------------------------------------------
-    | Foursight |							|
-    -------------							|
-    |									|
+-------------------------------------
+| Arbitre			    |
+-------------------------------------
+			       /|\
+				| Identification
+				| Partie
+				| Coup
+				|
+				|
+				|
+    ----------------------------|----------------------------------------
+    | Foursight |		|					|
+    -------------		|					|
+    |			       \|/					|
+    |	---------------------------------				|
+    |	| Client (client.c/h)		|				|
+    |	---------------------------------				|
+    |	       /|\							|
+    |		| interfaçage						|
+    |	       \|/							|
     |	-------------------------  coup joué	    ---------------	|
-    |	| Client (client.c)	|------------------>| Jeu (jeu.c) |	|
+    |	| Main (client.c)	|------------------>| Jeu (jeu.c) |	|
     |	|			|<------------------|		  |	|
     |	-------------------------	plateau	    ---------------	|
     |	    |plateau   /|\						|
