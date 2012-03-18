@@ -58,7 +58,7 @@ jeu_err jeu_init()
     if(DEBUG)
     {
 	printf("[DEBUG] jeu_init\n");
-	jeu_afficheJeu();
+	jeu_afficherJeu();
     }
 
     return JEU_OK;
@@ -121,12 +121,12 @@ jeu_err jeu_setCase(TypPosition position, TypPiece piece)
 
 
 
-jeu_err jeu_ajouterCoup(TypCoupReq coup, TypBooleen adv)
+jeu_err jeu_ajouterCoup(TypCoupReq coup, TypBooleen moi)
 {
     TypPosition pos = coup.caseArrivee;
     TypPiece piece= coup.typePiece;
     
-    Joueur *j = (adv)?adversaire:joueur;
+    Joueur *j = (moi)?joueur:adversaire;
 
     switch(piece)
     {
@@ -148,18 +148,18 @@ jeu_err jeu_ajouterCoup(TypCoupReq coup, TypBooleen adv)
 
 
 
-jeu_err jeu_afficheJeu()
+jeu_err jeu_afficherJeu()
 {
     jeu_err err ;
 
     printf("\n");
-    err = jeu_afficheJoueur(*joueur,FAUX);
+    err = jeu_afficherJoueur(*joueur,FAUX);
     if(err == JEU_OK) 
     {
 	printf("\n");
-	jeu_affichePlateau();
+	jeu_afficherPlateau();
 	printf("\n");
-	err = jeu_afficheJoueur(*adversaire,VRAI);
+	err = jeu_afficherJoueur(*adversaire,VRAI);
 	printf("\n");
     }
 
@@ -167,7 +167,7 @@ jeu_err jeu_afficheJeu()
 }
 
 
-jeu_err jeu_afficheJoueur(Joueur j, TypBooleen adv)
+jeu_err jeu_afficherJoueur(Joueur j, TypBooleen adv)
 {
     int i;
 
@@ -195,7 +195,7 @@ jeu_err jeu_afficheJoueur(Joueur j, TypBooleen adv)
 }
 
 
-void jeu_affichePlateau()
+void jeu_afficherPlateau()
 {
     int i,j;
 

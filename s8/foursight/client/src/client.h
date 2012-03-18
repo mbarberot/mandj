@@ -23,16 +23,25 @@
 #include "protocole.h"
 
 typedef enum {
-    CONN_OK,	CONN_KO,
-    IDENT_OK,	IDENT_KO,   IDENT_LOGIN,
-    PARTIE_OK,	PARTIE_KO,  PARTIE_JOUEUR,
-    COUP_OK,	COUP_KO,    COUP_INVALIDE,  COUP_TIMEOUT
+    CONN_OK,	CONN_ERR,
+    IDENT_OK,	IDENT_ERR,  IDENT_LOGIN,
+    PARTIE_OK,	PARTIE_ERR,  PARTIE_JOUEUR,
+    COUP_OK,	COUP_ERR,   COUP_INVALIDE,  COUP_TIMEOUT
 } client_err;
 
 
 /*
  * Fonctions
  */
+
+
+/**
+ * Affiche un message d'erreur pour les erreurs définies dans protocole.h
+ * Attention : Ne fonctionne qu'en mode DEBUG
+ *
+ * @param err	Le type d'erreur à afficher
+ */
+void client_perror(TypErreur err);
 
 /**
  * Connexion à l'arbitre
@@ -41,7 +50,7 @@ typedef enum {
  * @param port		Port de la machine qui héberge le serveur
  * @param sockArbitre	Socket de communication créé lors de la connexion
  * @return CONN_OK	Tout s'est bien passé
- * @return CONN_KO	Erreur lors de la connexion
+ * @return CONN_ERR	Erreur lors de la connexion
  */
 client_err client_connexion(
 	char machine[],
@@ -56,7 +65,7 @@ client_err client_connexion(
  * @param login		Login du joueur
  * @param joueur	Numéro du joueur donné par l'arbitre
  * @return IDENT_OK	Tout s'est bien passé
- * @return IDENT_KO	Erreur lors des transmissions
+ * @return IDENT_ERR	Erreur lors des transmissions
  * @return IDENT_LOGIN	Login incorrect
  */
 client_err client_identification(
@@ -74,7 +83,7 @@ client_err client_identification(
  * @param premier	    VRAI si le joueur est le premier à jouer, FAUX sinon
  * @param adversaire	    Numéro de l'adversaire
  * @return PARTIE_OK	    Tout s'est bien passé
- * @return PARTIE_KO	    Erreur lors des transmissions
+ * @return PARTIE_ERR	    Erreur lors des transmissions
  * @return PARTIE_JOUEUR    No Joueur incorrect
  */
 client_err client_partie(
@@ -91,13 +100,13 @@ client_err client_partie(
  * @param sockArbitre	    Socket de communication avec l'arbitre
  * @param coup		    Coup du joueur
  * @return COUP_OK	    Le coup est valide et tout s'est bien passé
- * @return COUP_KO	    Erreur lors des transmissions
+ * @return COUP_ERR	    Erreur lors des transmissions
  * @return COUP_INVALIDE    Le coup est invalide
  * @return COUP_TIMEOUT	    Le coup est en timeout
  */
 client_err client_envoieCoup(
 	int sockArbitre,
-	TypCoupReq coup
+	TypCoupReq *coup
 	);
 
 /**
@@ -106,13 +115,13 @@ client_err client_envoieCoup(
  * @param sockArbitre	    Socket de communication avec l'arbitre
  * @param coup		    Coup de l'adversaire
  * @return COUP_OK	    Le coup de l'adversaire est valide et tout s'est bien passé
- * @return COUP_KO	    Erreur lors des transmissions
+ * @return COUP_ERR	    Erreur lors des transmissions
  * @return COUP_INVALIDE    Le coup de l'adversaire est invalide
  * @return COUP_TIMEOUT	    L'adversaire est en timeout
  */
 client_err client_attendCoup(
 	int sockArbitre,
-	TypCoupReq coup
+	TypCoupReq *coup
 	);
 
 #endif

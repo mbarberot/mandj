@@ -53,22 +53,63 @@ int main (int argc, char **argv)
     err = scanf("%s",login);
     if(DEBUG) { printf("[DEBUG] Login : %s\n",login); }
 
-    
-    jeu_init();
+
+    int sockArbitre,
+	joueur,
+	adversaire,
+	nbCoup;
+
+    TypBooleen finTournoi,
+	       finPartie,
+	       premier;
+
+    TypCoupReq *coup;
+
+    jeu_err jeuErr;
+    client_err clientErr;
+    ia_err iaErr;
+
+    jeuErr = jeu_init();
+    clientErr = client_connexion(machine,port,&sockArbitre);
+    clientErr = client_identification(sockArbitre,login,&joueur);
 
 
-    //
-    // En travaux
-    // 
+    do {
+	clientErr = client_partie(sockArbitre,joueur,&finTournoi,&premier,&adversaire);
 
-    TypCoupReq *coup = (TypCoupReq*) malloc(sizeof(TypCoupReq));
-    coup->idRequest = COUP;
-    coup->numeroDuCoup = 0;
+	if(!finTournoi)
+	{
+	    finPartie = VRAI;
+	    nbCoup = 0;
 
-    ia_calculeCoup(coup); 
-    jeu_ajouterCoup(*coup);
+	    while(!finPartie)
+	    {
+		coup = (TypCoupReq*) malloc(sizeof(TypCoupReq));
 
-    jeu_affichePlateau();
-    
+		if(!premier)
+		{
+		    clientErr = client_attendCoup(sockArbitre,coup);
+		    if(clientErr != COUP_OK) break;
+		}
+		else
+		{
+		    coup->idRequest = COUP;
+		    coup->numeroDuCoup = nbCoup;
+		    iaErr = ia_calculeCoup(coup);
+		    clientErr = client_envoieCoup(sockArbitre,coup);
+		    if(clientErr != COUP_OK) break;
+		}
+
+		jeuErr = jeu_ajouterCoup(*coup,premier);
+		jeuErr = jeu_afficherJeu();
+
+		nbCoup++;
+
+		free(coup);
+	    }
+	}
+    } while(!finTournoi);
+
+
     return 0;
 }

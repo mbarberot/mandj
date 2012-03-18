@@ -119,11 +119,11 @@ jeu_err jeu_setCase(TypPosition position, TypPiece piece);
  * Ajoute le coup dans le plateau
  *
  * @param coup	    Le coup à ajouter
- * @param adv	    VRAI si le coup vient de l'adversaire, FAUX sinon
+ * @param moi	    VRAI si c'est mon coup, FAUX si c'est celui de l'adversaire
  * @return JEU_OK   L'intialisation s'est bien passée
  * @return JEU_ERR  Echec de l'initialisation
  */
-jeu_err jeu_ajouterCoup(TypCoupReq coup, TypBooleen adv);
+jeu_err jeu_ajouterCoup(TypCoupReq coup, TypBooleen moi);
 
 /**
  * Affichage du jeu
@@ -131,7 +131,7 @@ jeu_err jeu_ajouterCoup(TypCoupReq coup, TypBooleen adv);
  * @return JEU_OK   L'intialisation s'est bien passée
  * @return JEU_ERR  Echec de l'initialisation
  */
-jeu_err jeu_afficheJeu();
+jeu_err jeu_afficherJeu();
 
 /**
  * Affiche le plateau
@@ -139,7 +139,7 @@ jeu_err jeu_afficheJeu();
  * @return JEU_OK   L'intialisation s'est bien passée
  * @return JEU_ERR  Echec de l'initialisation
  */
-void jeu_affichePlateau();
+void jeu_afficherPlateau();
 
 /**
  * Affiche un joueur
@@ -149,7 +149,7 @@ void jeu_affichePlateau();
  * @return JEU_OK   L'intialisation s'est bien passée
  * @return JEU_ERR  Echec de l'initialisation
  */
-jeu_err jeu_afficheJoueur(Joueur j, TypBooleen adv);
+jeu_err jeu_afficherJoueur(Joueur j, TypBooleen adv);
 
 
 #endif
