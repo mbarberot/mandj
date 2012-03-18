@@ -22,36 +22,62 @@
 // Protocole de connexion au serveur
 #include "protocole.h"
 
-/*
- * Etat du client
- *
- * ST_KO 		Echec d'une étape
- * ST_IDENTIFICATION 	Identification auprès de l'arbitre
- * ST_PARTIE		Demande d'une partie auprès de l'arbitre
- * ST_COUP		Calcul et envoi de nos coups & attente des coups adverses
- * ST_DECONNEXION	Fin du tournoi, déconnexion du serveur
- *
- */
 typedef enum {
-    ST_KO,
-    ST_IDENTIFICATION,
-    ST_PARTIE,
-    ST_COUP,
-    ST_DECONNEXION
-} State ;
+    CONN_OK,	CONN_KO,
+    IDENT_OK,	IDENT_KO,   IDENT_LOGIN,
+    PARTIE_OK,	PARTIE_KO,  PARTIE_JOUEUR,
+    COUP_OK,	COUP_KO,    COUP_INVALIDE,  COUP_TIMEOUT
+} client_err;
 
 
 /*
  * Fonctions
  */
 
-State demandeIdentification(
+/**
+ * Connexion à l'arbitre
+ *
+ * @param machine	Machine qui héberge le serveur
+ * @param port		Port de la machine qui héberge le serveur
+ * @param sockArbitre	Socket de communication créé lors de la connexion
+ * @return CONN_OK	Tout s'est bien passé
+ * @return CONN_KO	Erreur lors de la connexion
+ */
+client_err client_connexion(
+	char machine[],
+	int port,
+	int *sockArbitre
+	);
+
+/**
+ * Identification auprès de l'arbitre
+ *
+ * @param sockArbitre	Socket de communication avec l'arbitre
+ * @param login		Login du joueur
+ * @param joueur	Numéro du joueur donné par l'arbitre
+ * @return IDENT_OK	Tout s'est bien passé
+ * @return IDENT_KO	Erreur lors des transmissions
+ * @return IDENT_LOGIN	Login incorrect
+ */
+client_err client_identification(
 	int sockArbitre,
 	char login[],
 	int *joueur
 	);
 
-State demandePartie(
+/**
+ * Demande une partie à l'arbitre
+ *
+ * @param sockArbitre	    Socket de communication avec l'arbitre
+ * @param joueur	    Numéro du joueur
+ * @param finTournoi	    VRAI si le tournoi est terminé, FAUX sinon
+ * @param premier	    VRAI si le joueur est le premier à jouer, FAUX sinon
+ * @param adversaire	    Numéro de l'adversaire
+ * @return PARTIE_OK	    Tout s'est bien passé
+ * @return PARTIE_KO	    Erreur lors des transmissions
+ * @return PARTIE_JOUEUR    No Joueur incorrect
+ */
+client_err client_partie(
 	int sockArbitre,
 	int joueur,
 	TypBooleen *finTournoi,
@@ -59,9 +85,34 @@ State demandePartie(
 	int *adversaire
 	);
 
-State calculCoup(
+/**
+ * Envoie un coup à l'arbitre et attend la validation.
+ *
+ * @param sockArbitre	    Socket de communication avec l'arbitre
+ * @param coup		    Coup du joueur
+ * @return COUP_OK	    Le coup est valide et tout s'est bien passé
+ * @return COUP_KO	    Erreur lors des transmissions
+ * @return COUP_INVALIDE    Le coup est invalide
+ * @return COUP_TIMEOUT	    Le coup est en timeout
+ */
+client_err client_envoieCoup(
 	int sockArbitre,
-	TypBooleen premier
+	TypCoupReq coup
+	);
+
+/**
+ * Attend la validation du coup de l'adversaire puis son coup.
+ *
+ * @param sockArbitre	    Socket de communication avec l'arbitre
+ * @param coup		    Coup de l'adversaire
+ * @return COUP_OK	    Le coup de l'adversaire est valide et tout s'est bien passé
+ * @return COUP_KO	    Erreur lors des transmissions
+ * @return COUP_INVALIDE    Le coup de l'adversaire est invalide
+ * @return COUP_TIMEOUT	    L'adversaire est en timeout
+ */
+client_err client_attendCoup(
+	int sockArbitre,
+	TypCoupReq coup
 	);
 
 #endif

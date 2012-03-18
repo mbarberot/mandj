@@ -1,1 +1,1 @@
-./bin/client 5555 localhost mbarbero
+./bin/client localhost 5555
