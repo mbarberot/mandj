@@ -14,17 +14,17 @@ class Edition{
 	private $flag_pret;// => us_edition : FLG_PRET
 	private $flag_dedicace;// => us_edition : FLG_DEDICACE
 	private $flag_aAcheter;// => us_edition : FLG_ACHAT
-	private $date_ajout;// => us_edition : DATE_AJOUT
+	private $date_ajout;// => us_edition : DATE_AJOUT (nullable)
 	/*
 	 * Attributs utilisés dans DETAILS_EDITION
 	 */
-	private $img_couv; // => bd_edition : IMG_COUV
+	private $img_couv; // => bd_edition : IMG_COUV (nullable)
 	/*
 	 * Attributs utilisés dans EDITION
 	 */
-	private $isbn; // => bd_edition : ISBN
-	private $date_parution;// => bd_edition : DTE_PARUTION
-	private $idEditeur; // => bd_edition (<-(ID_COLLECTION)->) ed_collection : ID_EDITEUR
+	private $isbn; // => bd_edition : ISBN (nullable)
+	private $date_parution;// => bd_edition : DTE_PARUTION (nullable)
+	private $idEditeur; // => bd_edition (nullable) (<-(ID_COLLECTION)->) ed_collection : ID_EDITEUR
 	private $flag_default;// => bd_collection : FLG_DEFAUT
 
 	/*
@@ -38,11 +38,11 @@ class Edition{
 		$this->flag_pret = $nflagPret;
 		$this->flag_dedicace = $nflagDed;
 		$this->flag_aAcheter = $nflagAa;
-		$this->date_ajout = $ndate;
-		$this->img_couv = $nimg;
-		$this->isbn = $nIsbn;
-		$this->date_parution = $nDatePar;
-		$this->idEditeur = $nIdEd;
+		($ndate == NULL)? $this->date_ajout = "" : $this->date_ajout = $ndate;
+		($nimg == NULL)? $this->img_couv = "" : $this->img_couv = $nimg;
+		($nIsbn == NULL)? $this->isbn = "" : $this->isbn = $nIsbn;
+		($nDatePar == NULL)? $this->date_parution = "" : $this->date_parution = $nDatePar;
+		($nIdEd == NULL)? $this->idEditeur = -1 : $this->idEditeur = $nIdEd;
 		$this->flag_default = $nflagDef;
 			
 	}
