@@ -295,6 +295,49 @@ class BDovore {
 		
 		return $res;		
 	}
+	
+	/**
+	 * Ajoute une édition à la collection d'un utilisateur.
+	 * @param String $userName
+	 * @param String $userPass
+	 * @param int $idEdition
+	 */
+	public function addUserBibliotheque($userName, $userPass, $idEdition){
+		// On récupère l'identifiant de l'utilisateur
+		$sqlGetUser = "SELECT ID_USER FROM user WHERE USERNAME = '{$userName}' AND PASSWORD =  '{$userPass}'";
+		$reqGetUser = mysql_query($sqlGetUser);
+
+		// On vérifie que la requete est bien effectu�e
+		if(!$reqGetUser) {
+			throw  new SoapFault("ERREUR_REQUETE : id_user", $errors["ERREUR_REQUETE"]);
+		}
+
+		// On vérifie l'identification et renvoie une erreur si elle est mauvaise
+		if(mysql_num_rows($reqGetUser) != 1) {
+			throw new SoapFault("IDENTIFICATION_KO", $errors["IDENTIFICATION_KO"]);
+		}
+
+		// On récupère l'identifiant
+		$dataUser = mysql_fetch_assoc($reqGetUser);
+		$idUser = $dataUser['ID_USER'];
+		
+		// Récupération de la date et conversion au format MySQL
+		$cDate = date("Y-m-d H:i:s");
+		
+		
+		
+		// Préparation de la requête SQL
+		$sqlAddEd = "INSERT INTO us_edition (ID_USER, ID_EDITION, DATE_AJOUT) 
+		VALUES({$idUser}, {$idEdition}, \"{$cDate}\")";
+		
+		$reqAddEd = mysql_query($sqlAddEd);
+		
+		if(!$reqAddEd){
+			throw new SoapFault("ERREUR_REQUETE : insert_into", $errors["ERREUR_REQUETE"]);
+		}
+
+	}
+	
 }
 
 

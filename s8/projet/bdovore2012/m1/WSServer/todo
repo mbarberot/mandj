@@ -1,6 +1,5 @@
 TODO - List :
 
-- Dans tous les constructeurs des classes contenant les infos (package data) : rajouter des conditionnelles pour gérer le cas où une valeur vaut NULL
-(exemple : Volume.php).
+- cf todo de serie.php, auteur.php
 
 - Rajouter les setters dans le WSDL ... et les implémenter :)

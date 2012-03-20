@@ -28,7 +28,7 @@ try	{
 	);
 
 	try{
-		$res = $client->getDetailsTome(74303);
+		$res = $client->addUserBibliotheque("latruffe","bdovore",1);
 		var_dump($res);
 	}catch (SoapFault $e)
 	{

@@ -133,6 +133,31 @@
 	<wsdl:message name="getColoristesTomeResponse">
 		<wsdl:part name="coloristes" type="xsd:string"></wsdl:part>
 	</wsdl:message>
+	<wsdl:message name="addUserBibliothequeRequest">
+		<wsdl:part name="userName" type="xsd:string"></wsdl:part>
+		<wsdl:part name="userPass" type="xsd:string"></wsdl:part>
+		<wsdl:part name="idEdition" type="xsd:int"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="addUserBibliothequeResponse">
+		<wsdl:part name="isAdded" type="xsd:boolean"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="Request">
+		<wsdl:part name="Request" type="xsd:string"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="Response">
+		<wsdl:part name="Response" type="xsd:string"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="doProposalRequest">
+		<wsdl:part name="typeAjout" type="xsd:int"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="doProposalResponse">
+		<wsdl:part name="proposalIsOk" type="xsd:boolean"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="addUserBibliothequeResponse1">
+		<wsdl:part name="date"
+			type="xsd:string">
+		</wsdl:part>
+	</wsdl:message>
 	<portType name='BDovore_PortType'>
 		<wsdl:operation name='getBibliotheque'>
 			<wsdl:input message='tns:getBibliothequeRequest' />
@@ -173,6 +198,9 @@
 		<wsdl:operation name="getColoristesTome">
 			<wsdl:input message="tns:getColoristesTomeRequest"></wsdl:input>
 			<wsdl:output message="tns:getColoristesTomeResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="addUserBibliotheque">
+			<wsdl:input message="tns:addUserBibliothequeRequest"></wsdl:input>					</wsdl:operation>		<wsdl:operation name="doProposal">			<wsdl:input message="tns:doProposalRequest"></wsdl:input>			<wsdl:output message="tns:doProposalResponse"></wsdl:output>
 		</wsdl:operation>
 	</portType>
 
@@ -272,6 +300,26 @@
 
 		<wsdl:operation name='getGenre'>
 			<soap:operation soapAction='getGenre' />
+			<wsdl:input>
+				<soap:body use='literal' namespace='namespace_adress' />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use='literal' namespace='namespace_adress' />
+			</wsdl:output>
+		</wsdl:operation>
+		
+		<wsdl:operation name='addUserBibliotheque'>
+			<soap:operation soapAction='addUserBibliotheque' />
+			<wsdl:input>
+				<soap:body use='literal' namespace='namespace_adress' />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use='literal' namespace='namespace_adress' />
+			</wsdl:output>
+		</wsdl:operation>
+		
+		<wsdl:operation name='doProposal'>
+			<soap:operation soapAction='doProposal' />
 			<wsdl:input>
 				<soap:body use='literal' namespace='namespace_adress' />
 			</wsdl:input>
