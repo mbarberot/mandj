@@ -1,0 +1,132 @@
+\documentclass[12pt]{article}
+
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[francais]{babel}
+\usepackage[a4paper]{geometry}
+%\usepackage{setspace}
+%\usepackage{layout}	
+\usepackage{lscape}
+%\usepackage{soul}
+%\usepackage{ulem}
+\usepackage{eurosym}		
+%\usepackage{bookman}
+%\usepackage{charter}
+%\usepackage{newcent}
+%\usepackage{lmodern}
+\usepackage{mathpazo}					
+%\usepackage{mathptmx}
+%\usepackage{verbatim}	
+%\usepackage{listings}	
+%\usepackage{url}		
+%\usepackage{moreverb}
+%\usepackage{color}	
+%\usepackage{colortbl}	
+%\usepackage[svgnames]{xcolor}
+%\usepackage{amsmath}
+%\usepackage{amssymb}
+%\usepackage{mathrsfs}
+%\usepackage{asmthm}
+%\usepackage[pdftex]{graphicx}	
+%\usepackage{wrapfig}		
+%\usepackage{makeidx}	
+%\usepackage{fancyhdr}
+%\usepackage{sfheaders}
+%\usepackage{pdfpages}
+%\usepackage[nottoc, notlof, notlot]{tocbibind}
+\usepackage{tocvsec2}
+
+
+\title{Client Java BDOvore\\Compte rendu de réunion}
+\date{20 mars 2012}
+
+\makeatletter
+\renewcommand\section{\@startsection{section}{1}{\z@}%
+	{2cm \@plus -1ex \@minus -.2ex}%
+	{2.3ex \@plus.2ex}%
+	{\reset@font\large\bfseries}}
+\makeatother
+
+\newcommand{\guil}[1]{\og{#1}\fg}
+
+\begin{document}
+
+\maketitle
+
+\begin{center}
+\begin{tabular}{lr}
+% 
+% Présents :
+%
+  \multicolumn{2}{c}{Présents :} \\ \hline
+  \begin{minipage}{0.47\linewidth}
+    \vspace{0.1cm}
+    \begin{flushleft}
+% 	Etudiants :
+      Barberot Mathieu
+    \end{flushleft}
+  \end{minipage} &
+  \begin{minipage}{0.47\linewidth}
+    \vspace{0.1cm}
+    \begin{flushright}
+% 	Encadrants :
+      Bouquet Fabrice
+    \end{flushright}
+  \end{minipage} \\
+  
+%
+%	Absents :
+%
+  \multicolumn{2}{c}{Absents :} \\ \hline
+  \begin{minipage}{0.47\linewidth}
+    \vspace{0.1cm}
+    \begin{flushleft}   
+% 	Etudiants :
+      Racenet Joan (Excusé)
+    \end{flushleft}
+  \end{minipage} &
+  \begin{minipage}{0.47\linewidth}
+    \vspace{0.1cm}	
+    \begin{flushright}
+%	Encadrants :
+      Coqblin Mathias
+    \end{flushright}
+  \end{minipage} \\
+\end{tabular}
+\end{center}
+
+
+\renewcommand{\contentsname}{Ordre du jour :}
+\tableofcontents
+
+
+\section{Bilan}
+Joan a implémenté les \guil{getters} du webservice, côté serveur. De plus, il a modifié le fichier WSDL pour mieux coller aux besoins et a inclus des \texttt{xsd:complexType} pour récupérer plus d'informations avec une seule requête.\\
+Enfin, il a également mis en place le webservice côté client, nous permettant de commencer les tests.\\
+\\
+Mathieu a remis en place la recherche par auteur ainsi que la recherche sans mots-clés, affichant alors tout le contenu de la base.\\
+Dans l'optique de l'utilisation de Lucene pour les recherches, il a migré la base de données sur la dernière version de h2 (1.3.x) et testé l'utilisation de Lucene (3.x). 
+
+\section{Décisions}
+Comme l'affichage de toutes la base pourrait prendre un certain temps et que l'utilisateur pourrait s'être trompé en validant sa recherche sans mots-clés, il faudra à nouveau désactiver cette fonctionalitée et laisser la possibilité d'utiliser le caractères astérisque. En faisant cela, l'utilisateur manifeste son envie de tout afficher, à ses risques et périls.\\
+Une bulle ou une ligne d'aide pourra être également affichée pour informer l'utilisateur des possibilités de la recherche, à svaoir : utiliser l'astérisque ou un mot clé de plus de trois caractères.
+
+\section{Rappel}
+Le contenu initial le base de données du client contiendra tous les tomes de la base distante, mais sans les détails. L'utilisateur effectue ensuite une recherche parmis les albums de la base de donnée du client et peut ajouter les albums à sa BDtèque. Dès lors que l'utilisateur double clique sur l'album, le client utilisera le webservice pour télécharger les détails de l'album.\\
+Lors d'une mise à jour, il faudra donc regarder si de nouveaux albums ont été ajoutés à la base distante BDovore, puis synchroniser la BDtèque de l'utilisateur.
+
+\section{Tâches pour la prochaine réunion}
+\begin{itemize}
+  \item Finir l'implémentation du webservice côté serveur
+  \item Mettre en place l'utilisation de l'astérisque dans les recherches et ré-interdire les recherches sans mots-clés.
+  \item Afficher la bulle/le texte d'aide
+  \item Mettre en place la recherche avec Lucene
+  \item Mettre en place les primitives d'accès lecture/écriture pour préparer le synchronisation
+\end{itemize}
+
+\section{Prochaine réunion}
+La prochaine réunion aura lieu le jeudi 22 mars 2012 à 9h00 dans le bureau de M. Bouquet.
+
+
+\end{document}

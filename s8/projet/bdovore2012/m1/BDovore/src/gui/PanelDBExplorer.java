@@ -2,10 +2,7 @@ package gui;
 
 import db.SearchQuery;
 import db.data.Album;
-import java.awt.BorderLayout;
-import java.awt.Dialog;
-import java.awt.FlowLayout;
-import java.awt.Window;
+import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -128,6 +125,11 @@ public class PanelDBExplorer extends JPanel {
                 }
             }
         });
+        
+        JLabel keywordsHelp = new JLabel("  Aide : Trois caractères minimum ou * pour lister tous les albums");
+        keywordsHelp.setForeground(Color.GRAY);
+        keywordsHelp.setFont(new Font("Arial",0,10));
+        
 
         // Bouton de validation de la recherche
         btnSearch = new JButton("Rechercher", new ImageIcon("img/search.png"));
@@ -152,12 +154,13 @@ public class PanelDBExplorer extends JPanel {
         // Positionnement horizontal des composants.
         GroupLayout.Alignment align = GroupLayout.Alignment.LEADING;
         layout.setHorizontalGroup(
-                layout.createSequentialGroup().addGroup(layout.createParallelGroup(align).addComponent(radAvailable).addComponent(lstCriterias)).addGroup(layout.createParallelGroup(align).addGroup(layout.createSequentialGroup().addComponent(radOwned).addComponent(radMissing)).addComponent(txtKeywords)).addComponent(btnSearch));
+                layout.createSequentialGroup().addGroup(layout.createParallelGroup(align).addComponent(radAvailable).addComponent(lstCriterias)).addGroup(layout.createParallelGroup(align).addGroup(layout.createSequentialGroup().addComponent(radOwned).addComponent(radMissing)).addComponent(txtKeywords).addComponent(keywordsHelp)).addComponent(btnSearch));
 
         // Positionnement vertical des composants.
         align = GroupLayout.Alignment.BASELINE;
         layout.setVerticalGroup(
-                layout.createSequentialGroup().addGroup(layout.createParallelGroup(align).addComponent(radOwned).addComponent(radAvailable).addComponent(radMissing)).addGroup(layout.createParallelGroup(align).addComponent(lstCriterias).addComponent(txtKeywords).addComponent(btnSearch)));
+                layout.createSequentialGroup().addGroup(layout.createParallelGroup(align).addComponent(radOwned).addComponent(radAvailable).addComponent(radMissing)).addGroup(layout.createParallelGroup(align).addComponent(lstCriterias).addComponent(txtKeywords).addComponent(btnSearch)).addComponent(keywordsHelp));
+    
         layout.linkSize(SwingConstants.HORIZONTAL, lstCriterias, radOwned, radAvailable, radMissing);
         layout.linkSize(SwingConstants.VERTICAL, lstCriterias, txtKeywords);
 

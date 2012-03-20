@@ -10,9 +10,11 @@
 	
 	<path id="classpath">  
 		<pathelement location="lib/"/>  
-		<pathelement path="lib/opencsv-1.8.jar"/>  
-		<pathelement path="lib/lucene-core-2.4.jar"/>
+		<pathelement path="lib/opencsv.jar"/>  
+		<pathelement path="lib/lucene-core.jar"/>
 		<pathelement path="lib/h2.jar"/>
+		<pathelement path="lib/jaxrpc.jar"/>
+		<pathelement path="lib/axis.jar"/>
 	</path>  
 	
 	
