@@ -76,20 +76,21 @@ int main (int argc, char **argv)
 
     do {
 	clientErr = client_partie(sockArbitre,joueur,&finTournoi,&premier,&adversaire);
+	if(clientErr != PARTIE_OK) { return 1; }
 
-	if(!finTournoi)
+	if(finTournoi == FAUX)
 	{
-	    finPartie = VRAI;
+	    finPartie = FAUX;
 	    nbCoup = 0;
 
-	    while(!finPartie)
+	    while(finPartie == FAUX)
 	    {
 		coup = (TypCoupReq*) malloc(sizeof(TypCoupReq));
 
 		if(!premier)
 		{
 		    clientErr = client_attendCoup(sockArbitre,coup);
-		    if(clientErr != COUP_OK) break;
+		    if(clientErr != COUP_OK) finPartie = VRAI;
 		}
 		else
 		{
@@ -97,12 +98,16 @@ int main (int argc, char **argv)
 		    coup->numeroDuCoup = nbCoup;
 		    iaErr = ia_calculeCoup(coup);
 		    clientErr = client_envoieCoup(sockArbitre,coup);
-		    if(clientErr != COUP_OK) break;
+		    if(clientErr != COUP_OK) finPartie = VRAI;
 		}
 
 		jeuErr = jeu_ajouterCoup(*coup,premier);
 		jeuErr = jeu_afficherJeu();
 
+		if(coup->propCoup != POSE) finPartie = VRAI;
+
+		premier = ((premier)?FAUX:VRAI);
+		
 		nbCoup++;
 
 		free(coup);

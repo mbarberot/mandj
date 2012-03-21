@@ -216,7 +216,7 @@ client_err client_partie(int sockArbitre, int joueur, TypBooleen *finTournoi, Ty
 
 	*finTournoi = partieRep->finTournoi;
 
-	if(finTournoi == FAUX) 
+	if(*finTournoi == FAUX) 
 	{
 	    if(DEBUG) { printf("[DEBUG] Demande de partie acceptée\n"); }
 
