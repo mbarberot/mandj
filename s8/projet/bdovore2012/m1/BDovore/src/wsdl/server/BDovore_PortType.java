@@ -18,4 +18,7 @@ public interface BDovore_PortType extends java.rmi.Remote {
     public wsdl.server.DetailsEditeur getDetailsEditeur(int idEditeur) throws java.rmi.RemoteException;
     public java.lang.String getGenre(int idGenre) throws java.rmi.RemoteException;
     public java.lang.String getColoristesTome(int idTome) throws java.rmi.RemoteException;
+    public void addUserBibliotheque(java.lang.String userName, java.lang.String userPass, int idEdition) throws java.rmi.RemoteException;
+    public boolean doProposal(int typeAjout) throws java.rmi.RemoteException;
+    public java.lang.String getEditionsManquantes(int lastId) throws java.rmi.RemoteException;
 }

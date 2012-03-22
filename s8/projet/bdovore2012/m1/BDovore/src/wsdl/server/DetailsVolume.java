@@ -16,6 +16,8 @@ public class DetailsVolume  implements java.io.Serializable {
 
     private int numTome;
 
+    private int idGenre;
+
     public DetailsVolume() {
     }
 
@@ -23,11 +25,13 @@ public class DetailsVolume  implements java.io.Serializable {
            int idTome,
            java.lang.String titre,
            int idSerie,
-           int numTome) {
+           int numTome,
+           int idGenre) {
            this.idTome = idTome;
            this.titre = titre;
            this.idSerie = idSerie;
            this.numTome = numTome;
+           this.idGenre = idGenre;
     }
 
 
@@ -110,6 +114,26 @@ public class DetailsVolume  implements java.io.Serializable {
         this.numTome = numTome;
     }
 
+
+    /**
+     * Gets the idGenre value for this DetailsVolume.
+     * 
+     * @return idGenre
+     */
+    public int getIdGenre() {
+        return idGenre;
+    }
+
+
+    /**
+     * Sets the idGenre value for this DetailsVolume.
+     * 
+     * @param idGenre
+     */
+    public void setIdGenre(int idGenre) {
+        this.idGenre = idGenre;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DetailsVolume)) return false;
@@ -127,7 +151,8 @@ public class DetailsVolume  implements java.io.Serializable {
              (this.titre!=null &&
               this.titre.equals(other.getTitre()))) &&
             this.idSerie == other.getIdSerie() &&
-            this.numTome == other.getNumTome();
+            this.numTome == other.getNumTome() &&
+            this.idGenre == other.getIdGenre();
         __equalsCalc = null;
         return _equals;
     }
@@ -145,6 +170,7 @@ public class DetailsVolume  implements java.io.Serializable {
         }
         _hashCode += getIdSerie();
         _hashCode += getNumTome();
+        _hashCode += getIdGenre();
         __hashCodeCalc = false;
         return _hashCode;
     }
@@ -176,6 +202,12 @@ public class DetailsVolume  implements java.io.Serializable {
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("numTome");
         elemField.setXmlName(new javax.xml.namespace.QName("", "numTome"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("idGenre");
+        elemField.setXmlName(new javax.xml.namespace.QName("", "idGenre"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

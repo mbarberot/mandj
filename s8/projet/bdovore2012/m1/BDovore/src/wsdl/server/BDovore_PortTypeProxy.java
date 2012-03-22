@@ -104,5 +104,23 @@ public class BDovore_PortTypeProxy implements wsdl.server.BDovore_PortType {
     return bDovore_PortType.getColoristesTome(idTome);
   }
   
+  public void addUserBibliotheque(java.lang.String userName, java.lang.String userPass, int idEdition) throws java.rmi.RemoteException{
+    if (bDovore_PortType == null)
+      _initBDovore_PortTypeProxy();
+    bDovore_PortType.addUserBibliotheque(userName, userPass, idEdition);
+  }
+  
+  public boolean doProposal(int typeAjout) throws java.rmi.RemoteException{
+    if (bDovore_PortType == null)
+      _initBDovore_PortTypeProxy();
+    return bDovore_PortType.doProposal(typeAjout);
+  }
+  
+  public java.lang.String getEditionsManquantes(int lastId) throws java.rmi.RemoteException{
+    if (bDovore_PortType == null)
+      _initBDovore_PortTypeProxy();
+    return bDovore_PortType.getEditionsManquantes(lastId);
+  }
+  
   
 }

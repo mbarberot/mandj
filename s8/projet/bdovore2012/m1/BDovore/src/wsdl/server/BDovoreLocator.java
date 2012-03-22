@@ -26,7 +26,7 @@ public class BDovoreLocator extends org.apache.axis.client.Service implements ws
     }
 
     // Use to get a proxy class for BDovore_Port
-    private java.lang.String BDovore_Port_address = "http://localhost/webservice/server.php";
+    private java.lang.String BDovore_Port_address = "http://localhost/bdovore/webservice/server.php";
 
     public java.lang.String getBDovore_PortAddress() {
         return BDovore_Port_address;

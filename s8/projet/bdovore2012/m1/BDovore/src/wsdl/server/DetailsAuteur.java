@@ -20,6 +20,8 @@ public class DetailsAuteur  implements java.io.Serializable {
 
     private java.lang.String date_deces;
 
+    private java.lang.String nationalite;
+
     public DetailsAuteur() {
     }
 
@@ -29,13 +31,15 @@ public class DetailsAuteur  implements java.io.Serializable {
            java.lang.String nom,
            java.lang.String prenom,
            java.lang.String date_naissance,
-           java.lang.String date_deces) {
+           java.lang.String date_deces,
+           java.lang.String nationalite) {
            this.idAuteur = idAuteur;
            this.pseudo = pseudo;
            this.nom = nom;
            this.prenom = prenom;
            this.date_naissance = date_naissance;
            this.date_deces = date_deces;
+           this.nationalite = nationalite;
     }
 
 
@@ -158,6 +162,26 @@ public class DetailsAuteur  implements java.io.Serializable {
         this.date_deces = date_deces;
     }
 
+
+    /**
+     * Gets the nationalite value for this DetailsAuteur.
+     * 
+     * @return nationalite
+     */
+    public java.lang.String getNationalite() {
+        return nationalite;
+    }
+
+
+    /**
+     * Sets the nationalite value for this DetailsAuteur.
+     * 
+     * @param nationalite
+     */
+    public void setNationalite(java.lang.String nationalite) {
+        this.nationalite = nationalite;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DetailsAuteur)) return false;
@@ -185,7 +209,10 @@ public class DetailsAuteur  implements java.io.Serializable {
               this.date_naissance.equals(other.getDate_naissance()))) &&
             ((this.date_deces==null && other.getDate_deces()==null) || 
              (this.date_deces!=null &&
-              this.date_deces.equals(other.getDate_deces())));
+              this.date_deces.equals(other.getDate_deces()))) &&
+            ((this.nationalite==null && other.getNationalite()==null) || 
+             (this.nationalite!=null &&
+              this.nationalite.equals(other.getNationalite())));
         __equalsCalc = null;
         return _equals;
     }
@@ -212,6 +239,9 @@ public class DetailsAuteur  implements java.io.Serializable {
         }
         if (getDate_deces() != null) {
             _hashCode += getDate_deces().hashCode();
+        }
+        if (getNationalite() != null) {
+            _hashCode += getNationalite().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -256,6 +286,12 @@ public class DetailsAuteur  implements java.io.Serializable {
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("date_deces");
         elemField.setXmlName(new javax.xml.namespace.QName("", "date_deces"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("nationalite");
+        elemField.setXmlName(new javax.xml.namespace.QName("", "nationalite"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
