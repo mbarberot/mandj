@@ -15,7 +15,7 @@ public class SearchQuery {
     public static final String GET_FIELDS =
             "t.ID_TOME, t.TITRE, t.NUM_TOME, "
             + "s.ID_SERIE, s.NOM_SERIE, "
-            + "g.ID_GENRE, g.NOM_GENRE, "
+            + "t.ID_GENRE, g.NOM_GENRE, "
             + "e.ISBN";
     public static final String GET_MAX = "COUNT(t.ID_TOME) AS NBR";
     public static final int SEARCH_IN_ALL = 0;
@@ -63,7 +63,7 @@ public class SearchQuery {
         String sql = "SELECT " + type + "\n"
                 + "FROM TOME t \n"
                 + "INNER JOIN SERIE s ON s.ID_SERIE = t.ID_SERIE \n"
-                + "INNER JOIN GENRE g ON g.ID_GENRE = s.ID_GENRE \n"
+                + "INNER JOIN GENRE g ON g.ID_GENRE = t.ID_GENRE \n"
                 + "INNER JOIN EDITION e ON " + searchInJoin[searchIn] + "\n"
                 + "WHERE 1" + searchInWhere[searchIn] + "\n"
                 + (type.equals(GET_MAX) ? "" : orderBy(sortby, order)) + "\n";
@@ -108,7 +108,7 @@ public class SearchQuery {
         String sql = "SELECT " + type + "\n"
                 + "FROM TOME t \n"
                 + "INNER JOIN SERIE s ON s.ID_SERIE = t.ID_SERIE \n"
-                + "INNER JOIN GENRE g ON g.ID_GENRE = s.ID_GENRE \n"
+                + "INNER JOIN GENRE g ON g.ID_GENRE = t.ID_GENRE \n"
                 + "INNER JOIN EDITION e ON " + searchInJoin[searchIn] + "\n"
                 + "WHERE t.TITRE like '%" + search + "%' \n"
                 + searchInWhere[searchIn] + "\n"
@@ -141,7 +141,7 @@ public class SearchQuery {
         String sql = "SELECT " + type + "\n"
                 + "FROM TOME t \n"
                 + "INNER JOIN SERIE s ON s.ID_SERIE = t.ID_SERIE \n"
-                + "INNER JOIN GENRE g ON g.ID_GENRE = s.ID_GENRE \n"
+                + "INNER JOIN GENRE g ON g.ID_GENRE = t.ID_GENRE \n"
                 + "INNER JOIN EDITION e ON " + searchInJoin[searchIn] + "\n"
                 + "WHERE  s.NOM_SERIE LIKE '%" + search + "%' \n"
                 + searchInWhere[searchIn] + "\n"
@@ -175,7 +175,7 @@ public class SearchQuery {
         String sql = "SELECT " + type + "\n"
                 + "FROM TOME t \n"
                 + "INNER JOIN SERIE s ON s.ID_SERIE = t.ID_SERIE \n"
-                + "INNER JOIN GENRE g ON g.ID_GENRE = s.ID_GENRE \n"
+                + "INNER JOIN GENRE g ON g.ID_GENRE = t.ID_GENRE \n"
                 + "INNER JOIN EDITION e ON " + searchInJoin[searchIn] + "\n"
                 + "INNER JOIN TJ_TOME_AUTEUR tj ON tj.ID_TOME = t.ID_TOME \n"
                 + "INNER JOIN AUTEUR a ON a.ID_AUTEUR = tj.ID_AUTEUR \n"
@@ -214,7 +214,7 @@ public class SearchQuery {
         String sql = "SELECT " + type + "\n"
                 + "FROM TOME t\n"
                 + "INNER JOIN SERIE s ON s.ID_SERIE = t.ID_SERIE \n"
-                + "INNER JOIN GENRE g ON g.ID_GENRE = s.ID_GENRE \n"
+                + "INNER JOIN GENRE g ON g.ID_GENRE = t.ID_GENRE \n"
                 + "INNER JOIN EDITION e ON e.ID_TOME = t.ID_TOME \n"
                 + "WHERE (e.ISBN like '%" + search + "%' "
                 + "OR e.ISBN like '%" + isbn + "%' "

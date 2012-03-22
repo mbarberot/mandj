@@ -26,8 +26,7 @@ public class StatsQuery {
                 + "FROM BD_USER us \n"
                 + "INNER JOIN EDITION e ON us.ID_EDITION = e.ID_EDITION \n"
                 + "INNER JOIN TOME t ON e.ID_TOME = t.ID_TOME \n"
-                + "INNER JOIN SERIE s ON t.ID_SERIE = s.ID_SERIE \n"
-                + "INNER JOIN GENRE g ON s.ID_GENRE = g.ID_GENRE \n"
+                + "INNER JOIN GENRE g ON t.ID_GENRE = g.ID_GENRE \n"
                 + "GROUP BY g.ID_GENRE \n"
                 + "ORDER BY NBR DESC";
         return sql;

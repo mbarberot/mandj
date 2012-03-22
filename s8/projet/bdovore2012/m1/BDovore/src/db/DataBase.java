@@ -30,7 +30,7 @@ public class DataBase {
         Class.forName("org.h2.Driver");
 
         // Ouvre la connexion
-        conn = DriverManager.getConnection("jdbc:h2:" + filename, "bdovore", "b64tgtc");
+        conn = DriverManager.getConnection("jdbc:h2:" + filename, "bdovore", "bdovore");
 
     }
 
