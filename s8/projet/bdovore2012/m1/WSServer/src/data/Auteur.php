@@ -7,21 +7,17 @@
 		private $prenom; // auteur : PRENOM (nullable)
 		private $date_naissance; // auteur : DATE_NAISS (nullable)
 		private $date_deces; // auteur : DATE_DECES (nullable)
-		
-		/*
-		private $nationalite;// auteur <- ID_PAYS -> pays : PAYS
-		=> TODO : à voir : apparemment, tous les ID_PAYS dans auteur sont à NULL
-		*/
+		private $nationalite;// auteur <- ID_PAYS -> pays : PAYS (nullable)
 		
 		/* Constructeur */
-		public function Auteur($nAuteur, $nPseudo, $nNom, $nPrenom, $nNaissance, $nDeces){
+		public function Auteur($nAuteur, $nPseudo, $nNom, $nPrenom, $nNaissance, $nDeces, $nNationalite){
 			$this->idAuteur = $nAuteur;
 			$this->pseudo = $nPseudo;
 			($nNom == NULL)? $this->nom = "" : $this->nom = $nNom;
 			($nPrenom == NULL)? $this->prenom = "" : $this->prenom = $nPrenom;
 			($nNaissance == NULL)? $this->date_naissance = "" : $this->date_naissance = $nNaissance;
 			($nDeces == NULL)? $this->date_deces = "" : $this->date_deces = $nDeces;
-			/*$this->nationalite = $nNationalite;*/			
+			($nNationalite == NULL)? $this->nationalite = "" : $this->nationalite = $nNationalite;			
 		}
 	}
 ?>

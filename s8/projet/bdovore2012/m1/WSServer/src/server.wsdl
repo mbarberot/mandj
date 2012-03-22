@@ -31,6 +31,7 @@
 					<xsd:element name="titre" type="xsd:string"></xsd:element>
 					<xsd:element name="idSerie" type="xsd:int"></xsd:element>
 					<xsd:element name="numTome" type="xsd:int"></xsd:element>
+					<xsd:element name="idGenre" type="xsd:int"></xsd:element>
 				</xsd:sequence>
 			</xsd:complexType>
 			<xsd:complexType name="detailsAuteur">
@@ -39,8 +40,11 @@
 					<xsd:element name="pseudo" type="xsd:string"></xsd:element>
 					<xsd:element name="nom" type="xsd:string"></xsd:element>
 					<xsd:element name="prenom" type="xsd:string"></xsd:element>
-					<xsd:element name="date_naissance" type="xsd:string"></xsd:element>
+					<xsd:element name="date_naissance"
+						type="xsd:string">
+					</xsd:element>
 					<xsd:element name="date_deces" type="xsd:string"></xsd:element>
+					<xsd:element name="nationalite" type="xsd:string"></xsd:element>
 				</xsd:sequence>
 			</xsd:complexType>
 			<xsd:complexType name="detailsSerie">
@@ -158,6 +162,12 @@
 			type="xsd:string">
 		</wsdl:part>
 	</wsdl:message>
+	<wsdl:message name="getEditionsManquantesRequest">
+		<wsdl:part name="lastId" type="xsd:int"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getEditionsManquantesResponse">
+		<wsdl:part name="editionsManquantes" type="xsd:string"></wsdl:part>
+	</wsdl:message>
 	<portType name='BDovore_PortType'>
 		<wsdl:operation name='getBibliotheque'>
 			<wsdl:input message='tns:getBibliothequeRequest' />
@@ -201,6 +211,10 @@
 		</wsdl:operation>
 		<wsdl:operation name="addUserBibliotheque">
 			<wsdl:input message="tns:addUserBibliothequeRequest"></wsdl:input>					</wsdl:operation>		<wsdl:operation name="doProposal">			<wsdl:input message="tns:doProposalRequest"></wsdl:input>			<wsdl:output message="tns:doProposalResponse"></wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getEditionsManquantes">
+			<wsdl:input message="tns:getEditionsManquantesRequest"></wsdl:input>
+			<wsdl:output message="tns:getEditionsManquantesResponse"></wsdl:output>
 		</wsdl:operation>
 	</portType>
 
@@ -327,13 +341,23 @@
 				<soap:body use='literal' namespace='namespace_adress' />
 			</wsdl:output>
 		</wsdl:operation>
+		
+		<wsdl:operation name='getEditionsManquantes'>
+			<soap:operation soapAction='getEditionsManquantes' />
+			<wsdl:input>
+				<soap:body use='literal' namespace='namespace_adress' />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use='literal' namespace='namespace_adress' />
+			</wsdl:output>
+		</wsdl:operation>
 
 	</binding>
 
 	<service name='BDovore'>
 		<documentation>Webservice BDovore</documentation>
 		<port name='BDovore_Port' binding='tns:BDovore_Binding'>
-			<soap:address location='http://localhost/webservice/server.php' />
+			<soap:address location='http://localhost/bdovore/webservice/server.php' />
 		</port>
 	</service>
 

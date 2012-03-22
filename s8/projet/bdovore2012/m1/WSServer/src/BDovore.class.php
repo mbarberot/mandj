@@ -1,6 +1,8 @@
 <?php
 /**
  * Fonctions du Webservice, décrites par server.wsdl
+ * @author Joan RACENET
+ * @author Mathieu BARBEROT
  */
 
 class BDovore {
@@ -113,8 +115,8 @@ class BDovore {
 
 		// Préparation de la requête SQL
 		$sqlDetailsTome = 
-		"SELECT VOLUME, ID_SERIE, NUM_TOME 
-		FROM bd_volume
+		"SELECT VOLUME, ID_SERIE, NUM_TOME, ID_GENRE 
+		FROM bd_volume INNER JOIN bd_volume_genre ON bd_volume.ID_GENRE = bd_volume_genre.ID_GENRE
 		WHERE ID_VOLUME = {$idTome}";
 		
 		$reqDetailsTome = mysql_query($sqlDetailsTome);
@@ -125,7 +127,7 @@ class BDovore {
 		$dataDetails = mysql_fetch_assoc($reqDetailsTome);
 		
 		// Création de l'objet contenant toutes les infos
-		$res = new Volume($idTome, $dataDetails["VOLUME"], $dataDetails["ID_SERIE"], $dataDetails["NUM_TOME"]);
+		$res = new Volume($idTome, $dataDetails["VOLUME"], $dataDetails["ID_SERIE"], $dataDetails["NUM_TOME"], $dataDetails["ID_GENRE"]);
 
 		return $res;
 	}
@@ -214,8 +216,8 @@ class BDovore {
 	 * (cf. Auteur.php pour ces détails)
 	 */
 	public function getDetailsAuteur($idAuteur){
-		$sqlDetailsAuteur = "SELECT PSEUDO, NOM, PRENOM, DATE_NAISS, DATE_DECES
-		FROM auteur
+		$sqlDetailsAuteur = "SELECT PSEUDO, NOM, PRENOM, DATE_NAISS, DATE_DECES, PAYS
+		FROM auteur LEFT OUTER JOIN pays ON auteur.ID_PAYS = pays.ID_PAYS
 		WHERE auteur.ID_AUTEUR = {$idAuteur}";
 		
 		$reqDetailsAuteur = mysql_query($sqlDetailsAuteur);
@@ -228,7 +230,7 @@ class BDovore {
 		
 		// Création de l'objet contenant les infos
 		$res = new Auteur($idAuteur, $dataDetails["PSEUDO"], $dataDetails["NOM"], $dataDetails["PRENOM"]
-		, $dataDetails["DATE_NAISS"], $dataDetails["DATE_DECES"]);
+		, $dataDetails["DATE_NAISS"], $dataDetails["DATE_DECES"], $dataDetails["PAYS"]);
 		
 		return $res;
 	}
@@ -338,6 +340,39 @@ class BDovore {
 
 	}
 	
+	/** 
+	 * 
+	 * TODO : à implémenter, une fois le système de proposition intégré au programme
+	 * @param unknown_type $typeAjout
+	 */
+	public function doProposal($typeAjout)
+	{
+		
+	}
+	
+	/**
+	 * Récupère la liste des id des éditions suivants $lastId
+	 * @param lastId : la dernière édition récupérée	
+	 */
+	public function getEditionsManquantes($lastId)
+	{
+		// Préparation de la requête
+		$sqlEdManquantes = "SELECT ID_EDITION FROM bd_edition WHERE ID_EDITION > {$lastId}";
+		$reqGetEdManquantes = mysql_query($sqlEdManquantes);
+		
+		if(!$reqGetEdManquantes)
+		{
+			throw  new SoapFault("ERREUR_REQUETE : id_user", $errors["ERREUR_REQUETE"]);
+		}
+		
+		// Concatène dans une chaine les id des editions manquantes
+		while($data = mysql_fetch_assoc($reqGetEdManquantes))
+		{
+			$res = $data["ID_EDITION"].";".$res;
+		}
+		
+		return $res;
+	}	
 }
 
 
