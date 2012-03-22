@@ -373,6 +373,32 @@ class BDovore {
 		
 		return $res;
 	}	
+	
+	/**
+	 * Récupère l'id d'un utilisateur
+	 */
+	public function getIdUser($userName, $userPass)
+	{
+		// On récupère l'identifiant de l'utilisateur
+		$sqlGetUser = "SELECT ID_USER FROM user WHERE USERNAME = '{$userName}' AND PASSWORD =  '{$userPass}'";
+		$reqGetUser = mysql_query($sqlGetUser);
+
+		// On vérifie que la requete est bien effectu�e
+		if(!$reqGetUser) {
+			throw  new SoapFault("ERREUR_REQUETE", $errors["ERREUR_REQUETE"]);
+		}
+
+		// On vérifie l'identification et renvoie une erreur si elle est mauvaise
+		if(mysql_num_rows($reqGetUser) != 1) {
+			throw new SoapFault("IDENTIFICATION_KO", $errors["IDENTIFICATION_KO"]);
+		}
+
+		// On récupère l'identifiant
+		$dataUser = mysql_fetch_assoc($reqGetUser);
+		$res = $dataUser['ID_USER'];
+		
+		return $res;
+	}
 }
 
 
