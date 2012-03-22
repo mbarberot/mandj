@@ -122,5 +122,11 @@ public class BDovore_PortTypeProxy implements wsdl.server.BDovore_PortType {
     return bDovore_PortType.getEditionsManquantes(lastId);
   }
   
+  public int getIdUser(java.lang.String userName, java.lang.String userPass) throws java.rmi.RemoteException{
+    if (bDovore_PortType == null)
+      _initBDovore_PortTypeProxy();
+    return bDovore_PortType.getIdUser(userName, userPass);
+  }
+  
   
 }

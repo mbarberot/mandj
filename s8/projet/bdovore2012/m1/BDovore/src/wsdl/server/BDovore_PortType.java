@@ -21,4 +21,5 @@ public interface BDovore_PortType extends java.rmi.Remote {
     public void addUserBibliotheque(java.lang.String userName, java.lang.String userPass, int idEdition) throws java.rmi.RemoteException;
     public boolean doProposal(int typeAjout) throws java.rmi.RemoteException;
     public java.lang.String getEditionsManquantes(int lastId) throws java.rmi.RemoteException;
+    public int getIdUser(java.lang.String userName, java.lang.String userPass) throws java.rmi.RemoteException;
 }
