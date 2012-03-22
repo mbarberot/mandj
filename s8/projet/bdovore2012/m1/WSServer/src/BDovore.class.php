@@ -100,6 +100,8 @@ class BDovore {
 		$dataDetails = mysql_fetch_assoc($reqGetDetailsEdition);
 		
 		// Création de l'objet contenant toutes les infos
+		return $dataDetails["ID_VOLUME"];
+		
 		$res = new Edition($idEdition,$dataDetails["ID_VOLUME"], $dataDetails["FLG_PRET"], $dataDetails["FLG_DEDICACE"], 
 		$dataDetails["FLG_ACHAT"], $dataDetails["DATE_AJOUT"], $dataDetails["IMG_COUV"], $dataDetails["ISBN"], $dataDetails["DATE_PARUTION"], 
 		$dataDetails["ID_EDITEUR"], $dataDetails["FLG_DEFAULT"]);

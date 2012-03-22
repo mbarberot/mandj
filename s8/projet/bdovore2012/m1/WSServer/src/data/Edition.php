@@ -35,15 +35,15 @@ class Edition{
 			
 		$this->idEdition = $nId_edition;
 		($nId_volume == NULL)? $this->idTome = -1 : $this->idTome = $nId_volume;
-		$this->flag_pret = $nflagPret;
-		$this->flag_dedicace = $nflagDed;
-		$this->flag_aAcheter = $nflagAa;
+		($nflagPret == NULL)? $this->flag_pret = false : $this->flag_pret = $nflagPret;
+		($nflagDed == NULL)? $this->flag_dedicace = false : $this->flag_dedicace = $nflagDed;
+		($nflagAa == NULL)? $this->flag_aAcheter = false : $this->flag_aAcheter = $nflagAa;
 		($ndate == NULL)? $this->date_ajout = "" : $this->date_ajout = $ndate;
 		($nimg == NULL)? $this->img_couv = "" : $this->img_couv = $nimg;
 		($nIsbn == NULL)? $this->isbn = "" : $this->isbn = $nIsbn;
 		($nDatePar == NULL)? $this->date_parution = "" : $this->date_parution = $nDatePar;
 		($nIdEd == NULL)? $this->idEditeur = -1 : $this->idEditeur = $nIdEd;
-		$this->flag_default = $nflagDef;
+		($nflagDef == NULL)? $this->flag_default = false : $this->flag_default = $nflagDef;
 			
 	}
 

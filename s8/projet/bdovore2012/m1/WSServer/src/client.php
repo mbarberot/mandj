@@ -1,5 +1,4 @@
 <?php
-header('Content-Type: text/plain');
 
 // On d�sactive la mise en cache du wsdl (pour le test)
 ini_set('soap.wsdl_cache_enabled', 0);
@@ -28,7 +27,7 @@ try	{
 	);
 
 	try{
-		$res = $client->addUserBibliotheque("latruffe","bdovore",1);
+		$res = $client->getDetailsEdition(7,"latruffe","bdovore");
 		var_dump($res);
 	}catch (SoapFault $e)
 	{

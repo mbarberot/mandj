@@ -86,7 +86,7 @@
 		<wsdl:part name="userPass" type="xsd:string"></wsdl:part>
 	</wsdl:message>
 	<wsdl:message name="getDetailsEditionResponse">
-		<wsdl:part name="detailsEdition" type="tns:detailsEdition"></wsdl:part>
+		<wsdl:part name="detailsEdition" type="xsd:string"></wsdl:part>
 	</wsdl:message>
 
 	<wsdl:message name="getDetailsTomeRequest">
