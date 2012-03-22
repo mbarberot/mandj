@@ -34,7 +34,7 @@ class Edition{
 	$ndate, $nimg, $nIsbn, $nDatePar,$nIdEd, $nflagDef){
 			
 		$this->idEdition = $nId_edition;
-		$this->idTome = $nId_volume;
+		($nId_volume == NULL)? $this->idTome = -1 : $this->idTome = $nId_volume;
 		$this->flag_pret = $nflagPret;
 		$this->flag_dedicace = $nflagDed;
 		$this->flag_aAcheter = $nflagAa;
