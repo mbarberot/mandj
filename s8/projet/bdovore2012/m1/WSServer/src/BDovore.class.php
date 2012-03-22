@@ -54,7 +54,7 @@ class BDovore {
 		}
 	  
 		while($dataBib = mysql_fetch_assoc($reqBib)){
-			$res = $res.';'.$dataBib['ID_EDITION'];
+			$res = ($res == "")? $dataBib["ID_EDITION"] : $res.';'.$dataBib["ID_EDITION"];
 		}
 
 		return $res;
@@ -367,8 +367,8 @@ class BDovore {
 		
 		// Concatène dans une chaine les id des editions manquantes
 		while($data = mysql_fetch_assoc($reqGetEdManquantes))
-		{
-			$res = $res.';'.$data["ID_EDITION"];
+		{			
+			$res = ($res == "")? $data["ID_EDITION"] : $res.';'.$data["ID_EDITION"];
 		}
 		
 		return $res;
