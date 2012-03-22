@@ -6,7 +6,6 @@ import java.net.Proxy;
 import java.sql.SQLException;
 import wsdl.server.BDovoreLocator;
 import wsdl.server.BDovore_PortType;
-import org.
 
 /**
  * Objet permettant la synchronisation de la base avec le serveur BDovore

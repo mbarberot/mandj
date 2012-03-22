@@ -17,6 +17,7 @@
 		<pathelement path="lib/axis.jar"/>
 		<pathelement path="lib/commons-logging.jar"/>
 		<pathelement path="lib/commons-discovery.jar"/>
+                <pathelement path="lib/wsdl4j.jar"/>
 	</path>  
 	
 	
