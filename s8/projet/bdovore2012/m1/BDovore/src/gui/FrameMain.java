@@ -2,7 +2,7 @@ package gui;
 
 import db.DataBase;
 import db.data.User;
-import db.update.Updater;
+import db.synch.Synch;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
@@ -33,7 +33,7 @@ public class FrameMain extends JFrame {
     // Base de donnée embarquée
     public static final DataBase db = getDBConnection();
     // Objet pour les mises à jour
-    public static final Updater up = getUpdaterConstruct();
+    public static final Synch synch = getUpdaterConstruct();
     // Utilisateur courant
     public static final User currentUser = getCurrentUser();
     // Proxy courant
@@ -233,12 +233,12 @@ public class FrameMain extends JFrame {
      * Retourne un objet pour les mises à jour
      * @return un objet pour les mises à jour
      */
-    private static Updater getUpdaterConstruct() {
+    private static Synch getUpdaterConstruct() {
         Proxy proxy = currentProxy;
         if (proxy == null) {
-            return new Updater(FrameMain.db);
+            return new Synch(FrameMain.db);
         } else {
-            return new Updater(FrameMain.db, proxy);
+            return new Synch(FrameMain.db, proxy);
         }
     }
 }

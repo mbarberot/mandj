@@ -40,7 +40,7 @@ public class ActionUpdate extends AbstractAction {
      * @param e Détails de l'évenement
      */
     public void actionPerformed(ActionEvent e) {
-        DialogGlobalUpdate dialog = new DialogGlobalUpdate(Main.appFrame, Dialog.ModalityType.APPLICATION_MODAL, FrameMain.currentProxy, FrameMain.up);
+        DialogGlobalUpdate dialog = new DialogGlobalUpdate(Main.appFrame, Dialog.ModalityType.APPLICATION_MODAL, FrameMain.currentProxy, FrameMain.synch);
         dialog.setVisible(true);
     }
 }

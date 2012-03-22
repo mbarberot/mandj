@@ -1,36 +1,19 @@
 package db.update;
 
-import au.com.bytecode.opencsv.CSVReader;
-import db.DataBase;
-import db.Tables;
-import db.data.Edition;
-import gui.FrameMain;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.NoRouteToHostException;
-import java.net.Proxy;
-import java.net.SocketTimeoutException;
-import java.nio.charset.Charset;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import main.Clavier;
-
 /**
- * Module de mise à jour de la base Utilise un Web Service fournissant, au
- * format CSV, les entrées manquante à partir d'une table et d'un identifiant
- * donné.
- *
- * @author Thorisoka
+ * @deprecated Utiliser l'objet Synch
  */
 public class Updater {
 
+    
+    
+    
+    
+    
+    
     /**
      * Taille des requêtes d'insertion
-     */
+     *
     public static final int INSERT_SIZE = 1;
     DataBase db;
     Proxy proxy;
@@ -40,7 +23,7 @@ public class Updater {
      * Constructeur sans proxy
      *
      * @param db
-     */
+     *
     public Updater(DataBase db) {
         this.db = db;
         this.proxy = null;
@@ -52,7 +35,7 @@ public class Updater {
      *
      * @param db
      * @param proxy
-     */
+     *
     public Updater(DataBase db, Proxy proxy) {
         this.db = db;
         this.proxy = proxy;
@@ -64,7 +47,7 @@ public class Updater {
      * @throws SQLException
      * @throws SocketTimeoutException
      * @throws NoRouteToHostException
-     */
+     *
     public void updateGlobal() throws Exception {
 
         String[] ordreUpdateTables = {"EDITEUR", "AUTEUR", "GENRE", "SERIE", "TOME", "EDITION"};
@@ -84,14 +67,12 @@ public class Updater {
      * @param table
      * @param reponse
      * @throws SQLException
-     */
+     *
     public void update(String table, String reponse) throws Exception {
 
         String reponseWS = reponse;
         String insert = null;
 
-
-        CSVReader csv = createCSVReader(reponseWS);
 
         while ((insert = this.makeBatchInsert(table, csv, INSERT_SIZE)) != null) {
             try {
@@ -113,7 +94,7 @@ public class Updater {
      * @param limit Nombre d'insertion maximal par requête
      * @return
      * @throws IOException
-     */
+     *
     private String makeBatchInsert(String table, CSVReader csv, int limit) throws IOException {
 
         String query;
@@ -157,7 +138,7 @@ public class Updater {
      * @param inputArray le tableau
      * @param glue le caractère séparateur
      * @return
-     */
+     *
     private String implode(String[] inputArray, String glue) {
         String AsImplodedString;
 
@@ -184,7 +165,7 @@ public class Updater {
      * @param liste
      * @param glue
      * @return
-     */
+     *
     private String implode(ArrayList<String> liste, String glue) {
         return implode((String[]) liste.toArray(new String[1]), glue);
     }
@@ -194,7 +175,7 @@ public class Updater {
      *
      * @param s
      * @return
-     */
+     *
     public static CSVReader createCSVReader(String s) {
 
         // R�cup�ration dans un Buffer (! Attention au CHARSET !)
@@ -223,7 +204,7 @@ public class Updater {
      *
      *
      * @throws Exception
-     */
+     *
     public void synchronizeUserAccount() throws Exception {
 
         // Faire un mise à jour globale avant de synchroniser
@@ -329,7 +310,7 @@ public class Updater {
                     /**
                      * TODO: telecharger les infos sur l'édition mais ne pas
                      * telecharger si les infos sont déjà présentes...
-                     */
+                     *
                 }
             }
         } catch (Exception e) {
@@ -355,7 +336,7 @@ public class Updater {
      * mais sur le compte utilisateur du site)
      * @param hasTrans s'il existe une transaction pour l'edition courante
      * @throws SQLException
-     */
+     *
     public void compareLineCSV2Local(ResultSet rs, String[] lineEd, boolean hasTrans) throws SQLException {
 
         final int PRET = 0;
@@ -396,7 +377,7 @@ public class Updater {
      *
      * @param ln : numéro de la ligne a renvoyer
      * @return String[] sous la forme (idEdition, FLG_P, FLG_D, FLG_A, Date)
-     */
+     *
     public String[] getLine(int iD, CSVReader csv) {
 
         String[] curLine;
@@ -420,7 +401,7 @@ public class Updater {
      *
      * @param i
      * @param csv
-     */
+     *
     public void deleteLine(int i, CSVReader csv) {
         /**
          * TODO: faire la fonction qui supprime une ligne du csv après l'avoir
@@ -433,16 +414,16 @@ public class Updater {
      *
      * @param id
      * @return
-     */
+     *
     public int demandeUserConflict(int id) {
 
         /**
          * TODO: demander le choix à l'utilisateur en mode graphique
-         */
+         *
         System.out.println("Conflit sur l'edition avec pour id " + id + ". \n"
                 + "Que faire ? \n"
                 + "1 - Priorite au site \n"
                 + "2 - Priorite au logiciel \n");
         return Clavier.saisirInt();
     }
-}
+    */

@@ -1,5 +1,6 @@
 package gui;
 
+import db.synch.Synch;
 import db.update.Updater;
 import java.awt.BorderLayout;
 import java.awt.Dialog;
@@ -24,7 +25,7 @@ public class DialogGlobalUpdate extends JDialog {
     private Proxy proxy;
     
     // Objet utilisé pour la mise à jour (cf WebService & WSDL)
-    private Updater updater;
+    private Synch synch;
 
     /**
      * Constructeur
@@ -33,12 +34,12 @@ public class DialogGlobalUpdate extends JDialog {
      * @param p Proxy pour la connexion au serveur
      * @param up Updater pour l'utilisation du webservice
      */
-    public DialogGlobalUpdate(Window owner, Dialog.ModalityType modal, Proxy p, Updater up) {
+    public DialogGlobalUpdate(Window owner, Dialog.ModalityType modal, Proxy p, Synch synch) {
         super(owner, modal);
 
-        proxy = p;
-        updater = up;
-        updateMsg = new JLabel("Cliquer le bouton START pour commencer.");
+        this.proxy = p;
+        this.synch = synch;
+        this.updateMsg = new JLabel("Cliquer le bouton START pour commencer.");
 
         btnStart = new JButton("Start", new ImageIcon("img/restore.png"));
         btnStart.addActionListener(new ActionListener() {
@@ -64,7 +65,7 @@ public class DialogGlobalUpdate extends JDialog {
 
     private void update() {
         try {
-            updater.updateGlobal();
+            synch.updateGlobal();
             JOptionPane.showMessageDialog(null, "Mise à jour terminée avec succès", "Félicitation", JOptionPane.INFORMATION_MESSAGE);
             dispose();
         } catch (Exception ex) {

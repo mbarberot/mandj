@@ -12,10 +12,10 @@ public class Updates {
 			DataBase db = new DataBase("db/bdovore");
 			
 			System.out.println("DB Ouverte.");
-			
+			/*
 			Updater up = new Updater(db);
 			up.updateGlobal();
-			
+			*/
 			db.shutdown();
 			
 			

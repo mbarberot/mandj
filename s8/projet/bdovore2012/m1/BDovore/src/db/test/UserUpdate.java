@@ -1,8 +1,6 @@
 package db.test;
 
 import db.DataBase;
-import db.data.User;
-import db.update.Updater;
 
 
 public class UserUpdate {
@@ -16,7 +14,7 @@ public class UserUpdate {
 			System.out.println("DB Open.");
 			
 			
-			Updater up = new Updater(db);
+			//Updater up = new Updater(db);
 			
 			//db.query("SELECT * FROM BD_USER");
 			
