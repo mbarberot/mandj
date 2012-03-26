@@ -27,7 +27,7 @@ try	{
 	);
 
 	try{
-		$res = $client->getDetailsEdition(7,"latruffe","bdovore");
+		$res = $client->getDetailsEdition(7);
 		var_dump($res);
 	}catch (SoapFault $e)
 	{
@@ -41,8 +41,8 @@ try	{
 	//$retour_ws = $client->getBibliotheque(1); // Param�tre en trop/non reconnu
 
 	// Affichage des requ�tes et r�ponses SOAP (pour debug)
-	//echo 'Requete SOAP : '.$client->__getLastRequest();
-	//echo 'Reponse SOAP : '.$client->__getLastResponse();
+	echo 'Requete SOAP : '.$client->__getLastRequest();
+	echo 'Reponse SOAP : '.$client->__getLastResponse();
 
 
 }

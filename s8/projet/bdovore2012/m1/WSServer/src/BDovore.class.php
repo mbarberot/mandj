@@ -65,7 +65,7 @@ class BDovore {
 	 * @param $idEdition : l'identifiant de l'édition
 	 * @return les détails de l'édition
 	 */
-	public function getDetailsEdition($idEdition, $userName, $userPass){
+	public function getDetailsEditionUser($idEdition, $userName, $userPass){
 			
 		// On récupère l'identifiant de l'utilisateur
 		$sqlGetUser = "SELECT ID_USER FROM user WHERE USERNAME = '{$userName}' AND PASSWORD =  '{$userPass}'";
@@ -358,8 +358,14 @@ class BDovore {
 	 */
 	public function getEditionsManquantes($lastId)
 	{
+		
+		/*
+		 * Permet de limiter le nombre de tuples à renvoyer
+		 */
+		$limit = 1000;
+		
 		// Préparation de la requête
-		$sqlEdManquantes = "SELECT ID_EDITION FROM bd_edition WHERE ID_EDITION > {$lastId}";
+		$sqlEdManquantes = "SELECT ID_EDITION FROM bd_edition WHERE ID_EDITION > {$lastId} LIMIT 0, {$limit}";
 		$reqGetEdManquantes = mysql_query($sqlEdManquantes);
 		
 		if(!$reqGetEdManquantes)
@@ -398,6 +404,30 @@ class BDovore {
 		// On récupère l'identifiant
 		$dataUser = mysql_fetch_assoc($reqGetUser);
 		$res = $dataUser['ID_USER'];
+		
+		return $res;
+	}
+	
+	/**
+	 * Permet de renvoyer les détails d'une édition (exceptées les données liées aux utilisateurs, notamment les flags
+	 */
+	public function getDetailsEdition($idEdition)
+	{
+		// Préparation de la requête sql
+		$sqlGetDetailsEdition = "SELECT ID_VOLUME,  IMG_COUV, ISBN, DTE_PARUTION, ID_EDITEUR, FLG_DEFAULT
+		FROM bd_edition, ed_collection
+		WHERE bd_edition.ID_EDITION = {$idEdition} AND
+		bd_edition.ID_COLLECTION = ed_collection.ID_COLLECTION";
+		
+		$reqGetDetailsEdition = mysql_query($sqlGetDetailsEdition);
+		if(!$reqGetDetailsEdition) {
+			throw  new SoapFault("ERREUR_REQUETE", $errors["ERREUR_REQUETE"]);
+		}
+		$dataDetails = mysql_fetch_assoc($reqGetDetailsEdition);
+				
+		$res = new Edition($idEdition,$dataDetails["ID_VOLUME"], 0, 0, 
+		0, $dataDetails["DATE_AJOUT"], $dataDetails["IMG_COUV"], $dataDetails["ISBN"], $dataDetails["DATE_PARUTION"], 
+		$dataDetails["ID_EDITEUR"], $dataDetails["FLG_DEFAULT"]);
 		
 		return $res;
 	}
