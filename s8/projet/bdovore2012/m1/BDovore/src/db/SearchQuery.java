@@ -6,7 +6,12 @@ import java.security.NoSuchAlgorithmException;
 /**
  * Génère une requête de recherche en fonction des paramètres. On peut chercher
  * selon un certain champs (Titre, Série, ISBN, etc.) On cherche également selon
- * un filtre (tout album, possédés, manquant)
+ * un filtre (tout album, possédés, manquant). A l'exception de la fonction
+ * 'searchNothing', les recherches sont effectuées avec Lucene. Ainsi les
+ * caractères '*', '?', '~', les guillements et les mots-clés 'AND' et 'OR' sont
+ * autorisés. Sauf '*' et '?' si l'un deux est au début des termes de la
+ * recherche (exemple: *foo ou ?foo).
+ *
  *
  * @author Thorisoka
  */
@@ -39,7 +44,7 @@ public class SearchQuery {
     };
     public static final int ORDER_ASC = 0;
     public static final int ORDER_DESC = 1;
-    
+
     /**
      * Retourne le code SQL permettant de faire une recherche sans critères pour
      * lister tous les albums.
@@ -56,9 +61,6 @@ public class SearchQuery {
         if (searchIn < 0 && searchIn > 2) {
             return "";
         }
-        if (searchIn == SEARCH_IN_ALL) {
-            return ""; // Pas de liste totale
-        }
 
         String sql = "SELECT " + type + "\n"
                 + "FROM TOME t \n"
@@ -70,7 +72,7 @@ public class SearchQuery {
 
         return sql;
     }
-    
+
     /**
      * Retourne le code SQL permettant une recherche par titre.
      *
@@ -88,30 +90,22 @@ public class SearchQuery {
             return "";
         }
 
-        // Ce bloc d'instruction, une fois décommenté
-        // désactive la recherche "sans critères"
-        // Utile dans les cas d'une grosse BDthèque.
-        //
-        //if (search.length() < 3) {
-        //    return "";
-        //}
+        if (search.length() < 3) {
+            if (search.charAt(0) == '*') {
+                return searchNothing(searchIn, type, sortby, order);
+            }
+            return "";
+        }
 
-        //
-        // TODO : Faire de la recherche avec plusieurs mots clef
-        // Première approche, naïve : 
-        //  1/ récupérer les mots (caractère sép : espace, virgule)
-        //  2/ faire une recherche : mot1 mot2 =>  like '%mot1%' or like '%mot2%'
-        //  3/ Voir pour gérer le symbole '+' qui remplacerai le 'or' par 'and'
-        //  4/ Voir pour gérer les accents (recherche avec et sans accents)
-        //
 
         String sql = "SELECT " + type + "\n"
-                + "FROM TOME t \n"
+                + "FROM TOME t, FTL_SEARCH_DATA('" + search + "',0,0) AS FT \n"
                 + "INNER JOIN SERIE s ON s.ID_SERIE = t.ID_SERIE \n"
                 + "INNER JOIN GENRE g ON g.ID_GENRE = t.ID_GENRE \n"
                 + "INNER JOIN EDITION e ON " + searchInJoin[searchIn] + "\n"
-                + "WHERE t.TITRE like '%" + search + "%' \n"
+                + "WHERE FT.TABLE='TOME' AND t.ID_TOME = FT.KEYS[0] \n"
                 + searchInWhere[searchIn] + "\n"
+                + "GROUP BY " + GET_FIELDS + "\n"
                 + (type.equals(GET_MAX) ? "" : orderBy(sortby, order)) + "\n";
 
         return sql;
@@ -134,25 +128,27 @@ public class SearchQuery {
             return "";
         }
         if (search.length() < 3) {
+            if (search.charAt(0) == '*') {
+                return searchNothing(searchIn, type, sortby, order);
+            }
             return "";
         }
 
 
         String sql = "SELECT " + type + "\n"
-                + "FROM TOME t \n"
+                + "FROM TOME t, FTL_SEARCH_DATA('" + search + "',0,0) AS FT \n"
                 + "INNER JOIN SERIE s ON s.ID_SERIE = t.ID_SERIE \n"
                 + "INNER JOIN GENRE g ON g.ID_GENRE = t.ID_GENRE \n"
                 + "INNER JOIN EDITION e ON " + searchInJoin[searchIn] + "\n"
-                + "WHERE  s.NOM_SERIE LIKE '%" + search + "%' \n"
-                + searchInWhere[searchIn] + "\n"
+                + "WHERE FT.TABLE='SERIE' AND s.ID_SERIE = FT.KEYS[0] \n"
+                + "GROUP BY " + GET_FIELDS + "\n"
                 + (type.equals(GET_MAX) ? "" : orderBy(sortby, order)) + "\n";
 
         return sql;
     }
 
     /**
-     * Retourne le code SQL permettant une recherche par auteur. Attention,
-     * cette recherche prend en compte la casse!
+     * Retourne le code SQL permettant une recherche par auteur.
      *
      * @param searchIn Domaine de recherche (Albums possédés, manquant ou tous
      * les albums)
@@ -168,23 +164,23 @@ public class SearchQuery {
             return "";
         }
         if (search.length() < 3) {
+            if (search.charAt(0) == '*') {
+                return searchNothing(searchIn, type, sortby, order);
+            }
             return "";
         }
-
-
         String sql = "SELECT " + type + "\n"
-                + "FROM TOME t \n"
+                + "FROM TOME t, FTL_SEARCH_DATA('" + search + "',0,0) AS FT \n"
                 + "INNER JOIN SERIE s ON s.ID_SERIE = t.ID_SERIE \n"
                 + "INNER JOIN GENRE g ON g.ID_GENRE = t.ID_GENRE \n"
                 + "INNER JOIN EDITION e ON " + searchInJoin[searchIn] + "\n"
                 + "INNER JOIN TJ_TOME_AUTEUR tj ON tj.ID_TOME = t.ID_TOME \n"
                 + "INNER JOIN AUTEUR a ON a.ID_AUTEUR = tj.ID_AUTEUR \n"
-                + "WHERE a.PSEUDO LIKE '%" + search + "%' \n"
+                + "WHERE FT.TABLE='AUTEUR' AND a.ID_AUTEUR = FT.KEYS[0] \n"
                 + searchInWhere[searchIn] + "\n"
-                + "GROUP BY t.ID_TOME \n"
+                + "GROUP BY " + GET_FIELDS + "\n"
                 + (type.equals(GET_MAX) ? "" : orderBy(sortby, order)) + "\n";
-       
-        
+
         return sql;
     }
 
@@ -205,33 +201,37 @@ public class SearchQuery {
             return "";
         }
         if (search.length() < 3) {
+            if (search.charAt(0) == '*') {
+                return searchNothing(searchIn, type, sortby, order);
+            }
             return "";
         }
-        
+
         String isbn = CodeBarre.toBDovoreISBN(escape(search));
         String ean = CodeBarre.toBDovoreEAN(escape(search));
 
         String sql = "SELECT " + type + "\n"
-                + "FROM TOME t\n"
+                + "FROM TOME t, FTL_SEARCH_DATA('" + search + " OR " + isbn + " OR " + ean + "',0,0) AS FT \n"
                 + "INNER JOIN SERIE s ON s.ID_SERIE = t.ID_SERIE \n"
                 + "INNER JOIN GENRE g ON g.ID_GENRE = t.ID_GENRE \n"
                 + "INNER JOIN EDITION e ON e.ID_TOME = t.ID_TOME \n"
-                + "WHERE (e.ISBN like '%" + search + "%' "
-                + "OR e.ISBN like '%" + isbn + "%' "
-                + "OR e.ISBN like '%" + ean + "%')\n"
+                + "WHERE FT.TABLE='EDITION' AND e.ID_EDITION = FT.KEYS[0] \n"
                 + searchInWhere[searchIn] + "\n"
+                + "GROUP BY " + GET_FIELDS + "\n"
                 + (type.equals(GET_MAX) ? "" : orderBy(sortby, order)) + "\n";
+
         return sql;
     }
- 
+
     /**
-     * Retourne le code SQL permettant l'insertion d'un album dans la bibliothèque avec son ISBN
-     * 
+     * Retourne le code SQL permettant l'insertion d'un album dans la
+     * bibliothèque avec son ISBN
+     *
      * @param search
      * @param isPret
      * @param isDedicace
      * @param isAAcheter
-     * @return 
+     * @return
      */
     public static String insertISBN(String search, String isPret, String isDedicace, String isAAcheter) {
 
@@ -242,7 +242,7 @@ public class SearchQuery {
         //
         // TODO : Utiliser la nouvelle DB 
         //
-        
+
         String sqlSearch = "SELECT t.ID_TOME, s.ID_SERIE, e.ID_EDITEUR, e.ID_COLLECTION, e.ID_EDITION, scenar.ID_AUTEUR, dess.ID_AUTEUR, g.ID_GENRE, '" + isPret + "', NULL, NULL, '" + isDedicace + "', e.FLG_TT, NULL, NULL, CURRENT_TIMESTAMP, '" + isAAcheter + "', NULL, NULL, 'N' \n"
                 + "FROM BD_EDITION e, FTL_SEARCH_DATA('" + eanisbn + "', 0, 0) FT \n"
                 + "INNER JOIN BD_TOME t ON t.ID_TOME = e.ID_TOME \n"

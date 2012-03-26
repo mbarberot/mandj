@@ -445,10 +445,6 @@ public class DataBase {
             return 0;
         }
 
-        if (!table.startsWith("BD_")) {
-            return 0;
-        }
-
         String sql = "SELECT MAX(" + Tables.ids.get(table) + ") AS id FROM " + table;
 
         Statement st = conn.createStatement();

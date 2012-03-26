@@ -6,6 +6,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.table.TableColumn;
 
@@ -126,10 +128,13 @@ public class PanelDBExplorer extends JPanel {
             }
         });
         
-        JLabel keywordsHelp = new JLabel("  Aide : Trois caractères minimum ou * pour lister tous les albums");
-        keywordsHelp.setForeground(Color.GRAY);
-        keywordsHelp.setFont(new Font("Arial",0,10));
+        String help = "<html><font size=\"2\" color=\"gray\" face=\"Arial\">"
+                + "Aide : Vous pouvez utiliser *, ?, AND, OR ou des guillemets dans vos recherches.<br/>"
+                + "Vos recherches doivent comporter 3 caractères minimum et ne peuvent pas commencer par *<br/>"
+                + "Sauf si voulez afficher tous les albums en utilisant alors * comme unique caractère"
+                + "</font></html>";
         
+        JLabel keywordsHelp = new JLabel(help);
 
         // Bouton de validation de la recherche
         btnSearch = new JButton("Rechercher", new ImageIcon("img/search.png"));
@@ -312,8 +317,16 @@ public class PanelDBExplorer extends JPanel {
                 getResultQuery = SearchQuery.searchISBN(searchIn, keywords, SearchQuery.GET_FIELDS, "t.TITRE", SearchQuery.ORDER_ASC);
                 getCountQuery = SearchQuery.searchISBN(searchIn, keywords, SearchQuery.GET_MAX, "t.TITRE", SearchQuery.ORDER_ASC);
                 break;
+        }        
+      
+        
+        try {
+            FrameMain.db.query(getResultQuery);
+            FrameMain.db.query(getCountQuery);
+        } catch (SQLException ex) {
+            Logger.getLogger(PanelDBExplorer.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        
         refreshAll();
     }
 

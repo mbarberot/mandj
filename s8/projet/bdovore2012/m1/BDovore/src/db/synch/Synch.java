@@ -1,11 +1,12 @@
 package db.synch;
 
 import db.DataBase;
-import db.SynchQuery;
+import db.data.User;
+import gui.FrameMain;
 import java.net.Proxy;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
-import wsdl.server.BDovoreLocator;
-import wsdl.server.BDovore_PortType;
+import wsdl.server.*;
 
 /**
  * Objet permettant la synchronisation de la base avec le serveur BDovore
@@ -81,13 +82,64 @@ public class Synch
      */
     public void updateBase ()
     {
+        int     lastID, 
+                len;
+        String  res,
+                genre,
+                sql,
+                editions[];
         
-        // Récupération de l'ID du dernier tome de la base
-        String sql = SynchQuery.getLastID();
+        DetailsEdition dEdition;
+        DetailsVolume dTome;
+        DetailsSerie dSerie;
+        
+        User user = FrameMain.currentUser;
         
         try 
-        { 
-            db.query(sql);
+        {
+            // Récupération de l'ID du dernier tome de la base
+            lastID = db.getLastID("EDITION");
+            
+            // Récupération des editiones manquantes
+            res = port.getEditionsManquantes(lastID);            
+            editions = res.split(";");
+            
+            System.out.println("Editions manquantes reçues : \n"+res);
+            
+            len = editions.length;
+            for(int i = 0; i < 1; i++)
+            {
+                System.out.println("Nb d'éléments reçus : "+len);
+                System.out.println("Premier élément : "+editions[i]);
+                System.out.println("Username = "+user.getUsername());
+                System.out.println("Password = "+user.getPassword());
+                
+                dEdition = port.getDetailsEdition(
+                        Integer.parseInt(editions[i]), 
+                        user.getUsername(), 
+                        user.getPassword());
+                //dTome = port.getDetailsTome(dEdition.getIdTome());
+                //dSerie = port.getDetailsSerie(dTome.getIdSerie());
+                //genre = port.getGenre(dTome.getIdGenre());
+                
+                System.out.println("Détails reçus");
+                
+                sql =   "INSERT INTO EDITION VALUES ("
+                        + dEdition.getIdEdition()   + ","
+                        + dEdition.getIdTome()      + ","
+                        + "'" + dEdition.getIsbn()  + "',"
+                        + dEdition.getDate_parution()   + ","
+                        + dEdition.getIdEditeur()   + ","
+                        + ");";
+                
+                System.out.println("SQL :\n"+sql);       
+            }
+           
+           
+            
+        } catch (RemoteException ex) 
+        {
+            ex.printStackTrace();
         }
         catch( SQLException ex )
         {
