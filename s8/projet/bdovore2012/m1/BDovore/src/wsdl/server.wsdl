@@ -11,17 +11,17 @@
 				<xsd:sequence>
 					<xsd:element name="idEdition" type="xsd:int"></xsd:element>
 					<xsd:element name="idTome" type="xsd:int"></xsd:element>
-					<xsd:element name="flag_pret" type="xsd:boolean"></xsd:element>
-					<xsd:element name="flag_dedicace" type="xsd:boolean">
+					<xsd:element name="flag_pret" type="xsd:int"></xsd:element>
+					<xsd:element name="flag_dedicace" type="xsd:int">
 					</xsd:element>
-					<xsd:element name="flag_aAcheter" type="xsd:boolean">
+					<xsd:element name="flag_aAcheter" type="xsd:int">
 					</xsd:element>
 					<xsd:element name="date_ajout" type="xsd:string"></xsd:element>
 					<xsd:element name="img_couv" type="xsd:string"></xsd:element>
 					<xsd:element name="isbn" type="xsd:string"></xsd:element>
 					<xsd:element name="date_parution" type="xsd:string"></xsd:element>
 					<xsd:element name="idEditeur" type="xsd:int"></xsd:element>
-					<xsd:element name="flag_default" type="xsd:boolean">
+					<xsd:element name="flag_default" type="xsd:int">
 					</xsd:element>
 				</xsd:sequence>
 			</xsd:complexType>
@@ -80,12 +80,12 @@
 	<wsdl:message name="getVolumeResponse">
 		<wsdl:part name="volume" type="xsd:string"></wsdl:part>
 	</wsdl:message>
-	<wsdl:message name="getDetailsEditionRequest">
+	<wsdl:message name="getDetailsEditionUserRequest">
 		<wsdl:part name="idEdition" type="xsd:int"></wsdl:part>
 		<wsdl:part name="userName" type="xsd:string"></wsdl:part>
 		<wsdl:part name="userPass" type="xsd:string"></wsdl:part>
 	</wsdl:message>
-	<wsdl:message name="getDetailsEditionResponse">
+	<wsdl:message name="getDetailsEditionUserResponse">
 		<wsdl:part name="detailsEdition" type="tns:detailsEdition"></wsdl:part>
 	</wsdl:message>
 
@@ -175,14 +175,20 @@
 	<wsdl:message name="getIdUserResponse">
 		<wsdl:part name="idUser" type="xsd:int"></wsdl:part>
 	</wsdl:message>
+	<wsdl:message name="getDetailsEditionRequest">
+		<wsdl:part name="idEdition" type="xsd:int"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getDetailsEditionResponse">
+		<wsdl:part name="detailsEdition" type="tns:detailsEdition"></wsdl:part>
+	</wsdl:message>
 	<portType name='BDovore_PortType'>
 		<wsdl:operation name='getBibliotheque'>
 			<wsdl:input message='tns:getBibliothequeRequest' />
 			<wsdl:output message='tns:getBibliothequeResponse' />
 		</wsdl:operation>
-		<wsdl:operation name="getDetailsEdition">
-			<wsdl:input message="tns:getDetailsEditionRequest"></wsdl:input>
-			<wsdl:output message="tns:getDetailsEditionResponse"></wsdl:output>
+		<wsdl:operation name="getDetailsEditionUser">
+			<wsdl:input message="tns:getDetailsEditionUserRequest"></wsdl:input>
+			<wsdl:output message="tns:getDetailsEditionUserResponse"></wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="getDetailsTome">
 			<wsdl:input message="tns:getDetailsTomeRequest"></wsdl:input>
@@ -227,6 +233,10 @@
 			<wsdl:input message="tns:getIdUserRequest"></wsdl:input>
 			<wsdl:output message="tns:getIdUserResponse"></wsdl:output>
 		</wsdl:operation>
+		<wsdl:operation name="getDetailsEdition">
+			<wsdl:input message="tns:getDetailsEditionRequest"></wsdl:input>
+			<wsdl:output message="tns:getDetailsEditionResponse"></wsdl:output>
+		</wsdl:operation>
 	</portType>
 
 	<binding name='BDovore_Binding' type='tns:BDovore_PortType'>
@@ -243,8 +253,8 @@
 			</wsdl:output>
 		</wsdl:operation>
 
-		<wsdl:operation name='getDetailsEdition'>
-			<soap:operation soapAction='getDetailsEdition' />
+		<wsdl:operation name='getDetailsEditionUser'>
+			<soap:operation soapAction='getDetailsEditionUser' />
 			<wsdl:input>
 				<soap:body use='literal' namespace='namespace_adress' />
 			</wsdl:input>
@@ -365,6 +375,16 @@
 		
 		<wsdl:operation name='getIdUser'>
 			<soap:operation soapAction='getIdUser' />
+			<wsdl:input>
+				<soap:body use='literal' namespace='namespace_adress' />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use='literal' namespace='namespace_adress' />
+			</wsdl:output>
+		</wsdl:operation>
+		
+		<wsdl:operation name='getDetailsEdition'>
+			<soap:operation soapAction='getDetailsEdition' />
 			<wsdl:input>
 				<soap:body use='literal' namespace='namespace_adress' />
 			</wsdl:input>

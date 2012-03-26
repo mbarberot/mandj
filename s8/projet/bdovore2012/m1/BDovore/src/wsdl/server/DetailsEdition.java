@@ -12,11 +12,11 @@ public class DetailsEdition  implements java.io.Serializable {
 
     private int idTome;
 
-    private boolean flag_pret;
+    private int flag_pret;
 
-    private boolean flag_dedicace;
+    private int flag_dedicace;
 
-    private boolean flag_aAcheter;
+    private int flag_aAcheter;
 
     private java.lang.String date_ajout;
 
@@ -28,7 +28,7 @@ public class DetailsEdition  implements java.io.Serializable {
 
     private int idEditeur;
 
-    private boolean flag_default;
+    private int flag_default;
 
     public DetailsEdition() {
     }
@@ -36,15 +36,15 @@ public class DetailsEdition  implements java.io.Serializable {
     public DetailsEdition(
            int idEdition,
            int idTome,
-           boolean flag_pret,
-           boolean flag_dedicace,
-           boolean flag_aAcheter,
+           int flag_pret,
+           int flag_dedicace,
+           int flag_aAcheter,
            java.lang.String date_ajout,
            java.lang.String img_couv,
            java.lang.String isbn,
            java.lang.String date_parution,
            int idEditeur,
-           boolean flag_default) {
+           int flag_default) {
            this.idEdition = idEdition;
            this.idTome = idTome;
            this.flag_pret = flag_pret;
@@ -104,7 +104,7 @@ public class DetailsEdition  implements java.io.Serializable {
      * 
      * @return flag_pret
      */
-    public boolean isFlag_pret() {
+    public int getFlag_pret() {
         return flag_pret;
     }
 
@@ -114,7 +114,7 @@ public class DetailsEdition  implements java.io.Serializable {
      * 
      * @param flag_pret
      */
-    public void setFlag_pret(boolean flag_pret) {
+    public void setFlag_pret(int flag_pret) {
         this.flag_pret = flag_pret;
     }
 
@@ -124,7 +124,7 @@ public class DetailsEdition  implements java.io.Serializable {
      * 
      * @return flag_dedicace
      */
-    public boolean isFlag_dedicace() {
+    public int getFlag_dedicace() {
         return flag_dedicace;
     }
 
@@ -134,7 +134,7 @@ public class DetailsEdition  implements java.io.Serializable {
      * 
      * @param flag_dedicace
      */
-    public void setFlag_dedicace(boolean flag_dedicace) {
+    public void setFlag_dedicace(int flag_dedicace) {
         this.flag_dedicace = flag_dedicace;
     }
 
@@ -144,7 +144,7 @@ public class DetailsEdition  implements java.io.Serializable {
      * 
      * @return flag_aAcheter
      */
-    public boolean isFlag_aAcheter() {
+    public int getFlag_aAcheter() {
         return flag_aAcheter;
     }
 
@@ -154,7 +154,7 @@ public class DetailsEdition  implements java.io.Serializable {
      * 
      * @param flag_aAcheter
      */
-    public void setFlag_aAcheter(boolean flag_aAcheter) {
+    public void setFlag_aAcheter(int flag_aAcheter) {
         this.flag_aAcheter = flag_aAcheter;
     }
 
@@ -264,7 +264,7 @@ public class DetailsEdition  implements java.io.Serializable {
      * 
      * @return flag_default
      */
-    public boolean isFlag_default() {
+    public int getFlag_default() {
         return flag_default;
     }
 
@@ -274,7 +274,7 @@ public class DetailsEdition  implements java.io.Serializable {
      * 
      * @param flag_default
      */
-    public void setFlag_default(boolean flag_default) {
+    public void setFlag_default(int flag_default) {
         this.flag_default = flag_default;
     }
 
@@ -292,9 +292,9 @@ public class DetailsEdition  implements java.io.Serializable {
         _equals = true && 
             this.idEdition == other.getIdEdition() &&
             this.idTome == other.getIdTome() &&
-            this.flag_pret == other.isFlag_pret() &&
-            this.flag_dedicace == other.isFlag_dedicace() &&
-            this.flag_aAcheter == other.isFlag_aAcheter() &&
+            this.flag_pret == other.getFlag_pret() &&
+            this.flag_dedicace == other.getFlag_dedicace() &&
+            this.flag_aAcheter == other.getFlag_aAcheter() &&
             ((this.date_ajout==null && other.getDate_ajout()==null) || 
              (this.date_ajout!=null &&
               this.date_ajout.equals(other.getDate_ajout()))) &&
@@ -308,7 +308,7 @@ public class DetailsEdition  implements java.io.Serializable {
              (this.date_parution!=null &&
               this.date_parution.equals(other.getDate_parution()))) &&
             this.idEditeur == other.getIdEditeur() &&
-            this.flag_default == other.isFlag_default();
+            this.flag_default == other.getFlag_default();
         __equalsCalc = null;
         return _equals;
     }
@@ -322,9 +322,9 @@ public class DetailsEdition  implements java.io.Serializable {
         int _hashCode = 1;
         _hashCode += getIdEdition();
         _hashCode += getIdTome();
-        _hashCode += (isFlag_pret() ? Boolean.TRUE : Boolean.FALSE).hashCode();
-        _hashCode += (isFlag_dedicace() ? Boolean.TRUE : Boolean.FALSE).hashCode();
-        _hashCode += (isFlag_aAcheter() ? Boolean.TRUE : Boolean.FALSE).hashCode();
+        _hashCode += getFlag_pret();
+        _hashCode += getFlag_dedicace();
+        _hashCode += getFlag_aAcheter();
         if (getDate_ajout() != null) {
             _hashCode += getDate_ajout().hashCode();
         }
@@ -338,7 +338,7 @@ public class DetailsEdition  implements java.io.Serializable {
             _hashCode += getDate_parution().hashCode();
         }
         _hashCode += getIdEditeur();
-        _hashCode += (isFlag_default() ? Boolean.TRUE : Boolean.FALSE).hashCode();
+        _hashCode += getFlag_default();
         __hashCodeCalc = false;
         return _hashCode;
     }
@@ -364,19 +364,19 @@ public class DetailsEdition  implements java.io.Serializable {
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("flag_pret");
         elemField.setXmlName(new javax.xml.namespace.QName("", "flag_pret"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("flag_dedicace");
         elemField.setXmlName(new javax.xml.namespace.QName("", "flag_dedicace"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("flag_aAcheter");
         elemField.setXmlName(new javax.xml.namespace.QName("", "flag_aAcheter"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
@@ -412,7 +412,7 @@ public class DetailsEdition  implements java.io.Serializable {
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("flag_default");
         elemField.setXmlName(new javax.xml.namespace.QName("", "flag_default"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "boolean"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
     }

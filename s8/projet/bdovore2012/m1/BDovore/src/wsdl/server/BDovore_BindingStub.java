@@ -16,7 +16,7 @@ public class BDovore_BindingStub extends org.apache.axis.client.Stub implements 
     static org.apache.axis.description.OperationDesc [] _operations;
 
     static {
-        _operations = new org.apache.axis.description.OperationDesc[14];
+        _operations = new org.apache.axis.description.OperationDesc[15];
         _initOperationDesc1();
         _initOperationDesc2();
     }
@@ -38,7 +38,7 @@ public class BDovore_BindingStub extends org.apache.axis.client.Stub implements 
         _operations[0] = oper;
 
         oper = new org.apache.axis.description.OperationDesc();
-        oper.setName("getDetailsEdition");
+        oper.setName("getDetailsEditionUser");
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "idEdition"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"), int.class, false, false);
         oper.addParameter(param);
         param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "userName"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"), java.lang.String.class, false, false);
@@ -192,6 +192,17 @@ public class BDovore_BindingStub extends org.apache.axis.client.Stub implements 
         oper.setStyle(org.apache.axis.constants.Style.RPC);
         oper.setUse(org.apache.axis.constants.Use.LITERAL);
         _operations[13] = oper;
+
+        oper = new org.apache.axis.description.OperationDesc();
+        oper.setName("getDetailsEdition");
+        param = new org.apache.axis.description.ParameterDesc(new javax.xml.namespace.QName("", "idEdition"), org.apache.axis.description.ParameterDesc.IN, new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"), int.class, false, false);
+        oper.addParameter(param);
+        oper.setReturnType(new javax.xml.namespace.QName("server.wsdl", "detailsEdition"));
+        oper.setReturnClass(wsdl.server.DetailsEdition.class);
+        oper.setReturnQName(new javax.xml.namespace.QName("", "detailsEdition"));
+        oper.setStyle(org.apache.axis.constants.Style.RPC);
+        oper.setUse(org.apache.axis.constants.Use.LITERAL);
+        _operations[14] = oper;
 
     }
 
@@ -359,19 +370,19 @@ public class BDovore_BindingStub extends org.apache.axis.client.Stub implements 
 }
     }
 
-    public wsdl.server.DetailsEdition getDetailsEdition(int idEdition, java.lang.String userName, java.lang.String userPass) throws java.rmi.RemoteException {
+    public wsdl.server.DetailsEdition getDetailsEditionUser(int idEdition, java.lang.String userName, java.lang.String userPass) throws java.rmi.RemoteException {
         if (super.cachedEndpoint == null) {
             throw new org.apache.axis.NoEndPointException();
         }
         org.apache.axis.client.Call _call = createCall();
         _call.setOperation(_operations[1]);
         _call.setUseSOAPAction(true);
-        _call.setSOAPActionURI("getDetailsEdition");
+        _call.setSOAPActionURI("getDetailsEditionUser");
         _call.setEncodingStyle(null);
         _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
         _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
         _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
-        _call.setOperationName(new javax.xml.namespace.QName("namespace_adress", "getDetailsEdition"));
+        _call.setOperationName(new javax.xml.namespace.QName("namespace_adress", "getDetailsEditionUser"));
 
         setRequestHeaders(_call);
         setAttachments(_call);
@@ -780,6 +791,40 @@ public class BDovore_BindingStub extends org.apache.axis.client.Stub implements 
                 return ((java.lang.Integer) _resp).intValue();
             } catch (java.lang.Exception _exception) {
                 return ((java.lang.Integer) org.apache.axis.utils.JavaUtils.convert(_resp, int.class)).intValue();
+            }
+        }
+  } catch (org.apache.axis.AxisFault axisFaultException) {
+  throw axisFaultException;
+}
+    }
+
+    public wsdl.server.DetailsEdition getDetailsEdition(int idEdition) throws java.rmi.RemoteException {
+        if (super.cachedEndpoint == null) {
+            throw new org.apache.axis.NoEndPointException();
+        }
+        org.apache.axis.client.Call _call = createCall();
+        _call.setOperation(_operations[14]);
+        _call.setUseSOAPAction(true);
+        _call.setSOAPActionURI("getDetailsEdition");
+        _call.setEncodingStyle(null);
+        _call.setProperty(org.apache.axis.client.Call.SEND_TYPE_ATTR, Boolean.FALSE);
+        _call.setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, Boolean.FALSE);
+        _call.setSOAPVersion(org.apache.axis.soap.SOAPConstants.SOAP11_CONSTANTS);
+        _call.setOperationName(new javax.xml.namespace.QName("namespace_adress", "getDetailsEdition"));
+
+        setRequestHeaders(_call);
+        setAttachments(_call);
+ try {        java.lang.Object _resp = _call.invoke(new java.lang.Object[] {new java.lang.Integer(idEdition)});
+
+        if (_resp instanceof java.rmi.RemoteException) {
+            throw (java.rmi.RemoteException)_resp;
+        }
+        else {
+            extractAttachments(_call);
+            try {
+                return (wsdl.server.DetailsEdition) _resp;
+            } catch (java.lang.Exception _exception) {
+                return (wsdl.server.DetailsEdition) org.apache.axis.utils.JavaUtils.convert(_resp, wsdl.server.DetailsEdition.class);
             }
         }
   } catch (org.apache.axis.AxisFault axisFaultException) {

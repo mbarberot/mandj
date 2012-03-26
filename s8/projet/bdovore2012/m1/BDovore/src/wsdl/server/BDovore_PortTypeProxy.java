@@ -50,10 +50,10 @@ public class BDovore_PortTypeProxy implements wsdl.server.BDovore_PortType {
     return bDovore_PortType.getBibliotheque(userName, userPass);
   }
   
-  public wsdl.server.DetailsEdition getDetailsEdition(int idEdition, java.lang.String userName, java.lang.String userPass) throws java.rmi.RemoteException{
+  public wsdl.server.DetailsEdition getDetailsEditionUser(int idEdition, java.lang.String userName, java.lang.String userPass) throws java.rmi.RemoteException{
     if (bDovore_PortType == null)
       _initBDovore_PortTypeProxy();
-    return bDovore_PortType.getDetailsEdition(idEdition, userName, userPass);
+    return bDovore_PortType.getDetailsEditionUser(idEdition, userName, userPass);
   }
   
   public wsdl.server.DetailsVolume getDetailsTome(int idTome) throws java.rmi.RemoteException{
@@ -126,6 +126,12 @@ public class BDovore_PortTypeProxy implements wsdl.server.BDovore_PortType {
     if (bDovore_PortType == null)
       _initBDovore_PortTypeProxy();
     return bDovore_PortType.getIdUser(userName, userPass);
+  }
+  
+  public wsdl.server.DetailsEdition getDetailsEdition(int idEdition) throws java.rmi.RemoteException{
+    if (bDovore_PortType == null)
+      _initBDovore_PortTypeProxy();
+    return bDovore_PortType.getDetailsEdition(idEdition);
   }
   
   

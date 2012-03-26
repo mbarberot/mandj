@@ -9,7 +9,7 @@ package wsdl.server;
 
 public interface BDovore_PortType extends java.rmi.Remote {
     public java.lang.String getBibliotheque(java.lang.String userName, java.lang.String userPass) throws java.rmi.RemoteException;
-    public wsdl.server.DetailsEdition getDetailsEdition(int idEdition, java.lang.String userName, java.lang.String userPass) throws java.rmi.RemoteException;
+    public wsdl.server.DetailsEdition getDetailsEditionUser(int idEdition, java.lang.String userName, java.lang.String userPass) throws java.rmi.RemoteException;
     public wsdl.server.DetailsVolume getDetailsTome(int idTome) throws java.rmi.RemoteException;
     public java.lang.String getScenaristesTome(int idTome) throws java.rmi.RemoteException;
     public java.lang.String getDessinateursTome(java.lang.String idTome) throws java.rmi.RemoteException;
@@ -22,4 +22,5 @@ public interface BDovore_PortType extends java.rmi.Remote {
     public boolean doProposal(int typeAjout) throws java.rmi.RemoteException;
     public java.lang.String getEditionsManquantes(int lastId) throws java.rmi.RemoteException;
     public int getIdUser(java.lang.String userName, java.lang.String userPass) throws java.rmi.RemoteException;
+    public wsdl.server.DetailsEdition getDetailsEdition(int idEdition) throws java.rmi.RemoteException;
 }
