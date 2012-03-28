@@ -18,18 +18,29 @@ erreur initParcoursChinois(int idGraphe)
 {
     erreur err;
 
-    // ID valide ?
+    // idGraphe valide ?
     if(idGraphe < 0 || idGraphe > 2) { return NUMERO_GRAPHE_INVALIDE; }
 
+    // Quels graphes ?
     if(idGraphe == 0)
     {
+	// Les deux graphes
+
+	// Existent-ils ?
 	if(graphes[1] == NULL || graphes[2] == NULL) { return GRAPHE_INEXISTANT; }
+
+	// Peuplement de nbAretes
 	if((err = peupleTabAretes(1)) != RES_OK) { return err; }
 	if((err = peupleTabAretes(2)) != RES_OK) { return err; }
     }
     else
     {
+	// Un seul
+
+	// Existe-t-il ?
 	if(graphes[idGraphe-1] == NULL) { return GRAPHE_INEXISTANT; }
+
+	// Peuplement de nbAretes
 	if((err = peupleTabAretes(idGraphe-1)) != RES_OK) { return err; }
     }
     return RES_OK;
@@ -127,6 +138,31 @@ erreur freeParcoursChinois()
 	    free(nbAretes[i]);
 	}
     }
+    return RES_OK;
+}
+
+erreur dupliqueArete(int s1, int s2)
+{
+    TypVoisins *p, *q;
+    TypGraphe *g;
+
+    // Récupérer le graphe courant
+    g = graphes[grapheCourant];
+    
+    // Est-il valide ?
+    if(g == NULL) { return GRAPHE_INEXISTANT; }
+    
+    // Les sommets s1 et s2 existent-ils ?
+    if(g->aretes[s1-1] == NULL || g->aretes[s2-1] == NULL) { return SOMMET_INEXISTANT; }
+    
+    // Y-a-t-il un arêtes entre les deux
+    p = rechercheVoisin(&(g->aretes[s1-1]),s2);
+    q = rechercheVoisin(&(g->aretes[s2-1]),s1);
+    if(p == NULL || q == NULL) { return ARETE_INEXISTANTE; }
+
+    // Dupliquer l'arête
+    nbAretes[grapheCourant][s1-1][s2-1]++;
+
     return RES_OK;
 }
 
