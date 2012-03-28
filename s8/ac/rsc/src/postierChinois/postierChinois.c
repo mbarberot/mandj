@@ -180,7 +180,25 @@ erreur isGrapheEulerien(int idGraphe, int* res)
 int parcoursProfondeur(TypGraphe *g, TypVoisins** l, int origine)
 {
   int res = 0;
+  TypVoisins tmp = g->&aretes[i];
   
-  
+  // Tant qu'il existe des voisins
+  while(tmp != NULL) 
+  {
+    
+    if(rechercheVoisin(l, tmp->voisin) != NULL)
+    {
+      // Ajouter le voisin en cours à la liste
+      ajouteVoisin(l, tmp->voisin, tmp->poidsVoisin, tmp->info);
+      
+      // Incrémenter res
+      res++;
+      
+      // Appeler le parcours sur le voisin + ajouter le résultat à res
+      res = res + parcoursProfondeur(g, l, tmp->voisin);
+    }
+    
+    tmp = tmp->voisinSuivant;
+  }
   
 }
