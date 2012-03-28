@@ -129,3 +129,22 @@ erreur freeParcoursChinois()
     }
     return RES_OK;
 }
+
+erreur isGrapheEulerien(int idGraphe, int* res)
+{
+  // Tester si le graphe est connexe
+  // -> Parcours en profondeur
+  
+  // Tester la parité des degrés de chaque sommet
+  // -> SI tous pairs => on peut effectuer un cycle eulérien
+  // -> SI deux sommets sont impairs => un cycle chinois est possible
+  // SINON : le graphe n'est pas eulérien
+}
+
+int parcoursProfondeur(TypGraphe *g, TypVoisins** l, int origine)
+{
+  int res = 0;
+  
+  
+  
+}

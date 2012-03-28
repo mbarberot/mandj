@@ -67,7 +67,7 @@ erreur dupliqueArete(
 	); // TODO
 
 /**
- * Teste si le graphe est euulérien
+ * Teste si le graphe est eulérien
  *
  * @param idGraphe  ID du graphe à tester
  * @param res	    1 = Eulérien, 0 = Non-eulérien
@@ -75,9 +75,17 @@ erreur dupliqueArete(
  */
 erreur isGrapheEulerien(
 	int idGraphe,
-	int *res
+	int* res
 	); // TODO
 
+/**
+ * Effectue le parcours en profondeur d'un graphe donné
+ * @param g : le graphe à parcourir
+ * @param l : liste des sommets déjà parcourus (marquage)
+ * @param origine : le sommet d'où commence le parcours
+ * @return : le nombre de sommets parcourus
+ */
+int parcoursProfondeur(TypGraphe *g, TypVoisins** l, int origine)
 
 
 /**
