@@ -18,18 +18,67 @@
 /** Nombre d'heuristique implantées */
 #define NB_HEURISTIQUE 0
 
+/** Tableau indiquant le nombre d'arêtes */
+int **nbAretes[NB_GRAPHES];
+
+
+/**
+ * Prépare le tableau de recensement des arêtes
+ * en vue d'un parcours chinois.
+ * 
+ * @param idGraphe  Le graphe utilisé pour le parcours chinois (0 = les deux graphes)
+ * @return NUMERO_GRAPHE_INVALIDE
+ * @return GRAPHE_INEXISTANT
+ * @return RES_OK
+ */
+erreur initParcoursChinois(
+	int idGraphe
+	);
+
+/**
+ * Peuple le tableau 'nbAretes' avec le graphe n° 'idGraphe' 
+ * et alloue la mémoire nécessaire
+ *
+ * @param idGraphe  L'id du graphe, 1 ou 2
+ * @return 
+ */
+erreur peupleTabAretes(int idGraphe);
+
+/**
+ * Libère la mémoire allouée au tablean nbAretes
+ *
+ * @return
+ */
+erreur freeParcoursChinois();
+
 
 /**
  * Duplique l'arète du graphe courant allant du sommet s1 vers le sommet s2
  *
- * @param s1	    ID du sommet de départ 
- * @param s2	    ID du sommet d'arrivée
- * @return	    
+ * @param s1			ID du sommet de départ 
+ * @param s2			ID du sommet d'arrivée
+ * @return GRAPHE_INEXISTANT	Le graphe courant n'existe pas
+ * @return SOMMET_INVALIDE	L'un ou les deux sommets n'existents pas
+ * @return ARETE_INEXISTANTE	Aucune arête ne relie ces deux sommets
  */
 erreur dupliqueArete(
 	int s1,
 	int s2
-	);			// Todo
+	); // TODO
+
+/**
+ * Teste si le graphe est euulérien
+ *
+ * @param idGraphe  ID du graphe à tester
+ * @param res	    1 = Eulérien, 0 = Non-eulérien
+ * @return  
+ */
+erreur isGrapheEulerien(
+	int idGraphe,
+	int *res
+	); // TODO
+
+
 
 /**
  * Calcule un Cycle Eulérien.
