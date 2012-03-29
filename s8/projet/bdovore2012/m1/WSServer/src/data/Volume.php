@@ -9,15 +9,17 @@
 		private $idSerie; // => bd_volume : ID_SERIE
 		private $numTome; // => bd_volume : NUM_TOME (nullable)
 		private $idGenre; // => bd_volume_genre : ID_GENRE (nullable)
+                private $idAuteur; // => bd_volume_auteur : ID_AUTEUR 
 		/*
 		 * Constructeur
 		 */
-		public function Volume($nIdTome, $nTitre, $nIdSerie, $nNumTome, $nIdGenre){			
+		public function Volume($nIdTome, $nTitre, $nIdSerie, $nNumTome, $nIdGenre, $nIdAuteur){			
 			$this->idTome = $nIdTome;
 			($nTitre == NULL)? $this->titre = "" : $this->titre = $nTitre;
 			$this->idSerie = $nIdSerie;
 			($nNumTome == NULL)? $this->numTome = -1 : $this->numTome = $nNumTome;
 			($nIdGenre == NULL)? $this->idGenre = -1 : $this->idGenre = $nIdGenre;
+                        $this->idAuteur = $nIdAuteur;
 		}
 	}
 ?>

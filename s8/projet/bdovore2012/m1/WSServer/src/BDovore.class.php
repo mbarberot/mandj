@@ -117,9 +117,11 @@ class BDovore {
 
 		// Préparation de la requête SQL
 		$sqlDetailsTome = 
-		"SELECT VOLUME, ID_SERIE, NUM_TOME, ID_GENRE 
-		FROM bd_volume INNER JOIN bd_volume_genre ON bd_volume.ID_GENRE = bd_volume_genre.ID_GENRE
-		WHERE ID_VOLUME = {$idTome}";
+		"SELECT VOLUME, ID_SERIE, NUM_TOME, ID_GENRE, ID_AUTEUR
+		FROM bd_volume 
+                INNER JOIN bd_volume_genre ON bd_volume.ID_VOLUME = bd_volume_genre.ID_VOLUME
+                INNER JOIN bd_volume_auteur ON bd_volume.ID_VOLUME = bd_volume_auteur.ID_VOLUME
+		WHERE bd_volume.ID_VOLUME = {$idTome}";
 		
 		$reqDetailsTome = mysql_query($sqlDetailsTome);
 		if(!$reqDetailsTome) {
@@ -129,7 +131,7 @@ class BDovore {
 		$dataDetails = mysql_fetch_assoc($reqDetailsTome);
 		
 		// Création de l'objet contenant toutes les infos
-		$res = new Volume($idTome, $dataDetails["VOLUME"], $dataDetails["ID_SERIE"], $dataDetails["NUM_TOME"], $dataDetails["ID_GENRE"]);
+		$res = new Volume($idTome, $dataDetails["VOLUME"], $dataDetails["ID_SERIE"], $dataDetails["NUM_TOME"], $dataDetails["ID_GENRE"],$dataDetails["ID_AUTEUR"]);
 
 		return $res;
 	}

@@ -86,69 +86,55 @@ public class Synch
                 len;
         String  res,
                 genre,
-                sql,
+                sql = "",
                 editions[];
         
         DetailsEdition dEdition;
         DetailsVolume dTome;
         DetailsSerie dSerie;
-        
-        User user = FrameMain.currentUser;
+        DetailsAuteur dAuteur;
         
         try 
         {
-            // Récupération de l'ID du dernier tome de la base
-            lastID = db.getLastID("EDITION");
-            
-            // Récupération des editiones manquantes
-            res = port.getEditionsManquantes(lastID);            
-            editions = res.split(";");
-            
-            System.out.println("Editions manquantes reçues : \n"+res);
-            
-            len = editions.length;
-            for(int i = 0; i < 1; i++)
-            {
-                System.out.println("Nb d'éléments reçus : "+len);
-                System.out.println("Premier élément : "+editions[i]);
-                System.out.println("Username = "+user.getUsername());
-                System.out.println("Password = "+user.getPassword());
+            do {
                 
-                dEdition = port.getDetailsEdition(
-                        Integer.parseInt(editions[i]), 
-                        user.getUsername(), 
-                        user.getPassword());
-                //dTome = port.getDetailsTome(dEdition.getIdTome());
-                //dSerie = port.getDetailsSerie(dTome.getIdSerie());
-                //genre = port.getGenre(dTome.getIdGenre());
+                // Récupération de l'ID du dernier tome de la base
+                lastID = db.getLastID("EDITION");
+
+                // Récupération des editiones manquantes
+                res = port.getEditionsManquantes(lastID);
+                editions = res.split(";");
+
                 
-                System.out.println("Détails reçus");
+                len = 1; //editions.length;
+                for (int i = 0; i < len; i++) {
+                    
+                    // Récupération des détails
+                    dEdition = port.getDetailsEdition(Integer.parseInt(editions[i]));
+                    dTome = port.getDetailsTome(dEdition.getIdTome());
+                    dSerie = port.getDetailsSerie(dTome.getIdSerie());
+                    //dAuteur = port.getDetailsAuteur();
+                    genre = port.getGenre(dTome.getIdGenre());
+
+                    // Création de la requête SQL
+                    // + gestion des valeurs nulles
+                    
+                }
                 
-                sql =   "INSERT INTO EDITION VALUES ("
-                        + dEdition.getIdEdition()   + ","
-                        + dEdition.getIdTome()      + ","
-                        + "'" + dEdition.getIsbn()  + "',"
-                        + dEdition.getDate_parution()   + ","
-                        + dEdition.getIdEditeur()   + ","
-                        + ");";
-                
-                System.out.println("SQL :\n"+sql);       
-            }
-           
-           
+            } while(len == 1000);
             
-        } catch (RemoteException ex) 
+            this.db.update(sql);
+        } 
+        catch (RemoteException ex) 
+        {
+            ex.printStackTrace();
+        } 
+        catch (SQLException ex) 
         {
             ex.printStackTrace();
         }
-        catch( SQLException ex )
-        {
-            ex.printStackTrace();
-        }
-        
-        // Requête au webservice
-        
-        // Insertion des nouveaux tomes dans la base
+
+
         
     }
     
