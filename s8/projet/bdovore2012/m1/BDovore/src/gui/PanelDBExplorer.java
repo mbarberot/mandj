@@ -318,14 +318,6 @@ public class PanelDBExplorer extends JPanel {
                 getCountQuery = SearchQuery.searchISBN(searchIn, keywords, SearchQuery.GET_MAX, "t.TITRE", SearchQuery.ORDER_ASC);
                 break;
         }        
-      
-        
-        try {
-            FrameMain.db.query(getResultQuery);
-            FrameMain.db.query(getCountQuery);
-        } catch (SQLException ex) {
-            Logger.getLogger(PanelDBExplorer.class.getName()).log(Level.SEVERE, null, ex);
-        }
         
         refreshAll();
     }

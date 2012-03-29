@@ -91,7 +91,7 @@ public class SearchQuery {
         }
 
         if (search.length() < 3) {
-            if (search.charAt(0) == '*') {
+            if (search.length() > 0 && search.charAt(0) == '*') {
                 return searchNothing(searchIn, type, sortby, order);
             }
             return "";
@@ -99,7 +99,7 @@ public class SearchQuery {
 
 
         String sql = "SELECT " + type + "\n"
-                + "FROM TOME t, FTL_SEARCH_DATA('" + search + "',0,0) AS FT \n"
+                + "FROM TOME t, FTL_SEARCH_DATA('" + escape(search) + "',0,0) AS FT \n"
                 + "INNER JOIN SERIE s ON s.ID_SERIE = t.ID_SERIE \n"
                 + "INNER JOIN GENRE g ON g.ID_GENRE = t.ID_GENRE \n"
                 + "INNER JOIN EDITION e ON " + searchInJoin[searchIn] + "\n"
@@ -128,7 +128,7 @@ public class SearchQuery {
             return "";
         }
         if (search.length() < 3) {
-            if (search.charAt(0) == '*') {
+            if (search.length() > 0 && search.charAt(0) == '*') {
                 return searchNothing(searchIn, type, sortby, order);
             }
             return "";
@@ -136,7 +136,7 @@ public class SearchQuery {
 
 
         String sql = "SELECT " + type + "\n"
-                + "FROM TOME t, FTL_SEARCH_DATA('" + search + "',0,0) AS FT \n"
+                + "FROM TOME t, FTL_SEARCH_DATA('" + escape(search) + "',0,0) AS FT \n"
                 + "INNER JOIN SERIE s ON s.ID_SERIE = t.ID_SERIE \n"
                 + "INNER JOIN GENRE g ON g.ID_GENRE = t.ID_GENRE \n"
                 + "INNER JOIN EDITION e ON " + searchInJoin[searchIn] + "\n"
@@ -164,13 +164,13 @@ public class SearchQuery {
             return "";
         }
         if (search.length() < 3) {
-            if (search.charAt(0) == '*') {
+            if (search.length() > 0 && search.charAt(0) == '*') {
                 return searchNothing(searchIn, type, sortby, order);
             }
             return "";
         }
         String sql = "SELECT " + type + "\n"
-                + "FROM TOME t, FTL_SEARCH_DATA('" + search + "',0,0) AS FT \n"
+                + "FROM TOME t, FTL_SEARCH_DATA('" + escape(search) + "',0,0) AS FT \n"
                 + "INNER JOIN SERIE s ON s.ID_SERIE = t.ID_SERIE \n"
                 + "INNER JOIN GENRE g ON g.ID_GENRE = t.ID_GENRE \n"
                 + "INNER JOIN EDITION e ON " + searchInJoin[searchIn] + "\n"
@@ -201,7 +201,7 @@ public class SearchQuery {
             return "";
         }
         if (search.length() < 3) {
-            if (search.charAt(0) == '*') {
+            if (search.length() > 0 && search.charAt(0) == '*') {
                 return searchNothing(searchIn, type, sortby, order);
             }
             return "";
@@ -211,7 +211,7 @@ public class SearchQuery {
         String ean = CodeBarre.toBDovoreEAN(escape(search));
 
         String sql = "SELECT " + type + "\n"
-                + "FROM TOME t, FTL_SEARCH_DATA('" + search + " OR " + isbn + " OR " + ean + "',0,0) AS FT \n"
+                + "FROM TOME t, FTL_SEARCH_DATA('" + escape(search) + " OR " + isbn + " OR " + ean + "',0,0) AS FT \n"
                 + "INNER JOIN SERIE s ON s.ID_SERIE = t.ID_SERIE \n"
                 + "INNER JOIN GENRE g ON g.ID_GENRE = t.ID_GENRE \n"
                 + "INNER JOIN EDITION e ON e.ID_TOME = t.ID_TOME \n"
