@@ -1,9 +1,6 @@
 package db;
 
-import wsdl.server.DetailsEditeur;
-import wsdl.server.DetailsEdition;
-import wsdl.server.DetailsSerie;
-import wsdl.server.DetailsVolume;
+import wsdl.server.*;
 
 /**
  * Cette classe contient toutes les requêtes nécessaires aux fonctions de synchronisation 
@@ -17,6 +14,12 @@ public class SynchQuery {
         return "SELECT MAX(T.ID_TOME) FROM TOME T WHERE 1";
     }
     
+    /**
+     * Retourne la requête pour insérer une édition dans la DB
+     * 
+     * @param dEdition Informations sur l'édition
+     * @return La requête SQL
+     */
     public static String insertEdition(DetailsEdition dEdition)
     {
         String edition, details;
@@ -53,9 +56,51 @@ public class SynchQuery {
                 + dVolume.getIdSerie()  + ","
                 + ((dVolume.getNumTome() < 0) ? "NULL" : dVolume.getNumTome()) +","
                 + ((dVolume.getIdGenre() < 0) ? "NULL" : dVolume.getIdGenre())
-                + ");" ;
+                + ");" ;        
     }
     
+    /**
+     * Retourne la requête pour insérer un auteur dans la DB
+     * 
+     * @param dAuteur Informations sur l'auteur
+     * @return La requête SQL
+     */
+    public static String insertAuteur(DetailsAuteur dAuteur)
+    {
+        String auteur, details;
+        
+        auteur = "INSERT INTO AUTEUR VALUES("
+                + dAuteur.getIdAuteur() + ","
+                + dAuteur.getPseudo()   + ","
+                + dAuteur.getNom()      + ","
+                + dAuteur.getPrenom() 
+                + ";)";
+        
+        details = "INSERT INTO DETAILS_AUTEUR VALUES("
+                + dAuteur.getIdAuteur() + ","
+                + ((dAuteur.getDate_naissance().length() == 0) ? "NULL" : dAuteur.getDate_naissance()) + ","
+                + ((dAuteur.getDate_deces().length() == 0) ? "NULL" : dAuteur.getDate_deces()) + ","
+                + dAuteur.getNationalite()
+                + ");";
+        
+        return auteur + "\n" + details;
+    }
+    
+    /**
+     * Retourne la requête pour insérer les correspondances tomes <-> auteurs dans la DB
+     * @param idTome Id du tome
+     * @param idAuteur Id de l'auteur
+     * @param role Role de l'auteur
+     * @return La requête SQL
+     */
+    public static String insertTjTomeAuteur(int idTome, int idAuteur, String role)
+    {
+        return "INSERT INTO TJ_TOME_AUTEUR VALUES("
+                + idTome    + ","
+                + idAuteur  + ","
+                + role
+                + ");";
+    }
     
     /**
      * Retourne la requête pour insérer un éditeur dans la DB
