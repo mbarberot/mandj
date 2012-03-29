@@ -32,6 +32,8 @@
 					<xsd:element name="idSerie" type="xsd:int"></xsd:element>
 					<xsd:element name="numTome" type="xsd:int"></xsd:element>
 					<xsd:element name="idGenre" type="xsd:int"></xsd:element>
+					<xsd:element name="idAuteur" type="xsd:int"></xsd:element>
+
 				</xsd:sequence>
 			</xsd:complexType>
 			<xsd:complexType name="detailsAuteur">
@@ -50,7 +52,8 @@
 			<xsd:complexType name="detailsSerie">
 				<xsd:sequence>
 					<xsd:element name="idSerie" type="xsd:int"></xsd:element>
-					<xsd:element name="nomSerie" type="xsd:string"></xsd:element>
+					<xsd:element name="nomSerie" type="xsd:string"></xsd:element>
+
 					<xsd:element name="nbTomes" type="xsd:int"></xsd:element>
 					<xsd:element name="flgFini" type="xsd:int"></xsd:element>
 					<xsd:element name="histoire" type="xsd:string"></xsd:element>
@@ -223,7 +226,14 @@
 			<wsdl:output message="tns:getColoristesTomeResponse"></wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="addUserBibliotheque">
-			<wsdl:input message="tns:addUserBibliothequeRequest"></wsdl:input>					</wsdl:operation>		<wsdl:operation name="doProposal">			<wsdl:input message="tns:doProposalRequest"></wsdl:input>			<wsdl:output message="tns:doProposalResponse"></wsdl:output>
+			<wsdl:input message="tns:addUserBibliothequeRequest"></wsdl:input>
+
+			
+		</wsdl:operation>
+
+		<wsdl:operation name="doProposal">
+			<wsdl:input message="tns:doProposalRequest"></wsdl:input>
+			<wsdl:output message="tns:doProposalResponse"></wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="getEditionsManquantes">
 			<wsdl:input message="tns:getEditionsManquantesRequest"></wsdl:input>

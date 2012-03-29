@@ -18,6 +18,8 @@ public class DetailsVolume  implements java.io.Serializable {
 
     private int idGenre;
 
+    private int idAuteur;
+
     public DetailsVolume() {
     }
 
@@ -26,12 +28,14 @@ public class DetailsVolume  implements java.io.Serializable {
            java.lang.String titre,
            int idSerie,
            int numTome,
-           int idGenre) {
+           int idGenre,
+           int idAuteur) {
            this.idTome = idTome;
            this.titre = titre;
            this.idSerie = idSerie;
            this.numTome = numTome;
            this.idGenre = idGenre;
+           this.idAuteur = idAuteur;
     }
 
 
@@ -134,6 +138,26 @@ public class DetailsVolume  implements java.io.Serializable {
         this.idGenre = idGenre;
     }
 
+
+    /**
+     * Gets the idAuteur value for this DetailsVolume.
+     * 
+     * @return idAuteur
+     */
+    public int getIdAuteur() {
+        return idAuteur;
+    }
+
+
+    /**
+     * Sets the idAuteur value for this DetailsVolume.
+     * 
+     * @param idAuteur
+     */
+    public void setIdAuteur(int idAuteur) {
+        this.idAuteur = idAuteur;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof DetailsVolume)) return false;
@@ -152,7 +176,8 @@ public class DetailsVolume  implements java.io.Serializable {
               this.titre.equals(other.getTitre()))) &&
             this.idSerie == other.getIdSerie() &&
             this.numTome == other.getNumTome() &&
-            this.idGenre == other.getIdGenre();
+            this.idGenre == other.getIdGenre() &&
+            this.idAuteur == other.getIdAuteur();
         __equalsCalc = null;
         return _equals;
     }
@@ -171,6 +196,7 @@ public class DetailsVolume  implements java.io.Serializable {
         _hashCode += getIdSerie();
         _hashCode += getNumTome();
         _hashCode += getIdGenre();
+        _hashCode += getIdAuteur();
         __hashCodeCalc = false;
         return _hashCode;
     }
@@ -208,6 +234,12 @@ public class DetailsVolume  implements java.io.Serializable {
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("idGenre");
         elemField.setXmlName(new javax.xml.namespace.QName("", "idGenre"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("idAuteur");
+        elemField.setXmlName(new javax.xml.namespace.QName("", "idAuteur"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
