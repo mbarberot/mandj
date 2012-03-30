@@ -67,7 +67,7 @@ public class AG_Simple {
 		for(int i = 0 ; i < nbGenerations ; i++){
 			for(int j = 0 ; j < popSize / 2 ; j++)
 			{
-				// SÃ©lection
+				// Sélection
 				
 				selection = new Tournament(popList);
 				p1 = selection.doSelect();
@@ -100,6 +100,17 @@ public class AG_Simple {
 	} // execute
 
 
+        public double moyenneFitness(List<Individual> population)
+        {
+            double sum = 0.0;
+            
+            for(Individual i : population)
+            {
+                sum += i.getFitness();
+            }
+            return sum / population.size() ;
+        }
+        
 	/*
 	 * 
 	 */
