@@ -44,9 +44,13 @@ public class AG_TroisCercles extends JApplet {
         lab_display = new JLabel();
                 
         text_taillePop = new JTextField();
+        text_taillePop.setText("00");
         text_nbGen = new JTextField();
+        text_nbGen.setText("00");
         text_tauxCr = new JTextField();
+        text_tauxCr.setText("0.0");
         text_tauxMut = new JTextField();
+        text_tauxMut.setText("0.0");
         
         but_valider = new JButton("Valider");
         
@@ -130,10 +134,14 @@ public class AG_TroisCercles extends JApplet {
             ex.printStackTrace();
         }
         
-        lab_display.setText(
-                "<html><font size=\"2\" color=\"gray\" face=\"Arial\">La meilleure valeur de fitness trouvée est : <br/> " 
-                + bestSolution.getFitness() + "</font></html>"
-                );
+        if(bestSolution != null)
+        {        	
+	        lab_display.setText(
+	                "<html><font size=\"2\" color=\"gray\" face=\"Arial\">La meilleure valeur de fitness trouvée est : <br/> " 
+	                + bestSolution.getFitness() + "</font></html>"
+	                );        
+	        
+        }
     }
             
     

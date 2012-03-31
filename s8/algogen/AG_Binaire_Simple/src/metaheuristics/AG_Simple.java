@@ -62,21 +62,23 @@ public class AG_Simple {
             popList.add(new Individual(genotype));
         }
 
-        File f = new File("resultat");
+        /*File f = new File("resultat");
         OutputStream os = null;
         String line = "";
+        
         if (!f.exists()) {
             try {
-                f.createNewFile();
-                os = new FileOutputStream(f);
+                f.createNewFile();                
             } catch (IOException ex) {
                 Logger.getLogger(AG_Simple.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         
+		try {
+			os = new FileOutputStream(f);
+		} catch (Exception e) {
+		}*/
         
-        
-
         Individual p1, p2;
         for (int i = 0; i < nbGenerations; i++) {
             for (int j = 0; j < popSize / 2; j++) {
@@ -108,7 +110,7 @@ public class AG_Simple {
             offspringsPop.clear();
             
             bestSolution = findBest(popList);
-            line += 
+            /*line += 
                     i + " & " +
                     xProba + " & " +
                     mProba + " & " +
@@ -116,14 +118,14 @@ public class AG_Simple {
                     nbGenerations + " & " +
                     bestSolution.getId() + " & " +
                     bestSolution.getFitness() + " & " +
-                    moyenneFitness(popList) + "\\\\ \\hline \n" ;
+                    moyenneFitness(popList) + "\\\\ \\hline \n" ;*/
                     
         }
-        try {
+        /*try {
             os.write(line.getBytes());
         } catch (IOException ex) {
             Logger.getLogger(AG_Simple.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }*/
         
         return bestSolution;
     } // execute
