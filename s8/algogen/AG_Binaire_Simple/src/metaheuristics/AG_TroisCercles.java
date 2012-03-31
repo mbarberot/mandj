@@ -43,14 +43,10 @@ public class AG_TroisCercles extends JApplet {
         lab_tauxMut = new JLabel("Taux de mutation :");
         lab_display = new JLabel();
                 
-        text_taillePop = new JTextField();
-        text_taillePop.setText("00");
-        text_nbGen = new JTextField();
-        text_nbGen.setText("00");
-        text_tauxCr = new JTextField();
-        text_tauxCr.setText("0.0");
-        text_tauxMut = new JTextField();
-        text_tauxMut.setText("0.0");
+        text_taillePop = new JTextField("100");
+        text_nbGen = new JTextField("100");
+        text_tauxCr = new JTextField("0.5");
+        text_tauxMut = new JTextField("0.5");
         
         but_valider = new JButton("Valider");
         
@@ -62,7 +58,6 @@ public class AG_TroisCercles extends JApplet {
                 launch_AG();
             }
         });
-        
         
         GroupLayout layout = new GroupLayout(this.getContentPane());
         this.getContentPane().setLayout(layout);
@@ -134,14 +129,10 @@ public class AG_TroisCercles extends JApplet {
             ex.printStackTrace();
         }
         
-        if(bestSolution != null)
-        {        	
-	        lab_display.setText(
-	                "<html><font size=\"2\" color=\"gray\" face=\"Arial\">La meilleure valeur de fitness trouvée est : <br/> " 
-	                + bestSolution.getFitness() + "</font></html>"
-	                );        
-	        
-        }
+        lab_display.setText(
+                "<html><font size=\"2\" color=\"gray\" face=\"Arial\">La meilleure valeur de fitness trouvée est : <br/> " 
+                + (int)bestSolution.getFitness() + "</font></html>"
+                );
     }
             
     

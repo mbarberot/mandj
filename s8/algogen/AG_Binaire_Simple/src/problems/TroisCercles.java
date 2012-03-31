@@ -22,6 +22,8 @@ public class TroisCercles extends Problem{
 		lowerLimit_[1] = 0;
 		upperLimit_[1] = 100;
 		precision_[1] = 2;
+                
+                isToMinimize = false;
 		
 	}
 
@@ -38,4 +40,6 @@ public class TroisCercles extends Problem{
 		
 		
 	}
+        
+        
 }

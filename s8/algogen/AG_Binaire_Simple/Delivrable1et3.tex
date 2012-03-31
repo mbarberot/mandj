@@ -1,0 +1,172 @@
+\documentclass[12pt]{article}
+
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[francais]{babel}
+\usepackage[a4paper]{geometry}
+%\usepackage{setspace}
+%\usepackage{layout}	
+%\usepackage{lscape}
+%\usepackage{soul}
+%\usepackage{ulem}
+%\usepackage{eurosym}		
+%\usepackage{bookman}
+%\usepackage{charter}
+%\usepackage{newcent}
+%\usepackage{lmodern}
+\usepackage{mathpazo}					
+%\usepackage{mathptmx}
+%\usepackage{verbatim}	
+\usepackage{listings}		% \lstset{language=java}
+%\usepackage{url}		
+%\usepackage{moreverb}
+%\usepackage{color}	
+%\usepackage{colortbl}	
+\usepackage[svgnames]{xcolor}
+%\usepackage{amsmath}
+%\usepackage{amssymb}
+%\usepackage{mathrsfs}
+%\usepackage{asmthm}
+%\usepackage[pdftex]{graphicx}	
+%\usepackage{wrapfig}		
+%\usepackage{makeidx}	
+%\usepackage{fancyhdr}
+%\usepackage{sfheaders}
+%\usepackage{pdfpages}
+%\usepackage[nottoc, notlof, notlot]{tocbibind}
+\usepackage{tocvsec2}
+
+
+\title{Question 1}
+\date{Mars/Avril 2012}
+\author{Barberot Mathieu \& Joan Racenet}
+\lstset{language=java}
+
+\newcommand{\strong}[1]{\textbf{#1}}
+\newcommand{\changed}[1]{\color{green}{#1}}
+\newcommand{\good}[1]{\color{red}{#1}}
+
+
+
+\begin{document}
+\maketitle
+\maxsecnumdepth{chapter}
+\section{Délivrable 1}
+\subsection{Codage de A}
+\noindent On peut exprimer le diamètre de A de cette manière :\\
+$10 \leq d(A) \leq 80 $\\
+Le diamètre de A peut prendre 70 valeurs. Avec une précision d'un centième, il peut alors prendre 700 valeurs.\\
+Pour coder en binaire on utilisera une puissance de 2, comme 700 > 512, on prendra 1024, soit un codage sur 10 bits.\\
+$d(A) = A'\times\frac{70}{1023} + 10$
+
+\subsection{Codage de B}
+\noindent On peut exprimer le diamètre de B de cette manière :\\
+$10 \leq d(B) \leq 90 - d(A)$\\
+On va coder le diamètre de B comme un pourcentage. Il peut prendre 100 valeurs.\\
+Là encore on suit un codage binaire, sur 7 bits (127 valeurs).\\
+$d(B) = [(B'\times\frac{100}{127})(\frac{80-d(A)}{100})]+10$\\
+B' est le pourcentage d'espace restant.
+
+\subsection{Codage de C}
+\noindent Le diamètre de C ne sera pas codé, il est calculable de cette manière :\\
+$d(C) = d(D) - (d(A) + d(B))$\\
+On peut donc le déduire de D, connu, et de A et B.
+
+\subsection{Fonctions de calcul}
+Avec :
+\begin{description}
+ \item[P :] La précision
+ \item[max :] La valeur max de x ou X 
+ \item[min :] La valeur min de x ou X
+ \item[ep :] $= log_{2}(\frac{max - min}{P})$
+\end{description}
+\paragraph{Fonction d'encodage :}
+$F(x) = \frac{(x - min)\times(2^{ep}-1)}{(max - min)}$
+\paragraph{Fonction de décodage :}
+$F(X) = (\frac{X\times(max - min)}{2^{ep}-1})+min$
+
+\section{Délivrable 3}
+Pour trouver un bon réglage, nous allons faire varier les paramètres les uns après les autres, en gardant les réglages qui ont donné les meilleurs résultats.
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+\hline
+NbT 	& Tx 	& Tm 	& Tp 	& NbI 	& IdBest 	& FitnessBest 	& FitnessMoyen 	\\ \hline
+\multicolumn{8}{|c|}{Influence du taux de croisement} \\ \hline
+1 & \changed{0.1} & 0.5 & 100 & 100 & 89 & 9176 & 8724 \\ \hline 
+2 & \changed{0.1} & 0.5 & 100 & 100 & 79 & 9361 & 8386 \\ \hline 
+3 & \changed{0.1} & 0.5 & 100 & 100 & 81 & 9506 & 9391 \\ \hline 
+4 & \changed{0.3} & 0.5 & 100 & 100 & 54 & 9375 & 8776 \\ \hline 
+5 & \changed{0.3} & 0.5 & 100 & 100 & 81 & 9181 & 8607 \\ \hline 
+6 & \changed{0.3} & 0.5 & 100 & 100 & 52 & 9601 & \good{9601} \\ \hline 
+7 & \changed{0.5} & 0.5 & 100 & 100 & 5 & \good{9647} & 6703 \\ \hline 
+8 & \changed{0.5} & 0.5 & 100 & 100 & 38 & 9072 & 9040 \\ \hline 
+9 & \changed{0.5} & 0.5 & 100 & 100 & 80 & 8623 & 8465 \\ \hline 
+10 & \changed{0.7} & 0.5 & 100 & 100 & 10 & 8357 & 8344 \\ \hline 
+11 & \changed{0.7} & 0.5 & 100 & 100 & 13 & 9274 & 9114 \\ \hline 
+12 & \changed{0.7} & 0.5 & 100 & 100 & 58 & 9276 & 9231 \\ \hline 
+13 & \changed{0.9} & 0.5 & 100 & 100 & 14 & 9497 & 7225 \\ \hline 
+14 & \changed{0.9} & 0.5 & 100 & 100 & 90 & 9534 & 9360 \\ \hline 
+15 & \changed{0.9} & 0.5 & 100 & 100 & 35 & 9440 & 9389 \\ \hline 
+\end{tabular}
+\\
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+\hline
+NbT 	& Tx 	& Tm 	& Tp 	& NbI 	& IdBest 	& FitnessBest 	& FitnessMoyen 	\\ \hline
+\multicolumn{8}{|c|}{Influence du taux de mutation} \\ \hline
+1 & 0.3 & \changed{0.1} & 100 & 100 & 32 & 9397 & 9235 \\ \hline 
+2 & 0.3 & \changed{0.1} & 100 & 100 & 50 & 9030 & 8834 \\ \hline 
+3 & 0.3 & \changed{0.1} & 100 & 100 & 82 & 9335 & 9123 \\ \hline 
+4 & 0.3 & \changed{0.3} & 100 & 100 & 44 & 9297 & 9189 \\ \hline 
+5 & 0.3 & \changed{0.3} & 100 & 100 & 31 & 9340 & 8808 \\ \hline 
+6 & 0.3 & \changed{0.3} & 100 & 100 & 2 & 9295 & 8494 \\ \hline 
+7 & 0.3 & \changed{0.5} & 100 & 100 & 99 & 9500 & 9465 \\ \hline 
+8 & 0.3 & \changed{0.5} & 100 & 100 & 20 & 8396 & 7739 \\ \hline 
+9 & 0.3 & \changed{0.5} & 100 & 100 & 90 & 9416 & 8830 \\ \hline 
+10 & 0.3 & \changed{0.7} & 100 & 100 & 30 & 8931 & 8681 \\ \hline 
+11 & 0.3 & \changed{0.7} & 100 & 100 & 54 & 9490 & \good{9490} \\ \hline 
+12 & 0.3 & \changed{0.7} & 100 & 100 & 61 & \good{9558} & 9217 \\ \hline 
+13 & 0.3 & \changed{0.9} & 100 & 100 & 63 & 9403 & 9327 \\ \hline 
+14 & 0.3 & \changed{0.9} & 100 & 100 & 35 & 9317 & 9317 \\ \hline 
+15 & 0.3 & \changed{0.9} & 100 & 100 & 40 & 9310 & 9310 \\ \hline 
+\multicolumn{8}{|c|}{Influence de la taille de la population} \\ \hline
+1 & 0.3 & 0.7 & \changed{50} & 100 & 1 & 9593 & 9247 \\ \hline 
+2 & 0.3 & 0.7 & \changed{50} & 100 & 25 & 9360 & 9242 \\ \hline 
+3 & 0.3 & 0.7 & \changed{50} & 100 & 0 & 6658 & 6658 \\ \hline 
+4 & 0.3 & 0.7 & \changed{100} & 100 & 12 & 9472 & 8300 \\ \hline 
+5 & 0.3 & 0.7 & \changed{100} & 100 & 0 & \good{9684} & \good{9592} \\ \hline 
+6 & 0.3 & 0.7 & \changed{100} & 100 & 66 & 9533 & 8277 \\ \hline 
+7 & 0.3 & 0.7 & \changed{150} & 100 & 81 & 9303 & 8202 \\ \hline 
+8 & 0.3 & 0.7 & \changed{150} & 100 & 2 & 9052 & 7696 \\ \hline 
+9 & 0.3 & 0.7 & \changed{150} & 100 & 142 & 9254 & 9132 \\ \hline 
+10 & 0.3 & 0.7 & \changed{300} & 100 & 80 & 9597 & 8576 \\ \hline 
+11 & 0.3 & 0.7 & \changed{300} & 100 & 92 & 9616 & 9266 \\ \hline 
+12 & 0.3 & 0.7 & \changed{300} & 100 & 243 & 9229 & 8377 \\ \hline 
+13 & 0.3 & 0.7 & \changed{500} & 100 & 95 & 9544 & 8692 \\ \hline 
+14 & 0.3 & 0.7 & \changed{500} & 100 & 373 & 9277 & 8929 \\ \hline 
+15 & 0.3 & 0.7 & \changed{500} & 100 & 96 & 9442 & 8612 \\ \hline 
+\end{tabular}
+\\
+\begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+\hline
+NbT 	& Tx 	& Tm 	& Tp 	& NbI 	& IdBest 	& FitnessBest 	& FitnessMoyen 	\\ \hline
+\multicolumn{8}{|c|}{Influence du nombre d'itérations} \\ \hline
+1 & 0.3 & 0.7 & 100 & \changed{50} & 4 & 9219 & 9105 \\ \hline 
+2 & 0.3 & 0.7 & 100 & \changed{50} & 4 & 9610 & 8844 \\ \hline 
+3 & 0.3 & 0.7 & 100 & \changed{50} & 76 & 9142 & 7693 \\ \hline 
+4 & 0.3 & 0.7 & 100 & \changed{100} & 73 & 9408 & 9300 \\ \hline 
+5 & 0.3 & 0.7 & 100 & \changed{100} & 66 & 9311 & 9183 \\ \hline 
+6 & 0.3 & 0.7 & 100 & \changed{100} & 61 & 9273 & 8998 \\ \hline 
+7 & 0.3 & 0.7 & 100 & \changed{150} & 5 & 8566 & 8566 \\ \hline 
+8 & 0.3 & 0.7 & 100 & \changed{150} & 44 & \good{9621} & \good{9538} \\ \hline 
+9 & 0.3 & 0.7 & 100 & \changed{150} & 52 & 9371 & 7106 \\ \hline 
+10 & 0.3 & 0.7 & 100 & \changed{300} & 4 & 8598 & 8598 \\ \hline 
+11 & 0.3 & 0.7 & 100 & \changed{300} & 91 & 9382 & 9127 \\ \hline 
+12 & 0.3 & 0.7 & 100 & \changed{300} & 8 & 6838 & 6838 \\ \hline 
+13 & 0.3 & 0.7 & 100 & \changed{500} & 72 & 9389 & 9389 \\ \hline 
+14 & 0.3 & 0.7 & 100 & \changed{500} & 10 & 8854 & 8854 \\ \hline 
+15 & 0.3 & 0.7 & 100 & \changed{500} & 86 & 8621 & 8621 \\ \hline  
+\end{tabular}
+\end{center}
+
+\end{document}

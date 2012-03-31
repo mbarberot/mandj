@@ -20,10 +20,7 @@ import base.operators.mutation.*;
 import base.operators.selection.Selection;
 import base.operators.selection.Tournament;
 import base.variables.*;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,28 +54,32 @@ public class AG_Simple {
 
         List<Individual> popList = new ArrayList<Individual>();
         List<Individual> offspringsPop = new ArrayList<Individual>();
+        Individual johndoe;
 
         for (int i = 0; i < popSize; i++) {
-            popList.add(new Individual(genotype));
+            johndoe = new Individual(genotype);
+            johndoe.setId(i);
+            popList.add(johndoe);
+            
         }
 
-        /*File f = new File("resultat");
-        OutputStream os = null;
+        File f = new File("resultat.txt");
+        FileWriter fw = null;
         String line = "";
-        
-        if (!f.exists()) {
-            try {
-                f.createNewFile();                
-            } catch (IOException ex) {
-                Logger.getLogger(AG_Simple.class.getName()).log(Level.SEVERE, null, ex);
+        try {
+            if (!f.exists()) 
+            {
+                f.createNewFile();
             }
+            fw = new FileWriter(f,true);
+        } catch (IOException ex) {
+            Logger.getLogger(AG_Simple.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         
-		try {
-			os = new FileOutputStream(f);
-		} catch (Exception e) {
-		}*/
         
+        
+
         Individual p1, p2;
         for (int i = 0; i < nbGenerations; i++) {
             for (int j = 0; j < popSize / 2; j++) {
@@ -109,30 +110,34 @@ public class AG_Simple {
             popList.addAll(offspringsPop);
             offspringsPop.clear();
             
-            bestSolution = findBest(popList);
-            /*line += 
-                    i + " & " +
-                    xProba + " & " +
-                    mProba + " & " +
-                    popSize + " & " +
-                    nbGenerations + " & " +
-                    bestSolution.getId() + " & " +
-                    bestSolution.getFitness() + " & " +
-                    moyenneFitness(popList) + "\\\\ \\hline \n" ;*/
                     
         }
-        /*try {
-            os.write(line.getBytes());
+        
+        bestSolution = findBest(popList);
+        line +=
+                " | "
+                + xProba + " | "
+                + mProba + " | "
+                + popSize + " | "
+                + nbGenerations + " | "
+                + bestSolution.getId() + " | "
+                + (int) bestSolution.getFitness() + " | "
+                + (int) moyenneFitness(popList) + "\n";
+        
+        System.out.println(line);
+        try {
+            fw.write(line);
+            fw.flush();
         } catch (IOException ex) {
             Logger.getLogger(AG_Simple.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
+        }
         
         return bestSolution;
     } // execute
 
     public double moyenneFitness(List<Individual> population) {
         double sum = 0.0;
-
+        
         for (Individual i : population) {
             sum += i.getFitness();
         }
