@@ -21,7 +21,7 @@
 
 #include "graphe.h"
 #include "liste.h"
-
+#include "postierChinois.h"
 
 #define ENTREE_MAX_LENGTH 150
 #define RES_MAX_LENGTH 170

@@ -38,7 +38,7 @@ BIN= ../bin
 #
 # Règle principale
 #
-all : liste.a graphe.a tests exec postierChinois
+all : liste.a graphe.a tests postier.a exec 
 
 liste.a:
 	make -C $(LISTE)
@@ -49,10 +49,10 @@ graphe.a: liste.a
 tests: graphe.a liste.a
 	make -C $(TESTS)
 
-exec: graphe.a liste.a
+exec: graphe.a liste.a postier.a
 	make -C $(EXEC)
 
-postierChinois: graphe.a liste.a
+postier.a : graphe.a liste.a
 	make -C $(POSTIER_CHINOIS)
 
 # 

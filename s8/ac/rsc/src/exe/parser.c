@@ -338,7 +338,8 @@ void interpreteCommande(char* commandes)
 	    
 	    // Commande chargerCycleEulerienn
 	    if(strstr(tmp,"calculCycleEulerien") != NULL)
-	    {
+	    {	      
+	      
 		res = interpreteCalculCycleEulerien(tmp);
 		cmdOk = 1;
 		
@@ -984,19 +985,18 @@ parserError interpreteCalculCycleEulerien(char* cmd)
     int numCom;
     int arg1, arg2;
     
-    erreur err;
+    erreur err;    
     
     int nbArgs = sscanf(cmd, "%d:calculCycleEulerien(%d,%d)", &numCom, &arg1, &arg2);
     
-    if(numCom == 3)
-    {
-	/*err = calculCycleEulerien(arg1, arg2);
-	ecritureResultatCommande(numCom, err);*/
+    if(nbArgs == 3){
+        err = calculCycleEulerien(arg1, arg2);
+	//ecritureResultatCommande(numCom, err);
     }
     else
     {
-	ecritureResultatCommande(COMMANDE_INVALIDE, err);
-	return ARGUMENTS_INCORRECTS;
+	/*ecritureResultatCommande(COMMANDE_INVALIDE, err);
+	return ARGUMENTS_INCORRECTS;*/
     }
     
     // Ecriture en .dot ?

@@ -168,37 +168,62 @@ erreur dupliqueArete(int s1, int s2)
 
 erreur isGrapheEulerien(int idGraphe, int* res)
 {
-  // Tester si le graphe est connexe
-  // -> Parcours en profondeur
+  TypGraphe *g = graphes[idGraphe - 1];
+  int pariteCurrent = 0;
+  int sommetsImpairs = 0;
+  int i;
+  
+  *res = -1;
+  
+  if(g == NULL)
+    return GRAPHE_INEXISTANT;
   
   // Tester la parité des degrés de chaque sommet
-  // -> SI tous pairs => on peut effectuer un cycle eulérien
-  // -> SI deux sommets sont impairs => un cycle chinois est possible
-  // SINON : le graphe n'est pas eulérien
-}
-
-int parcoursProfondeur(TypGraphe *g, TypVoisins** l, int origine)
-{
-  int res = 0;
-  TypVoisins tmp = g->&aretes[i];
-  
-  // Tant qu'il existe des voisins
-  while(tmp != NULL) 
+  for(i = 0 ; i < g -> nbMaxSommets ; i++)
   {
+    calculerDegreSommet(idGraphe, i + 1, &pariteCurrent);
     
-    if(rechercheVoisin(l, tmp->voisin) != NULL)
-    {
-      // Ajouter le voisin en cours à la liste
-      ajouteVoisin(l, tmp->voisin, tmp->poidsVoisin, tmp->info);
-      
-      // Incrémenter res
-      res++;
-      
-      // Appeler le parcours sur le voisin + ajouter le résultat à res
-      res = res + parcoursProfondeur(g, l, tmp->voisin);
-    }
+    // => l'implémentation oblige de figurer les arêtes non-orientées comme deux arêtes orientées
+    // on divise donc le degré par deux pour avoir une valeur correcte
+    pariteCurrent = pariteCurrent / 2;
     
-    tmp = tmp->voisinSuivant;
+    if(pariteCurrent % 2 == 1)
+      sommetsImpairs++;
+    
+    if(sommetsImpairs > 2)
+      return TEST_KO;
+  }  
+  // -> SI tous pairs => on peut effectuer un cycle eulérien
+  if(sommetsImpairs == 0)
+  {
+    *res = 1;
+    
+  }  // -> SI deux sommets sont impairs => un cycle chinois est possible
+  else if (sommetsImpairs == 2)
+  {
+    *res = 0;
+  } // SINON : le graphe n'est pas eulérien
+  else
+  {
+    return TEST_KO;
   }
   
+ return TEST_OK;
+  
+}
+
+
+erreur calculCycleEulerien(int idGraphe,int idHeuristique)
+{
+  erreur res = RES_OK;
+  int *tparc = (int*)malloc(sizeof(int));
+  
+  
+  if(tparc != NULL) {    
+    res = isGrapheEulerien(idGraphe, tparc);
+  }
+  
+  printf("IsEulerien ? %s : %d \n", errToString(res), *tparc);
+  
+  return res;  
 }

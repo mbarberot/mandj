@@ -37,11 +37,7 @@ erreur initParcoursChinois(
 
 /**
  * Peuple le tableau 'nbAretes' avec le graphe n° 'idGraphe' 
- * et alloue la mémoire nécessaire.
- *
- * ATTENTION !
- * Cette méthode est utilisée par l'initialisation. Elle ne vérifie pas l'idGraphe
- * et ne devrait pas être utilisée hors de l'initialisation.
+ * et alloue la mémoire nécessaire
  *
  * @param idGraphe  L'id du graphe, 1 ou 2
  * @return 
@@ -51,7 +47,7 @@ erreur peupleTabAretes(int idGraphe);
 /**
  * Libère la mémoire allouée au tablean nbAretes
  *
- * @return RES_OK
+ * @return
  */
 erreur freeParcoursChinois();
 
@@ -74,22 +70,13 @@ erreur dupliqueArete(
  * Teste si le graphe est eulérien
  *
  * @param idGraphe  ID du graphe à tester
- * @param res	    1 = Eulérien, 0 = Non-eulérien
+ * @param res	    1 = cycle eulérien possible, 0 = cycle chinois possible
  * @return  
  */
 erreur isGrapheEulerien(
 	int idGraphe,
 	int* res
 	); // TODO
-
-/**
- * Effectue le parcours en profondeur d'un graphe donné
- * @param g : le graphe à parcourir
- * @param l : liste des sommets déjà parcourus (marquage)
- * @param origine : le sommet d'où commence le parcours
- * @return : le nombre de sommets parcourus
- */
-int parcoursProfondeur(TypGraphe *g, TypVoisins** l, int origine);
 
 
 /**
@@ -117,5 +104,6 @@ erreur afficheCycleEulerien(
 	int idGraphe,
 	int idHeuristique
 	);
+
 
 #endif

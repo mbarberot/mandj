@@ -7,7 +7,7 @@ INC=../../include/
 CC=gcc
 CFLAGS=-O4 -W -Wall -g
 CPPFLAGS=-I $(INC)
-LDFLAGS=-L $(LIBDIR) -lgraphe -lliste
+LDFLAGS=-L $(LIBDIR) -lgraphe -lliste -lpostier
 EXEC = Main
 
 # Sources necessaires
