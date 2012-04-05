@@ -1,8 +1,7 @@
 package db.synch;
 
 import db.DataBase;
-import db.data.User;
-import gui.FrameMain;
+import db.SynchQuery;
 import java.net.Proxy;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
@@ -83,16 +82,23 @@ public class Synch
     public void updateBase ()
     {
         int     lastID, 
-                len;
+                len,
+                j;
         String  res,
                 genre,
+                coloristes[],
+                dessinateurs[],
+                scenaristes[],
                 sql = "",
                 editions[];
+        
+        Update update = new Update(db);
         
         DetailsEdition dEdition;
         DetailsVolume dTome;
         DetailsSerie dSerie;
-        DetailsAuteur dAuteur;
+        DetailsAuteur dAuteur,dTj;
+        DetailsEditeur dEditeur;
         
         try 
         {
@@ -111,19 +117,66 @@ public class Synch
                     
                     // Récupération des détails
                     dEdition = port.getDetailsEdition(Integer.parseInt(editions[i]));
+                    dEditeur = port.getDetailsEditeur(dEdition.getIdEditeur());
                     dTome = port.getDetailsTome(dEdition.getIdTome());
                     dSerie = port.getDetailsSerie(dTome.getIdSerie());
-                    //dAuteur = port.getDetailsAuteur();
+                    dAuteur = port.getDetailsAuteur(dTome.getIdAuteur());
+                    coloristes = (port.getColoristesTome(dTome.getIdTome())).split(";");
+                    dessinateurs = (port.getDessinateursTome(dTome.getIdTome())).split(";");
+                    scenaristes = (port.getScenaristesTome(dTome.getIdTome())).split(";");
                     genre = port.getGenre(dTome.getIdGenre());
+                    
+                    
+                    
+                    // Insertion des données
+                    sql += update.genre(dTome.getIdGenre(), genre) + "\n";
+                    sql += update.serie(dSerie) + "\n";
+                    sql += update.auteur(dAuteur) + "\n";
+                    sql += update.volume(dTome) + "\n";
 
-                    // Création de la requête SQL
-                    // + gestion des valeurs nulles
+                    if(coloristes.length > 1)
+                    {
+                        for(j = 1; j < coloristes.length; j++)
+                        {
+                            dTj = port.getDetailsAuteur(Integer.parseInt(coloristes[i]));
+                            sql += SynchQuery.insertAuteur(dTj) + "\n";
+                            sql += SynchQuery.insertTjTomeAuteur(dTome.getIdTome(), coloristes[i], "Coloristes") + "\n";
+                        }
+                    }
+                    
+                    if(dessinateurs.length > 1)
+                    {
+                        for(j = 1; j < dessinateurs.length; j++)
+                        {
+                            dTj = port.getDetailsAuteur(Integer.parseInt(dessinateurs[i]));
+                            sql += SynchQuery.insertAuteur(dTj) + "\n";
+                            sql += SynchQuery.insertTjTomeAuteur(dTome.getIdTome(), dessinateurs[i], "Dessinateur") + "\n";
+                        }
+                    }
+                    
+                    if(scenaristes.length > 1)
+                    {
+                        for(j = 1; j < scenaristes.length; j++)
+                        {
+                            dTj = port.getDetailsAuteur(Integer.parseInt(scenaristes[i]));
+                            sql += SynchQuery.insertAuteur(dTj) + "\n";
+                            sql += SynchQuery.insertTjTomeAuteur(dTome.getIdTome(), scenaristes[i], "Scenariste") + "\n";
+                        }
+                    }
+                    
+                    sql += update.editeur(dEditeur) + "\n";
+                    sql += update.edition(dEdition) + "\n";
+                    
+                    
+                    System.out.println(sql);
                     
                 }
                 
+                //this.db.update(sql);
+                
             } while(len == 1000);
             
-            this.db.update(sql);
+            
         } 
         catch (RemoteException ex) 
         {

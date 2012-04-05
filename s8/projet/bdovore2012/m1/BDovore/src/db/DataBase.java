@@ -75,6 +75,32 @@ public class DataBase {
 
         st.close();
     }
+    
+    /**
+     * Effectue une requête select de base
+     *
+     * @param sql
+     * @return
+     * @throws SQLException
+     */
+    public synchronized int getCount(String sql) throws SQLException 
+    {
+        int amount = 0;
+
+        Statement st = null;
+        ResultSet rs = null;
+
+        st = conn.createStatement();
+        rs = st.executeQuery(sql);
+        
+        if(rs.next()) 
+        { 
+            amount = Integer.parseInt(""+rs.getLong(1));
+        }
+
+        st.close();
+        return amount;
+    }
 
     /**
      * Requete de recherche (récupère tout sauf auteurs et éditions)
@@ -478,7 +504,7 @@ public class DataBase {
                 // with 1 not 0
 
                 if (o != null) {
-                    System.out.print(o.getClass().getName()
+                    System.out.print("["+(i+1)+"] "+o.getClass().getName()
                             + " : " + o + " / ");
                 } else {
                     System.out.print("NULL : " + o + " / ");

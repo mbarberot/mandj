@@ -6,13 +6,15 @@ import wsdl.server.*;
  * Cette classe contient toutes les requêtes nécessaires aux fonctions de synchronisation 
  * @author kawa
  */
-public class SynchQuery {
+public class SynchQuery 
+{
+    
+    // TODO
+    // Insertion des détails_auteur, détails_editeur, détails_serie
+    // Présence d'un info(genre,série,auteur...) dans la table correspondante
  
     
-    public static String getLastID()
-    {
-        return "SELECT MAX(T.ID_TOME) FROM TOME T WHERE 1";
-    }
+    
     
     /**
      * Retourne la requête pour insérer une édition dans la DB
@@ -22,23 +24,14 @@ public class SynchQuery {
      */
     public static String insertEdition(DetailsEdition dEdition)
     {
-        String edition, details;
-        
-        edition = "INSERT INTO EDITION VALUES("
+       return "INSERT INTO EDITION VALUES("
                 + dEdition.getIdEdition() + ","
                 + ((dEdition.getIdTome() < 0) ? "NULL" : dEdition.getIdTome()) +","
-                + dEdition.getIsbn() + ","
-                + ((dEdition.getDate_parution().length() == 0) ? "NULL" : dEdition.getDate_parution()) +","
+                + sql_string(dEdition.getIsbn()) + ","
+                + ((dEdition.getDate_parution().length() == 0) ? "NULL" : sql_date(dEdition.getDate_parution())) +","
                 + ((dEdition.getIdEditeur() < 0) ? "NULL" : dEdition.getIdEditeur()) + ","
                 + dEdition.getFlag_default()
-                + ");";
-        
-        details = "INSERT INTO DETAILS VALUES("
-                + dEdition.getIdEdition() + ","
-                + ((dEdition.getImg_couv().length() == 0) ? "NULL" : dEdition.getImg_couv())
-                + ");";
-        
-        return edition + "\n" + details;
+                + ")";
     }
     
     
@@ -52,11 +45,11 @@ public class SynchQuery {
     {
         return "INSERT INTO TOME VALUES ("
                 + dVolume.getIdTome()   + ","
-                + dVolume.getTitre()    + ","
+                + sql_string(dVolume.getTitre())    + ","
                 + dVolume.getIdSerie()  + ","
                 + ((dVolume.getNumTome() < 0) ? "NULL" : dVolume.getNumTome()) +","
                 + ((dVolume.getIdGenre() < 0) ? "NULL" : dVolume.getIdGenre())
-                + ");" ;        
+                + ")" ;        
     }
     
     /**
@@ -67,39 +60,30 @@ public class SynchQuery {
      */
     public static String insertAuteur(DetailsAuteur dAuteur)
     {
-        String auteur, details;
-        
-        auteur = "INSERT INTO AUTEUR VALUES("
+       return "INSERT INTO AUTEUR VALUES("
                 + dAuteur.getIdAuteur() + ","
-                + dAuteur.getPseudo()   + ","
-                + dAuteur.getNom()      + ","
-                + dAuteur.getPrenom() 
-                + ";)";
-        
-        details = "INSERT INTO DETAILS_AUTEUR VALUES("
-                + dAuteur.getIdAuteur() + ","
-                + ((dAuteur.getDate_naissance().length() == 0) ? "NULL" : dAuteur.getDate_naissance()) + ","
-                + ((dAuteur.getDate_deces().length() == 0) ? "NULL" : dAuteur.getDate_deces()) + ","
-                + dAuteur.getNationalite()
-                + ");";
-        
-        return auteur + "\n" + details;
+                + sql_string(dAuteur.getPseudo())   + ","
+                + sql_string(dAuteur.getNom())      + ","
+                + sql_string(dAuteur.getPrenom()) 
+                + ")";
     }
     
     /**
      * Retourne la requête pour insérer les correspondances tomes <-> auteurs dans la DB
-     * @param idTome Id du tome
-     * @param idAuteur Id de l'auteur
-     * @param role Role de l'auteur
+     * 
+     * @param idTome ID du tome
+     * @param coloristes IDs des coloristes
+     * @param dessinateurs IDs des dessinateurs
+     * @param scenaristes IDs des scenaristes
      * @return La requête SQL
      */
-    public static String insertTjTomeAuteur(int idTome, int idAuteur, String role)
-    {
+    public static String insertTjTomeAuteur(int idTome, String idAuteur, String role)
+    {        
         return "INSERT INTO TJ_TOME_AUTEUR VALUES("
-                + idTome    + ","
-                + idAuteur  + ","
-                + role
-                + ");";
+                + idTome    +","
+                + idAuteur  +","
+                + sql_string(role) 
+                +")";
     }
     
     /**
@@ -109,11 +93,11 @@ public class SynchQuery {
      */
     public static String insertEditeur (DetailsEditeur dEditeur)
     {
-        return "INSERT INTO EDITEUR("
+        return "INSERT INTO EDITEUR VALUES("
                 + dEditeur.getIdEditeur() + ","
-                + dEditeur.getNomEditeur() + ","
-                + dEditeur.getUrl()
-                + ");";
+                + sql_string(dEditeur.getNomEditeur()) + ","
+                + sql_string(dEditeur.getUrl())
+                + ")";
     }
     
     
@@ -125,21 +109,10 @@ public class SynchQuery {
      */
     public static String insertSerie(DetailsSerie dSerie)
     {
-        String serie, details;
-        
-        serie = "INSERT INTO SERIE VALUES("
+        return "INSERT INTO SERIE VALUES("
                 + dSerie.getIdSerie() + ","
-                + dSerie.getNomSerie()
-                + ");";
-        
-        details = "INSERT INTO DETAILS_SERIE VALUES("
-                + dSerie.getIdSerie() + ","
-                + dSerie.getNbTomes() + ","
-                + dSerie.getFlgFini() + ","
-                + dSerie.getHistoire()
-                + ");";
-                
-        return serie + "\n" + details;
+                + sql_string(dSerie.getNomSerie())
+                + ")";
     }
     
     /**
@@ -153,7 +126,7 @@ public class SynchQuery {
         return "INSERT INTO GENRE VALUES("
                 + idGenre + ","
                 + ((nomGenre != null) ? sql_string(nomGenre) : "NULL" )
-                + ");";
+                + ")";
     }
     
     /**
@@ -164,6 +137,32 @@ public class SynchQuery {
     public static String sql_string(String str)
     {
         return "'"+str+"'";
+    }
+    
+    /**
+     * Ajoute le mot clef "Date" et les guillemets simples (') autour d'une chaine
+     * @param str La chaine
+     * @return La chaine rretouchée
+     */
+    public static String sql_date(String str)
+    {
+        return "DATE '"+str+"'";
+    }
+    
+    public static String getCount(String what, String table, int condition)
+    {
+        return "SELECT COUNT("+what+") \n"
+                + "FROM "+table+" \n"
+                + "WHERE "+what+" = "+condition;
+    }
+    
+    public static String getCount(int idTome, String auteur, String role)
+    {
+        return "SELECT COUNT(*) \n"
+                + "FROM TJ_TOME_AUTEUR \n"
+                + "WHERE ID_TOME = "+idTome+" \n"
+                + "AND ID_AUTEUR ="+sql_string(auteur)+" \n"
+                + "AND ROLE ="+sql_string(role);
     }
     
 }

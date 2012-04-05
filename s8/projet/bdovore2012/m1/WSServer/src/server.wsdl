@@ -104,7 +104,7 @@
 		<wsdl:part name="scenaristes" type="xsd:string"></wsdl:part>
 	</wsdl:message>
 	<wsdl:message name="getDessinateursTomeRequest">
-		<wsdl:part name="idTome" type="xsd:string"></wsdl:part>
+		<wsdl:part name="idTome" type="xsd:int"></wsdl:part>
 	</wsdl:message>
 	<wsdl:message name="getDessinateursTomeResponse">
 		<wsdl:part name="dessinateurs" type="xsd:string"></wsdl:part>
