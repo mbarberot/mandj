@@ -382,6 +382,28 @@ class BDovore {
 		}
 		
 		return $res;
+	}
+        
+        /**
+	 * Récupère le nombre d'éditions depuis $lastId
+	 * @param lastId : la dernière édition récupérée	
+	 */
+	public function getNbEditionsManquantes($lastId)
+	{	
+		// Préparation de la requête
+		$sqlEdManquantes = "SELECT COUNT(ID_EDITION) AS NB FROM bd_edition WHERE ID_EDITION > {$lastId}"; /// LIMIT 0, {$limit}";
+		$reqGetEdManquantes = mysql_query($sqlEdManquantes);
+		
+		if(!$reqGetEdManquantes)
+		{
+			throw  new SoapFault("ERREUR_REQUETE : id_user", $errors["ERREUR_REQUETE"]);
+		}
+		
+		// Récupération du nombre d'éditions
+		$data = mysql_fetch_assoc($reqGetEdManquantes);
+		$res = $data["NB"];
+		
+		return $res;
 	}	
 	
 	/**

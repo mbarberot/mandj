@@ -170,6 +170,12 @@
 	<wsdl:message name="getEditionsManquantesResponse">
 		<wsdl:part name="editionsManquantes" type="xsd:string"></wsdl:part>
 	</wsdl:message>
+        <wsdl:message name="getNbEditionsManquantesRequest">
+		<wsdl:part name="lastId" type="xsd:int"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getNbEditionsManquantesResponse">
+		<wsdl:part name="nbEditionsManquantes" type="xsd:int"></wsdl:part>
+	</wsdl:message>
 	<wsdl:message name="getIdUserRequest">
 		<wsdl:part name="userName" type="xsd:string"></wsdl:part>
 		<wsdl:part name="userPass" type="xsd:string"></wsdl:part>
@@ -237,6 +243,10 @@
 		<wsdl:operation name="getEditionsManquantes">
 			<wsdl:input message="tns:getEditionsManquantesRequest"></wsdl:input>
 			<wsdl:output message="tns:getEditionsManquantesResponse"></wsdl:output>
+		</wsdl:operation>
+                <wsdl:operation name="getNbEditionsManquantes">
+			<wsdl:input message="tns:getNbEditionsManquantesRequest"></wsdl:input>
+			<wsdl:output message="tns:getNbEditionsManquantesResponse"></wsdl:output>
 		</wsdl:operation>
 		<wsdl:operation name="getIdUser">
 			<wsdl:input message="tns:getIdUserRequest"></wsdl:input>
@@ -374,6 +384,16 @@
 		
 		<wsdl:operation name='getEditionsManquantes'>
 			<soap:operation soapAction='getEditionsManquantes' />
+			<wsdl:input>
+				<soap:body use='literal' namespace='namespace_adress' />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use='literal' namespace='namespace_adress' />
+			</wsdl:output>
+		</wsdl:operation>
+                
+                <wsdl:operation name='getNbEditionsManquantes'>
+			<soap:operation soapAction='getNbEditionsManquantes' />
 			<wsdl:input>
 				<soap:body use='literal' namespace='namespace_adress' />
 			</wsdl:input>

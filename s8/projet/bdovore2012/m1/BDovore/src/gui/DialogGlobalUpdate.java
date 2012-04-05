@@ -48,7 +48,7 @@ public class DialogGlobalUpdate extends JDialog {
                 update();
             }
         });
-
+       
         JPanel ctrlPane = new JPanel(new FlowLayout());
         ctrlPane.add(btnStart);
 
