@@ -27,7 +27,7 @@ public class SearchQuery {
     public static final int SEARCH_IN_OWNED = 1;
     public static final int SEARCH_IN_MISSING = 2;
     private static final String[] searchInJoin = {
-        "(e.ID_TOME = t.ID_TOME AND e.FLG_DEFAULT = TRUE)",
+        "(e.ID_TOME = t.ID_TOME)", // AND e.FLG_DEFAULT = TRUE)", > pourquoi ?
         "e.ID_TOME = t.ID_TOME",
         "e.ID_TOME = t.ID_TOME"
     };

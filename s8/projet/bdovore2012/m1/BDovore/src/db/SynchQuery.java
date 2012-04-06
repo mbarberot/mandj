@@ -24,7 +24,7 @@ public class SynchQuery
      */
     public static String insertEdition(DetailsEdition dEdition)
     {
-       return "INSERT INTO EDITION VALUES("
+       return insertValues("EDITION","")
                 + dEdition.getIdEdition() + ","
                 + ((dEdition.getIdTome() < 0) ? "NULL" : dEdition.getIdTome()) +","
                 + sql_string(dEdition.getIsbn()) + ","
@@ -43,7 +43,7 @@ public class SynchQuery
      */
     public static String insertVolume(DetailsVolume dVolume)
     {
-        return "INSERT INTO TOME VALUES ("
+        return insertValues("TOME","")
                 + dVolume.getIdTome()   + ","
                 + sql_string(dVolume.getTitre())    + ","
                 + dVolume.getIdSerie()  + ","
@@ -60,7 +60,7 @@ public class SynchQuery
      */
     public static String insertAuteur(DetailsAuteur dAuteur)
     {
-       return "INSERT INTO AUTEUR VALUES("
+       return insertValues("AUTEUR","")
                 + dAuteur.getIdAuteur() + ","
                 + sql_string(dAuteur.getPseudo())   + ","
                 + sql_string(dAuteur.getNom())      + ","
@@ -79,7 +79,7 @@ public class SynchQuery
      */
     public static String insertTjTomeAuteur(int idTome, String idAuteur, String role)
     {        
-        return "INSERT INTO TJ_TOME_AUTEUR VALUES("
+        return insertValues("TJ_TOME_AUTEUR","")
                 + idTome    +","
                 + idAuteur  +","
                 + sql_string(role) 
@@ -93,7 +93,7 @@ public class SynchQuery
      */
     public static String insertEditeur (DetailsEditeur dEditeur)
     {
-        return "INSERT INTO EDITEUR VALUES("
+        return insertValues("EDITEUR","")
                 + dEditeur.getIdEditeur() + ","
                 + sql_string(dEditeur.getNomEditeur()) + ","
                 + sql_string(dEditeur.getUrl())
@@ -109,7 +109,7 @@ public class SynchQuery
      */
     public static String insertSerie(DetailsSerie dSerie)
     {
-        return "INSERT INTO SERIE VALUES("
+        return insertValues("SERIE","")
                 + dSerie.getIdSerie() + ","
                 + sql_string(dSerie.getNomSerie())
                 + ");";
@@ -123,10 +123,15 @@ public class SynchQuery
      */
     public static String insertGenre(int idGenre, String nomGenre)
     {
-        return "INSERT INTO GENRE VALUES("
+        return insertValues("GENRE", "")
                 + idGenre + ","
                 + ((nomGenre != null) ? sql_string(nomGenre) : "NULL" )
                 + ");";
+    }
+    
+    public static String insertValues(String table, String flag)
+    {
+        return "INSERT "+flag+" INTO "+table+" VALUES(";
     }
     
     /**
@@ -136,7 +141,8 @@ public class SynchQuery
      */
     public static String sql_string(String str)
     {
-        String[] stab;
+        
+        String[] stab; // INSERT INTO TOME VALUES(26,STRINGDECODE('L archipel de Sanzunron'),25,37,26);
         String sqlstr;
         int len;
         
@@ -145,11 +151,11 @@ public class SynchQuery
         sqlstr = stab[0];
         for(int i = 1; i < len; i++)
         {
-           sqlstr += "\\'" + stab[i];
+           sqlstr += "''" + stab[i];
         }
         
-        
-        return "'"+sqlstr+"'";
+        //return "'"+sqlstr+"'";
+        return "STRINGDECODE('"+sqlstr+"')";
     }
     
     /**

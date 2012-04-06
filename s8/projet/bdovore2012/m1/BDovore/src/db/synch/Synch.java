@@ -61,10 +61,11 @@ public class Synch
     {
         this.db = db;
         this.proxy = proxy;
-        this.update = new Update(db);
+        this.update = null;
         try
         {
             this.port = new BDovoreLocator().getBDovore_Port();
+            this.update = new Update(db);
         } catch (Exception ex)
         {
             ex.printStackTrace();
@@ -90,35 +91,55 @@ public class Synch
      */
     public void updateBase()
     {
-        int lastID,
-                len,
-                tailleLot;
-        String res,
-                genre,
-                coloristes[],
-                dessinateurs[],
-                scenaristes[],
-                sql = "",
-                editions[];
-        DetailsEdition dEdition;
-        DetailsVolume dTome;
-        DetailsSerie dSerie;
-        DetailsAuteur dAuteur, dTj;
-        DetailsEditeur dEditeur;
+        int lastID,         // Dernier id_edition de la base
+                len,        // Nb éditions à ajouter durant l'itération courante
+                cptBoucle,  // Nombre de boucle
+                tailleLot;  // Nb édition reçues maximum par itération
+        
+        String res,                 // Chaine au format CVS pour la réception des id_edition manquants 
+                genre,              // Nom du genre
+                coloristes[],       // Id des coloristes
+                dessinateurs[],     // Id des dessinateurs
+                scenaristes[],      // Id des scénaristes
+                sql,           // Requête SQL qui sera construite
+                editions[];         // Editions manquantes passées du CSV en un tableau
+        
+        DetailsEdition dEdition;        // Objet edition du webservice
+        DetailsVolume dTome;            // Objet tome du webservice
+        DetailsSerie dSerie;            // Objet série du webservice
+        DetailsAuteur dAuteur, dTj;     // Objet auteur du webservice (+ dTj pour la table TJ_TOME_AUTEUR)
+        DetailsEditeur dEditeur;        // Objet editeur du webservice
 
+        // Synchronisation
         try
         {
+            // Initialisation
+            cptBoucle = 0;
             tailleLot = 0;
+            
             // Boucle de mise à jour
             do
             {
+                sql = "";
+                
                 // Récupération de l'ID du dernier tome de la base
-                lastID = db.getLastID("EDITION");
+                lastID = update.getLastIdEdition();
+                
                 // Récupération des editiones manquantes
                 res = port.getEditionsManquantes(lastID);
+                // CSV -> String[]
                 editions = res.split(";");
+                
+                // Nombre d'ID_EDITION reçus :
                 len = editions.length;
-                if(tailleLot == 0) { tailleLot = len; }
+                
+                // Initialisation de la taille de chaque lot de données
+                // + gestion de la taille = 0 (sinon : boucle infinie)
+                if(cptBoucle == 0) { tailleLot = len; }
+                else if(tailleLot == 0) { break; } 
+                
+                // Récupération des informations depuis le webservice
+                // + création de la requête SQL avec l'objet Update
                 for (int i = 0; i < len; i++)
                 {
                     // Récupération des détails
@@ -131,7 +152,8 @@ public class Synch
                     dessinateurs = (port.getDessinateursTome(dTome.getIdTome())).split(";");
                     scenaristes = (port.getScenaristesTome(dTome.getIdTome())).split(";");
                     genre = port.getGenre(dTome.getIdGenre());
-                    // Insertion des données
+                    
+                    // Création de la requête
                     sql += update.genre(dTome.getIdGenre(), genre) + "\n";
                     sql += update.serie(dSerie) + "\n";
                     sql += update.auteur(dAuteur) + "\n";
@@ -139,17 +161,27 @@ public class Synch
                     sql += tj_tome_auteur(dTome.getIdTome(), coloristes, dessinateurs, scenaristes) +"\n";
                     sql += update.editeur(dEditeur) + "\n";
                     sql += update.edition(dEdition) + "\n";
-                    
                 }
+                
+                // Affichage temporaire
                 System.out.println(sql);
+                
+                // Execution de la requête
                 this.db.update(sql);
+                
+                // Incrémentation du compteur de boucle pour éviter 
+                // les boucles infinies si aucune données à récupérer
+                // len == 0 & tailleLot == 0
+                cptBoucle++;
+
+                // Break temporaire
                 break;
+                
+                
+                
             } while (len == tailleLot);
             
         } catch (RemoteException ex)
-        {
-            ex.printStackTrace();
-        } catch (SQLException ex)
         {
             ex.printStackTrace();
         }
@@ -162,6 +194,15 @@ public class Synch
     {
     }
 
+    /**
+     * 
+     * @param idTome
+     * @param coloristes
+     * @param dessinateurs
+     * @param scenaristes
+     * @return
+     * @throws RemoteException 
+     */
     private String tj_tome_auteur(int idTome, String[] coloristes, String[] dessinateurs, String[] scenaristes) throws RemoteException
     {
         int j;

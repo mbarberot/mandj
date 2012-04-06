@@ -82,6 +82,7 @@ public class DataBase {
      * @param sql
      * @return
      * @throws SQLException
+     * @deprecated 
      */
     public synchronized int getCount(String sql) throws SQLException 
     {
