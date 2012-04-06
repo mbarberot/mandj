@@ -37,11 +37,6 @@ public class Synch
      * Objet 'intelligent' de création des requêtes
      */
     private Update update;
-
-    /*
-     * Nombre d'édition à insérer par lots
-     */
-    public static final int TAILLE_LOT = 1000;
     
     //
     // Constructeurs
@@ -96,7 +91,8 @@ public class Synch
     public void updateBase()
     {
         int lastID,
-                len;
+                len,
+                tailleLot;
         String res,
                 genre,
                 coloristes[],
@@ -112,6 +108,7 @@ public class Synch
 
         try
         {
+            tailleLot = 0;
             // Boucle de mise à jour
             do
             {
@@ -121,6 +118,7 @@ public class Synch
                 res = port.getEditionsManquantes(lastID);
                 editions = res.split(";");
                 len = editions.length;
+                if(tailleLot == 0) { tailleLot = len; }
                 for (int i = 0; i < len; i++)
                 {
                     // Récupération des détails
@@ -141,10 +139,12 @@ public class Synch
                     sql += tj_tome_auteur(dTome.getIdTome(), coloristes, dessinateurs, scenaristes) +"\n";
                     sql += update.editeur(dEditeur) + "\n";
                     sql += update.edition(dEdition) + "\n";
-                    System.out.println(sql);
+                    
                 }
+                System.out.println(sql);
                 this.db.update(sql);
-            } while (len == TAILLE_LOT);
+                break;
+            } while (len == tailleLot);
             
         } catch (RemoteException ex)
         {

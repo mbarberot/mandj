@@ -31,7 +31,7 @@ public class SynchQuery
                 + ((dEdition.getDate_parution().length() == 0) ? "NULL" : sql_date(dEdition.getDate_parution())) +","
                 + ((dEdition.getIdEditeur() < 0) ? "NULL" : dEdition.getIdEditeur()) + ","
                 + dEdition.getFlag_default()
-                + ")";
+                + ");";
     }
     
     
@@ -49,7 +49,7 @@ public class SynchQuery
                 + dVolume.getIdSerie()  + ","
                 + ((dVolume.getNumTome() < 0) ? "NULL" : dVolume.getNumTome()) +","
                 + ((dVolume.getIdGenre() < 0) ? "NULL" : dVolume.getIdGenre())
-                + ")" ;        
+                + ");" ;        
     }
     
     /**
@@ -65,7 +65,7 @@ public class SynchQuery
                 + sql_string(dAuteur.getPseudo())   + ","
                 + sql_string(dAuteur.getNom())      + ","
                 + sql_string(dAuteur.getPrenom()) 
-                + ")";
+                + ");";
     }
     
     /**
@@ -83,7 +83,7 @@ public class SynchQuery
                 + idTome    +","
                 + idAuteur  +","
                 + sql_string(role) 
-                +")";
+                +");";
     }
     
     /**
@@ -97,7 +97,7 @@ public class SynchQuery
                 + dEditeur.getIdEditeur() + ","
                 + sql_string(dEditeur.getNomEditeur()) + ","
                 + sql_string(dEditeur.getUrl())
-                + ")";
+                + ");";
     }
     
     
@@ -112,7 +112,7 @@ public class SynchQuery
         return "INSERT INTO SERIE VALUES("
                 + dSerie.getIdSerie() + ","
                 + sql_string(dSerie.getNomSerie())
-                + ")";
+                + ");";
     }
     
     /**
@@ -126,7 +126,7 @@ public class SynchQuery
         return "INSERT INTO GENRE VALUES("
                 + idGenre + ","
                 + ((nomGenre != null) ? sql_string(nomGenre) : "NULL" )
-                + ")";
+                + ");";
     }
     
     /**
@@ -136,7 +136,20 @@ public class SynchQuery
      */
     public static String sql_string(String str)
     {
-        return "'"+str+"'";
+        String[] stab;
+        String sqlstr;
+        int len;
+        
+        stab = str.split("'");
+        len = stab.length;
+        sqlstr = stab[0];
+        for(int i = 1; i < len; i++)
+        {
+           sqlstr += "\\'" + stab[i];
+        }
+        
+        
+        return "'"+sqlstr+"'";
     }
     
     /**

@@ -364,7 +364,7 @@ class BDovore {
 		/*
 		 * Permet de limiter le nombre de tuples à renvoyer
 		 */
-		$limit = 1000;
+		$limit = 10;
 		
 		// Préparation de la requête
 		$sqlEdManquantes = "SELECT ID_EDITION FROM bd_edition WHERE ID_EDITION > {$lastId} LIMIT 0, {$limit}";

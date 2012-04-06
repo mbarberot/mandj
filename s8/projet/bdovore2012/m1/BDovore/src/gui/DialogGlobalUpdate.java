@@ -69,6 +69,7 @@ public class DialogGlobalUpdate extends JDialog {
             JOptionPane.showMessageDialog(null, "Mise à jour terminée avec succès", "Félicitation", JOptionPane.INFORMATION_MESSAGE);
             dispose();
         } catch (Exception ex) {
+            ex.printStackTrace();
             JOptionPane.showMessageDialog(
                     null,
                     "Vérifiez votre connexion réseau ou "
