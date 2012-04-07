@@ -14,9 +14,23 @@
 #include "ia.h"
 
 
-// Calcul un coup "débile"
-ia_err ia_calculeCoup(TypCoupReq *coup)
+void *ia_calculeCoup(void *arg)
 {
+    printf("[] - Thread !\n");
+    //while(1);
+    (void)arg;
+    pthread_exit(NULL);
+}
+
+
+/*
+// Calcul un coup "débile"
+ia_err ia_calculeCoup(Data data)
+{
+    TypCoupReq *coup = data.coup;
+
+    system("sleep 10");
+
     if(coup == NULL)
     {
 	if(DEBUG)
@@ -32,6 +46,8 @@ ia_err ia_calculeCoup(TypCoupReq *coup)
 	alea,
 	found,
 	tirage[15];
+
+    char *debug; 
 
     TypPosition *pos = (TypPosition*) malloc(sizeof(TypPosition));
     if(pos == NULL)
@@ -61,9 +77,10 @@ ia_err ia_calculeCoup(TypCoupReq *coup)
 	{
 	    case VIDE :
 		if(joueur->blanc > 0) 
-		{ 
+		{
 		    coup->typePiece = BLANC; 
 		    found = 1;
+		    debug = "blanc";
 		}
 		break;
 	    case BLANC :
@@ -71,11 +88,13 @@ ia_err ia_calculeCoup(TypCoupReq *coup)
 		{
 		    coup->typePiece = ROUGE;
 		    found = 1;
+		    debug = "rouge";		
 		}
 		else if(joueur->jaune > 0)
 		{
 		    coup->typePiece = JAUNE;
 		    found = 1;
+		    debug = "jaune";
 		}
 		break;
 	    default:
@@ -87,7 +106,7 @@ ia_err ia_calculeCoup(TypCoupReq *coup)
     if(DEBUG)
     {
 	printf("[DEBUG] ia_calculeCoup \n");
-	printf("[DEBUG] alea = %d, ligne = %d, colonne = %d\n",alea,alea/4,alea%4);
+	printf("[DEBUG] alea = %d, ligne = %d, colonne = %d, pion = %s\n",alea,alea/4,alea%4,debug);
 	printf("-------------------------------------------\n");
     }
 
@@ -99,3 +118,4 @@ ia_err ia_calculeCoup(TypCoupReq *coup)
 
     return IA_OK;
 }
+*/

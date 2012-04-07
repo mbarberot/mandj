@@ -7,8 +7,8 @@ SRCDIR=src/
 # Commandes de compilation
 CC=gcc
 CFLAGS=-O4 -W -Wall -g
-CPPFLAGS=-I $(INC)
-LDFLAGS=-L $(LIBDIR) -lsocket
+CPPFLAGS=-I $(INC) 
+LDFLAGS=-L $(LIBDIR) -lsocket -lpthread
 EXEC = client
 
 # Sources necessaires
@@ -20,10 +20,10 @@ HDR= $(SRC:.c=.h)
 all:$(EXEC)
 
 $(EXEC): $(OBJ)
-	$(CC) -o $(BIN)$@ $^ $(CPPFLAGS) $(LDFLAGS)
+	$(CC) -o $(BIN)$@ $^ $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) 
 
 %.o: %.c %.h
-	$(CC) -o $@ -c $< $(CFLAGS) $(LDFLAGS) $(CPPFLAGS)
+	$(CC) -o $@ -c $< $(CFLAGS) $(CPPFLAGS) $(LDFLAGS)
 
 clean:
 	rm *.o

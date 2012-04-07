@@ -124,4 +124,17 @@ client_err client_attendCoup(
 	TypCoupReq *coup
 	);
 
+/**
+ * Attend un message de timeout de l'arbitre pendant le calcul du coup.
+ * A n'utiliser que dans ce cas précis.
+ *
+ * @param sockArbitre	    Socket de communication avec l'arbitre
+ * @return COUP_TIMEOUT
+ * @return COUP_ERR
+ *
+ */
+client_err client_estTimeout(
+	int sockArbitre
+	);
+
 #endif
