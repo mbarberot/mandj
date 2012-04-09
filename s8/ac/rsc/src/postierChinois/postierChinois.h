@@ -21,6 +21,17 @@
 /** Tableau indiquant le nombre d'arêtes */
 int **nbAretes[NB_GRAPHES];
 
+/**
+ * ----------------------------------------------------------
+ * Fonctions permettant de travailler sur le tableau d'arêtes
+ * ----------------------------------------------------------
+ */
+
+
+/**
+ * Renvoie le nombre de voisins accessibles pour un sommet
+ */
+int getNbVoisinsAccessibles(int idGraphe, int sommet);
 
 /**
  * Prépare le tableau de recensement des arêtes
@@ -53,18 +64,42 @@ erreur freeParcoursChinois();
 
 
 /**
- * Duplique l'arète du graphe courant allant du sommet s1 vers le sommet s2
+ * Duplique l'arête du graphe allant du sommet s1 vers le sommet s2
  *
  * @param s1			ID du sommet de départ 
  * @param s2			ID du sommet d'arrivée
+ * @param idGraphe		ID du graphe dont on veut dupliquer une arête
  * @return GRAPHE_INEXISTANT	Le graphe courant n'existe pas
  * @return SOMMET_INVALIDE	L'un ou les deux sommets n'existents pas
  * @return ARETE_INEXISTANTE	Aucune arête ne relie ces deux sommets
  */
 erreur dupliqueArete(
+	int idGraphe,
 	int s1,
 	int s2
-	); // TODO
+	);
+
+/**
+ * Supprime l'arête du graphe allant du sommet s1 vers le sommet s2
+ * @param idGraphe		ID du graphe à traiter
+ * @param s1			ID du sommet de départ
+ * @param s2			ID du sommet d''arrivée
+ * @return GRAPHE_INEXISTANT	Le graphe idGraphe n'existe pas
+ * @return SOMMET_INVALIDE	Un (ou les deux) sommets n'existe(nt) pas
+ * @return ARETE_INEXISTANTE	Aucune arête ne relie ces deux sommets
+ */
+erreur supprimeArete(
+    int idGraphe, 
+    int s1,
+    int s2
+       );
+
+/**
+ * ----------------------------------
+ * Fonctions traitant les algorithmes
+ * ----------------------------------
+ */
+
 
 /**
  * Teste si le graphe est eulérien
@@ -76,7 +111,16 @@ erreur dupliqueArete(
 erreur isGrapheEulerien(
 	int idGraphe,
 	int* res
-	); // TODO
+	);
+
+
+/**
+ * Effectue un cycle eulérien
+ * 
+ * @param idGraphe ID du graphe à tester
+ * @return 
+ */
+TypVoisins* cycleEulerien(int idGraphe, int x);
 
 
 /**
@@ -104,6 +148,8 @@ erreur afficheCycleEulerien(
 	int idGraphe,
 	int idHeuristique
 	);
+
+
 
 
 #endif

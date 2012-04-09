@@ -33,71 +33,72 @@ int initialiseListe(TypVoisins** l){
  * @return 1 si succès, -1 sinon, 0 si le voisin est deja present dans la liste
  */
 int ajouteVoisin(TypVoisins** l, int numVoisin, int poidsVoisin, void* info){
-	
-	TypVoisins *p,
-		   *q,
-		   *new;
-
-	
-	if(l != NULL)
+    
+    TypVoisins *p,
+    *q,
+    *new;
+    
+    
+    if(l != NULL)
+    {
+	// pas de doublon
+	/*
+	if(rechercheVoisin(l,numVoisin) != NULL)
 	{
-		// pas de doublon
-		if(rechercheVoisin(l,numVoisin) != NULL)
-		{
-			return -1;
-		}
-
-		// cas du premier élément
-		// --> il faut modifier l
-		if(numVoisin < (*l)->voisin || (*l)->voisin == -1)
-		{
-			new = (TypVoisins*) malloc(sizeof(TypVoisins));
-			if(new == NULL)
-			{
-				return -1;
-			}
-			else
-			{
-				new->voisin = numVoisin;
-				new->poidsVoisin = poidsVoisin;
-				new->info = info;
-				new->voisinSuivant = *l;
-				*l = new;
-				return 1;
-			}
-		}
-
-		// cas général (milieu / fin de liste)
-		// --> il faut modifier les éléments de la liste
-		// p pointe l'élément 'courant'
-		// q pointe le précédent
-		// le nouvel élément sera placé entre p et q ( q -> new -> p )
-		q = *l;
-		p = (*l)->voisinSuivant;
-		while(p != NULL) 
-		{	
-			if(numVoisin < p->voisin || p->voisin == -1)
-			{
-				new = (TypVoisins*) malloc(sizeof(TypVoisins));
-				if(new != NULL)
-				{
-					new->voisin = numVoisin;
-					new->poidsVoisin = poidsVoisin;
-					new->info = info;
-					new->voisinSuivant = p;
-					q->voisinSuivant = new;				
-					return 1;
-				}
-				else
-				{
-					return -1;
-				}
-			}
-			q = p;
-			p = p->voisinSuivant;
-		}
+	    return -1;
+	}*/
+	
+	// cas du premier élément
+	// --> il faut modifier l
+	if(numVoisin < (*l)->voisin || (*l)->voisin == -1)
+	{
+	    new = (TypVoisins*) malloc(sizeof(TypVoisins));
+	    if(new == NULL)
+	    {
+		return -1;
+	    }
+	    else
+	    {
+		new->voisin = numVoisin;
+		new->poidsVoisin = poidsVoisin;
+		new->info = info;
+		new->voisinSuivant = *l;
+		*l = new;
+		return 1;
+	    }
 	}
-	return -1;
+	
+	// cas général (milieu / fin de liste)
+	// --> il faut modifier les éléments de la liste
+	// p pointe l'élément 'courant'
+	// q pointe le précédent
+	// le nouvel élément sera placé entre p et q ( q -> new -> p )
+	q = *l;
+	p = (*l)->voisinSuivant;
+	while(p != NULL) 
+	{	
+	    if(numVoisin < p->voisin || p->voisin == -1)
+	    {
+		new = (TypVoisins*) malloc(sizeof(TypVoisins));
+		if(new != NULL)
+		{
+		    new->voisin = numVoisin;
+		    new->poidsVoisin = poidsVoisin;
+		    new->info = info;
+		    new->voisinSuivant = p;
+		    q->voisinSuivant = new;				
+		    return 1;
+		}
+		else
+		{
+		    return -1;
+		}
+	    }
+	    q = p;
+	    p = p->voisinSuivant;
+	}
+    }
+    return -1;
 }
 
 /**
@@ -178,7 +179,7 @@ void afficheVoisins(TypVoisins** l){
 TypVoisins* rechercheVoisin(TypVoisins** l, int numVoisin)
 {
     TypVoisins *tmp;
-
+    
     if(l != NULL)
     {
 	tmp = *l;
@@ -197,40 +198,40 @@ TypVoisins* rechercheVoisin(TypVoisins** l, int numVoisin)
  * @param l : la liste à supprimer
  */
 void supprimeListe(TypVoisins** l){
-  TypVoisins* next;
-  TypVoisins* tmp = *l;
-  
-  while(tmp != NULL){
-    next = tmp->voisinSuivant;
-    free(tmp);
-    tmp = next;
-  }
+    TypVoisins* next;
+    TypVoisins* tmp = *l;
+    
+    while(tmp != NULL){
+	next = tmp->voisinSuivant;
+	free(tmp);
+	tmp = next;
+    }
 }
-  
-  /**
-   * Renvoie la taille de la liste (nb d'éléments)
-   * @param l : la liste dont on veut connaître la taille
-   * @return la taille calculée
-   */
-  int tailleListe(TypVoisins** l)
-  {
-      int res = 0;
-      TypVoisins *tmp = *l;
-      
-      while(tmp != NULL)
-      {
-	  res++;
-	  tmp = tmp->voisinSuivant;
-      }
-      return res;
-  }
 
-  /**
-   * Compare deux listes (=> les deux listes ont les mêmes éléments)
-   * @param l1 : une liste
-   * @param l2 : une autre liste
-   * @return 1 si égales, 0 sinon
-   */
+/**
+ * Renvoie la taille de la liste (nb d'éléments)
+ * @param l : la liste dont on veut connaître la taille
+ * @return la taille calculée
+ */
+int tailleListe(TypVoisins** l)
+{
+    int res = 0;
+    TypVoisins *tmp = *l;
+    
+    while(tmp != NULL)
+    {
+	res++;
+	tmp = tmp->voisinSuivant;
+    }
+    return res;
+}
+
+/**
+ * Compare deux listes (=> les deux listes ont les mêmes éléments)
+ * @param l1 : une liste
+ * @param l2 : une autre liste
+ * @return 1 si égales, 0 sinon
+ */
 int compareListes(TypVoisins** l1, TypVoisins** l2)
 {
     int res = 1;
@@ -251,5 +252,78 @@ int compareListes(TypVoisins** l1, TypVoisins** l2)
     
     return res;
 }
-  
 
+/**
+ * Ajout d'un élément dans une liste sans respecter le tri
+ * @return 1 si succès, 0 sinon
+ */
+int ajouteVoisinNonTries(TypVoisins** l, int numVoisin, int poidsVoisin, void* info)
+{
+    // Le petit nouveau
+    TypVoisins *toAdd = (TypVoisins*) malloc(sizeof(TypVoisins));
+    
+    if(toAdd != NULL)
+    {
+	toAdd -> voisin = numVoisin;
+	toAdd -> poidsVoisin = poidsVoisin;
+	toAdd -> info = info;
+	toAdd->voisinSuivant = NULL;
+	
+	// Premier élément
+	if(*l == NULL)
+	{  
+	    *l = toAdd;
+	}
+	else // On ajoute à la fin
+	{
+	    TypVoisins *tmp = *l;
+	
+	    while(tmp->voisinSuivant != NULL)
+	    {
+		tmp = tmp ->voisinSuivant;
+	    }
+	    
+	    tmp -> voisinSuivant = toAdd;
+	    
+	    }
+    }
+    else
+    {
+	return 0;
+    }
+    
+    return 1;
+}
+
+/**
+ * Ajoute l2 à la fin de l1
+ */
+void concateneListe(TypVoisins** l1, TypVoisins* l2)
+{
+    TypVoisins *tmp = l2;
+    while(tmp != NULL)
+    {
+	ajouteVoisinNonTries(l1, tmp -> voisin, tmp -> poidsVoisin, tmp -> info);
+	tmp = tmp -> voisinSuivant;
+    }
+}
+
+/**
+ * Compte le nombre de fois où voisin apparaît dans l
+ */
+int compteOccurences(TypVoisins** l, int voisin)
+{
+    int res = 0;
+    TypVoisins *tmp = l;
+    
+    while(tmp != NULL)
+    {
+	if(tmp->voisin == voisin)
+	{
+	    res ++;
+	}
+	tmp = tmp -> voisinSuivant;
+    }
+    
+    return res;
+}

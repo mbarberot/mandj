@@ -17,18 +17,18 @@
 erreur initParcoursChinois(int idGraphe)
 {
     erreur err;
-
+    
     // idGraphe valide ?
     if(idGraphe < 0 || idGraphe > 2) { return NUMERO_GRAPHE_INVALIDE; }
-
+    
     // Quels graphes ?
     if(idGraphe == 0)
     {
 	// Les deux graphes
-
+	
 	// Existent-ils ?
-	if(graphes[1] == NULL || graphes[2] == NULL) { return GRAPHE_INEXISTANT; }
-
+	if(graphes[0] == NULL || graphes[1] == NULL) { return GRAPHE_INEXISTANT; }
+	
 	// Peuplement de nbAretes
 	if((err = peupleTabAretes(1)) != RES_OK) { return err; }
 	if((err = peupleTabAretes(2)) != RES_OK) { return err; }
@@ -36,12 +36,12 @@ erreur initParcoursChinois(int idGraphe)
     else
     {
 	// Un seul
-
+	
 	// Existe-t-il ?
 	if(graphes[idGraphe-1] == NULL) { return GRAPHE_INEXISTANT; }
-
+	
 	// Peuplement de nbAretes
-	if((err = peupleTabAretes(idGraphe-1)) != RES_OK) { return err; }
+	if((err = peupleTabAretes(idGraphe)) != RES_OK) { return err; }
     }
     return RES_OK;
 }
@@ -49,68 +49,52 @@ erreur initParcoursChinois(int idGraphe)
 erreur peupleTabAretes(int idGraphe)
 {
     int i,j,	    // Itérateurs
-	nbSom,	    // Nombre de sommet du graphe
-	nbArr,	    // Nombre d'arêtes d'un sommet
-	**tab;	    // Tableau de tableau d'entiers
-
+    nbSom,	    // Nombre de sommet du graphe
+    **tab;	    // Tableau de tableau d'entiers
+    
     // Récupération 
     //	    - du graphe
     //	    - du nombre de sommets
-    TypGraphe *g = graphes[idGraphe];
+    TypGraphe *g = graphes[idGraphe - 1];
     nbSom = g->nbMaxSommets;
-
+    
     // Allocation de la mémoire pour le tableau
-    nbAretes[idGraphe] = (int**) malloc(nbSom*sizeof(int));
-
+    nbAretes[idGraphe - 1] = (int**) malloc(nbSom*sizeof(int));
+    
     // Utilisation du pointeur tab pour plus de clareté
     // et vérification de l'allocation
-    tab = nbAretes[idGraphe];
+    tab = nbAretes[idGraphe - 1];
     if(tab == NULL) { return PROBLEME_MEMOIRE; }
-
+    
     // Peuplement du tableau :
     //	    - parcours du tableau d'arêtes du graphe
     for(i = 0; i < nbSom; i++)
     {
-	// Pas d'arêtes
-	if(g->aretes[i] == NULL) { tab[i] = NULL; }
-	else
-	{
-	    // Présence d'arêtes
-	     
-	    // Récupération du nombre d'arêtes
-	    nbArr = tailleListe(&(g->aretes[i]))-1;
-	    // Allocation mémoire pour le tableau
-	    if(nbArr == 0)
-	    {
-		tab[i] = (int*)malloc(nbArr*sizeof(int));
-		if(tab[i] == NULL) { return PROBLEME_MEMOIRE; }
-		else
-		{
-		    // Allocation réussie
-		    //	- mise à la valeur 1 pour chaque arête
-		    for(j = 0; j< nbArr; j++)
-		    {
-			tab[i][j] = 1;
-		    }
-		}
+	// Initialisation de la matrice d'adjacence
+	tab[i] = (int*)malloc(nbSom*sizeof(int));
+	
+	if(tab[i] == NULL)
+	    return PROBLEME_MEMOIRE;
+	
+	
+	// Initialisation des valeurs : 1 si une arête existe entre i et j, 0 sinon
+	    for(j = 0 ; j < nbSom ; j++)
+	    {		
+		tab[i][j] = compteOccurences(g -> aretes[i], j + 1);		
 	    }
-	    else
-	    {
-		tab[i] = NULL;
-	    }
-	}
-    }
+    }    
+    
     return RES_OK;
 }
 
 erreur freeParcoursChinois()
 {
     int i,j,	    // Iterateurs
-	nbSom;	    // Nombre de sommets
-
+    nbSom;	    // Nombre de sommets
+    
     TypGraphe *g;   // Les graphes
-
-
+    
+    
     // Pour chaque graphe
     for(i = 0; i < 2; i++)
     {
@@ -122,7 +106,7 @@ erreur freeParcoursChinois()
 	    //	    - du nombre de sommets
 	    g = graphes[i];
 	    nbSom = g->nbMaxSommets;
-
+	    
 	    // Pour chaque sommet
 	    for(j = 0; j < nbSom; j++)
 	    {
@@ -133,7 +117,7 @@ erreur freeParcoursChinois()
 		    free(nbAretes[i][j]);	    
 		}
 	    }
-
+	    
 	    // On libere le 'graphe' i
 	    free(nbAretes[i]);
 	}
@@ -141,13 +125,13 @@ erreur freeParcoursChinois()
     return RES_OK;
 }
 
-erreur dupliqueArete(int s1, int s2)
+erreur dupliqueArete(int s1, int s2, int idGraphe)
 {
     TypVoisins *p, *q;
     TypGraphe *g;
-
+    
     // Récupérer le graphe courant
-    g = graphes[grapheCourant];
+    g = graphes[idGraphe - 1];
     
     // Est-il valide ?
     if(g == NULL) { return GRAPHE_INEXISTANT; }
@@ -159,71 +143,216 @@ erreur dupliqueArete(int s1, int s2)
     p = rechercheVoisin(&(g->aretes[s1-1]),s2);
     q = rechercheVoisin(&(g->aretes[s2-1]),s1);
     if(p == NULL || q == NULL) { return ARETE_INEXISTANTE; }
-
+    
     // Dupliquer l'arête
-    nbAretes[grapheCourant][s1-1][s2-1]++;
-
+    nbAretes[idGraphe - 1][s1-1][s2-1]++;
+    nbAretes[idGraphe - 1][s2-1][s1-1]++;
+    
     return RES_OK;
 }
 
-erreur isGrapheEulerien(int idGraphe, int* res)
+erreur supprimeArete(int idGraphe, int s1, int s2)
 {
-  TypGraphe *g = graphes[idGraphe - 1];
-  int pariteCurrent = 0;
-  int sommetsImpairs = 0;
-  int i;
-  
-  *res = -1;
-  
-  if(g == NULL)
-    return GRAPHE_INEXISTANT;
-  
-  // Tester la parité des degrés de chaque sommet
-  for(i = 0 ; i < g -> nbMaxSommets ; i++)
-  {
-    calculerDegreSommet(idGraphe, i + 1, &pariteCurrent);
+    TypVoisins *p, *q;
+    TypGraphe *g;
     
-    // => l'implémentation oblige de figurer les arêtes non-orientées comme deux arêtes orientées
-    // on divise donc le degré par deux pour avoir une valeur correcte
-    pariteCurrent = pariteCurrent / 2;
     
-    if(pariteCurrent % 2 == 1)
-      sommetsImpairs++;
+    // Récupérer le graphe courant
+    g = graphes[idGraphe - 1];
     
-    if(sommetsImpairs > 2)
-      return TEST_KO;
-  }  
-  // -> SI tous pairs => on peut effectuer un cycle eulérien
-  if(sommetsImpairs == 0)
-  {
-    *res = 1;
+    // Est-il valide ?
+    if(g == NULL) { return GRAPHE_INEXISTANT; }
     
-  }  // -> SI deux sommets sont impairs => un cycle chinois est possible
-  else if (sommetsImpairs == 2)
-  {
-    *res = 0;
-  } // SINON : le graphe n'est pas eulérien
-  else
-  {
-    return TEST_KO;
-  }
-  
- return TEST_OK;
-  
+    // Les sommets s1 et s2 existent-ils ?
+    if(g->aretes[s1-1] == NULL || g->aretes[s2-1] == NULL) { return SOMMET_INEXISTANT; }
+    
+    // Y-a-t-il un arêtes entre les deux
+    p = rechercheVoisin(&(g->aretes[s1-1]),s2);
+    q = rechercheVoisin(&(g->aretes[s2-1]),s1);
+    
+    if(p == NULL || q == NULL) { return ARETE_INEXISTANTE; }
+    
+    // Supprimer l'arête
+    nbAretes[idGraphe - 1][s1-1][s2-1]--;
+    nbAretes[idGraphe - 1][s2-1][s1-1]--;
+    
+    return RES_OK;
 }
 
 
+erreur isGrapheEulerien(int idGraphe, int* res)
+{
+    TypGraphe *g = graphes[idGraphe - 1];
+    int pariteCurrent = 0;
+    int sommetsImpairs = 0;
+    int i;
+    
+    *res = -1;
+    
+    
+    if(g == NULL)
+	return GRAPHE_INEXISTANT;
+    
+    // Tester la parité des degrés de chaque sommet
+	for(i = 0 ; i < g -> nbMaxSommets ; i++)
+	{
+	    calculerDegreSommet(idGraphe, i + 1, &pariteCurrent);
+	    
+	    // => l'implémentation oblige de figurer les arêtes non-orientées comme deux arêtes orientées
+	    // on divise donc le degré par deux pour avoir une valeur correcte
+	    pariteCurrent = pariteCurrent / 2;
+	    
+	    if(pariteCurrent % 2 == 1)
+		sommetsImpairs++;
+	    
+	    if(sommetsImpairs > 2)
+		return TEST_KO;
+	}  
+	// -> SI tous pairs => on peut effectuer un cycle eulérien
+	if(sommetsImpairs == 0)
+	{
+	    *res = 1;
+	    
+	}  // -> SI deux sommets sont impairs => un cycle chinois est possible
+	else if (sommetsImpairs == 2)
+	{
+	    *res = 0;
+	} // SINON : le graphe n'est pas eulérien
+	else
+	{
+	    return TEST_KO;
+	}
+	
+	return TEST_OK;
+	
+}
+
+TypVoisins* cycleEulerien(int idGraphe, int x)
+{
+    
+    TypVoisins* res = NULL;
+    int current, voisin;
+    int nbVoisins;
+    
+    
+    // Vérifier si s_current est isole
+    if (getNbVoisinsAccessibles(idGraphe, x) == 0)
+    {
+	return res;
+    }
+    else
+    {
+	
+	// Ajout du sommet courant dans la liste res
+	ajouteVoisinNonTries(&res, x, 0, NULL);  
+	
+	current = x;
+	while((nbVoisins = getNbVoisinsAccessibles(idGraphe, current)) != 0)
+	{
+	    voisin = -1;
+	    // Choisir z tq z soit un voisin de current
+	    // => on parcourt les arêtes, et on prend la première existante
+	    
+	    int i = 0;
+	    while(i < graphes[idGraphe - 1] -> nbMaxSommets && voisin == -1)
+	    {
+		if(nbAretes[idGraphe - 1][current -1][i] > 0)
+		{
+		    voisin = i + 1;
+		}
+		i++;
+	    }
+	    //On supprime l'arête y <-> z
+	    supprimeArete(idGraphe, current, voisin);
+	    current = voisin;
+	    
+	    // Ajout de y dans le résultat
+	    ajouteVoisinNonTries(&res, current, 0, NULL);
+	    
+	}
+    }
+    
+    
+    // Appeler cycle eulérien sur tous les sommets de la liste résultat
+    
+    TypVoisins *tmp = res;
+    TypVoisins *nRes = NULL;
+    
+    while(tmp != NULL)
+    {
+	TypVoisins *lTmp = NULL;
+	lTmp = cycleEulerien(idGraphe, tmp -> voisin);
+	
+	// Concaténer la liste temporaire avec la liste résultat
+	if(tailleListe(&lTmp) > 0) 
+	{
+	    concateneListe(&nRes, lTmp);
+	}
+	else
+	{
+	    ajouteVoisinNonTries(&nRes, tmp->voisin, tmp->poidsVoisin, tmp->info);
+	}
+	
+	tmp = tmp -> voisinSuivant;
+    }
+     
+    // Retourner la concaténation de tous les résultats
+    return nRes;
+}
+
 erreur calculCycleEulerien(int idGraphe,int idHeuristique)
 {
-  erreur res = RES_OK;
-  int *tparc = (int*)malloc(sizeof(int));
-  
-  
-  if(tparc != NULL) {    
-    res = isGrapheEulerien(idGraphe, tparc);
-  }
-  
-  printf("IsEulerien ? %s : %d \n", errToString(res), *tparc);
-  
-  return res;  
+    erreur res = RES_OK;
+    int *tparc = (int*)malloc(sizeof(int));
+    
+    
+    if(tparc != NULL) {    
+	res = isGrapheEulerien(idGraphe, tparc);
+    } 
+    
+    
+    if(*tparc == 1)
+    {
+	// Cycle eulerien
+	res = initParcoursChinois(idGraphe);
+	
+	if(res == RES_OK)
+	{
+	    TypVoisins *test = cycleEulerien(idGraphe, 1);
+	    printf("CYCLE EULERIEN TROUVE POUR LE GRAPHE : \n\n ");
+	    afficheVoisins(&test);
+	    printf("\n\n");
+	}
+	
+    }
+    else if(*tparc == 0)
+    {
+	// Cycle chinois
+	// res = cycleChinois(int idGraphe, int idHeuristique);
+    }
+    else
+    {
+	// Erreur
+    }
+    
+    return res;  
+}
+
+
+int getNbVoisinsAccessibles(int idGraphe, int sommet)
+{
+    int nbVoisins = 0 ;
+    int i, max;
+    
+    max = graphes[idGraphe - 1]->nbMaxSommets;
+    
+    for(i = 0; i < max ; i++)
+    {
+	if(nbAretes[idGraphe - 1][sommet - 1][i] > 0 )
+	{
+	    nbVoisins ++;
+	}
+    }
+    
+    return nbVoisins;
 }

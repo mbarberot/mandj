@@ -22,6 +22,8 @@ TypVoisins* rechercheVoisin(TypVoisins** l, int numVoisin);
 void supprimeListe(TypVoisins** l);
 int tailleListe(TypVoisins**l);
 int compareListes(TypVoisins** l1, TypVoisins** l2);
-
+int ajouteVoisinNonTries(TypVoisins** l, int numVoisin, int poidsVoisin, void* info);
+void concateneListe(TypVoisins** l1, TypVoisins* l2);
+int compteOccurences(TypVoisins** l, int voisin);
 #endif
 
