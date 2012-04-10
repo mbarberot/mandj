@@ -3,6 +3,7 @@ package db;
 import db.data.*;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.TreeSet;
 
 /**
  * Objet principale de la base. Ouvre/ferme la base, et exécute des requêtes.
@@ -77,12 +78,12 @@ public class DataBase {
     }
     
     /**
-     * Effectue une requête select de base
+     * Retourne le nombre d'entrée de la requête.
+     * A utiliser avec un SELECT COUNT(...
      *
-     * @param sql
-     * @return
+     * @param sql La requête
+     * @return Le résultat
      * @throws SQLException
-     * @deprecated 
      */
     public synchronized int getCount(String sql) throws SQLException 
     {
@@ -483,6 +484,67 @@ public class DataBase {
 
         st.close();
         return id;
+    }
+    
+    /**
+     * Récupère les ID d'une table
+     *
+     * @param table La table à interroger
+     * @return Les id d'une table
+     * @throws SQLException
+     */
+    public synchronized TreeSet<Integer> getAllID(String table) throws SQLException {
+        TreeSet<Integer> ids = new TreeSet<Integer>();
+
+        if (!Tables.ids.containsKey(table)) {
+            return null;
+        }
+
+        String sql = "SELECT " + Tables.ids.get(table) + " AS id FROM " + table;
+
+        Statement st = conn.createStatement();
+        ResultSet rs = st.executeQuery(sql);
+
+        while (rs.next()) {
+            ids.add( (rs.getObject(1) == null) ? 0 : (Integer) rs.getObject(1) );
+        }
+        
+        System.out.println(ids);
+
+        st.close();
+        return ids;
+    }
+    
+    /**
+     * Récupère les ID d'une table
+     *
+     * @param table La table à interroger
+     * @return Les id d'une table
+     * @throws SQLException
+     */
+    public synchronized TreeSet<TJ> getAllTJ() throws SQLException {
+
+        int idTome, idAuteur;
+        String role;
+        TreeSet<TJ> tjs = new TreeSet<TJ>();
+
+        String sql = "SELECT * FROM TJ_TOME_AUTEUR";
+
+        Statement st = conn.createStatement();
+        ResultSet rs = st.executeQuery(sql);
+
+        while (rs.next()) 
+        {
+            idTome = rs.getInt("ID_TOME");
+            idAuteur = rs.getInt("ID_AUTEUR");
+            role = rs.getString("ROLE");
+            tjs.add(new TJ(idTome,idAuteur,role));
+        }
+        
+        System.out.println(tjs);
+
+        st.close();
+        return tjs;
     }
 
     /**
