@@ -347,15 +347,6 @@ void interpreteCommande(char* commandes)
 		    printf("Commande \"%s\" : %s \n", tmp, parserErrorToString(res));
 	    }
 	    
-	    // Commande afficherCycleEulerien
-	    if(strstr(tmp, "afficheCycleEulerien") != NULL)
-	    {
-		res = interpreteAfficheCycleEulerien(tmp);
-		cmdOk = 1;
-		
-		if(res != TRAITEMENT_CMD_OK)
-		    printf("Commande \"%s\" : %s \n", tmp, parserErrorToString(res));
-	    }
 	    // Commande non interprétable
 	    if(!cmdOk)
 	    {
@@ -1004,30 +995,3 @@ parserError interpreteCalculCycleEulerien(char* cmd)
     return TRAITEMENT_CMD_OK;
 }
 
-/**
-* Interprète la commande afficheCycleEulerien(G,H) : G -> Le graphe, H -> l'heuristique
-*/
-parserError interpreteAfficheCycleEulerien(char* cmd)
-{
-    int numCom;
-    int arg1, arg2;
-    
-    erreur err;
-    
-    int nbArgs = sscanf(cmd, "%d:afficheCycleEulerien(%d,%d)", &numCom, &arg1, &arg2);
-    
-    if(numCom == 3)
-    {
-	/*err = afficheCycleEulerien(arg1, arg2);
-	ecritureResultatCommande(numCom, err);*/
-    }
-    else
-    {
-	ecritureResultatCommande(COMMANDE_INVALIDE, err);
-	return ARGUMENTS_INCORRECTS;
-    }
-    
-    // Ecriture en .dot ?
-    
-    return TRAITEMENT_CMD_OK;
-}

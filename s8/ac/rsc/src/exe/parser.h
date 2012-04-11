@@ -97,6 +97,5 @@ parserError interpreteChargerGraphe(char* cmd);
 
 /* Interprétation des fonctions du TP4 */
 parserError interpreteCalculCycleEulerien(char* cmd);
-parserError interpreteAfficheCycleEulerien(char* cmd);
 
 #endif

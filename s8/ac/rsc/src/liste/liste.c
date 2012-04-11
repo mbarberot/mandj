@@ -327,3 +327,45 @@ int compteOccurences(TypVoisins** l, int voisin)
     
     return res;
 }
+
+/**
+ * Renvoie une liste chainée de doublons
+ */
+TypVoisins* getDoublons(TypVoisins** l, int voisin)
+{
+    TypVoisins *res = NULL;
+    TypVoisins *tmp = l;
+    
+    while(tmp != NULL)
+    {
+	if(tmp -> voisin == voisin)
+	{
+	    ajouteVoisinNonTries(&res, tmp -> voisin, tmp -> poidsVoisin, tmp -> info);
+	}
+	tmp = tmp -> voisinSuivant;
+    }
+    
+    return res;
+}
+
+/**
+ * Renvoie le sommet de poids minimal d'une liste
+ */
+int minPoids(TypVoisins** l, int voisin)
+{
+    TypVoisins *tmp = l;
+    int min = tmp -> poidsVoisin;
+    
+    while(tmp != NULL)
+    {
+	if(tmp -> poidsVoisin < min)
+	{
+	    min = tmp -> poidsVoisin;
+	}
+	
+	tmp = tmp -> voisinSuivant;
+    }
+    
+    return min;
+}
+

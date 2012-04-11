@@ -1,4 +1,4 @@
-/*
+/**
  * Algorithmique Combinatoire
  * Mars - Avril - Mai 2012
  *
@@ -48,23 +48,30 @@ erreur initParcoursChinois(int idGraphe)
 
 erreur peupleTabAretes(int idGraphe)
 {
-    int i,j,	    // Itérateurs
+    int i,j,k,	    // Itérateurs
     nbSom,	    // Nombre de sommet du graphe
-    **tab;	    // Tableau de tableau d'entiers
+    **tab;
     
+    TypVoisins*** pond;
+
     // Récupération 
     //	    - du graphe
     //	    - du nombre de sommets
     TypGraphe *g = graphes[idGraphe - 1];
     nbSom = g->nbMaxSommets;
     
-    // Allocation de la mémoire pour le tableau
+    // Allocation de la mémoire pour les tableaux
     nbAretes[idGraphe - 1] = (int**) malloc(nbSom*sizeof(int));
+    pondAretes[idGraphe - 1]  = (TypVoisins***) malloc(nbSom*sizeof(TypVoisins));
     
     // Utilisation du pointeur tab pour plus de clareté
     // et vérification de l'allocation
     tab = nbAretes[idGraphe - 1];
     if(tab == NULL) { return PROBLEME_MEMOIRE; }
+    
+    // Et de même pour les pondérations
+    pond = pondAretes[idGraphe - 1];
+    if(pond == NULL) { return PROBLEME_MEMOIRE; }
     
     // Peuplement du tableau :
     //	    - parcours du tableau d'arêtes du graphe
@@ -76,20 +83,27 @@ erreur peupleTabAretes(int idGraphe)
 	if(tab[i] == NULL)
 	    return PROBLEME_MEMOIRE;
 	
+	// Initialisation de la matrice de pondérations
+	pond[i] = (TypVoisins**)malloc(nbSom * sizeof(TypVoisins));
+	
+	if(pond[i] == NULL) { return PROBLEME_MEMOIRE; }
 	
 	// Initialisation des valeurs : 1 si une arête existe entre i et j, 0 sinon
 	    for(j = 0 ; j < nbSom ; j++)
 	    {		
-		tab[i][j] = compteOccurences(g -> aretes[i], j + 1);		
+		tab[i][j] = compteOccurences(g -> aretes[i], j + 1);
+		
+		// Allocation pour les pondérations	
+		pond[i][j] = getDoublons(g -> aretes[i], j + 1);
 	    }
     }    
-    
+
     return RES_OK;
 }
 
 erreur freeParcoursChinois()
 {
-    int i,j,	    // Iterateurs
+    int i,j,k,	    // Iterateurs
     nbSom;	    // Nombre de sommets
     
     TypGraphe *g;   // Les graphes
@@ -109,19 +123,23 @@ erreur freeParcoursChinois()
 	    
 	    // Pour chaque sommet
 	    for(j = 0; j < nbSom; j++)
-	    {
-		// S'il possède des arêtes
-		if(g->aretes[j] != NULL)
+	    {		
+		for( k = 0 ; k < nbSom ; k++)
 		{
-		    // On libère le 'sommet' j
-		    free(nbAretes[i][j]);	    
-		}
+		    free(nbAretes[i][j][k]);
+		    supprimeListe(&pondAretes[i][j][k]);
+		 }
+		free(nbAretes[i][j]);
+		free(pondAretes[i][j]);
 	    }
 	    
 	    // On libere le 'graphe' i
 	    free(nbAretes[i]);
+	    free(pondAretes[i]);
+	    
 	}
     }
+    
     return RES_OK;
 }
 
@@ -171,7 +189,7 @@ erreur supprimeArete(int idGraphe, int s1, int s2)
     q = rechercheVoisin(&(g->aretes[s2-1]),s1);
     
     if(p == NULL || q == NULL) { return ARETE_INEXISTANTE; }
-    
+
     // Supprimer l'arête
     nbAretes[idGraphe - 1][s1-1][s2-1]--;
     nbAretes[idGraphe - 1][s2-1][s1-1]--;
@@ -204,17 +222,14 @@ erreur isGrapheEulerien(int idGraphe, int* res)
 	    
 	    if(pariteCurrent % 2 == 1)
 		sommetsImpairs++;
-	    
-	    if(sommetsImpairs > 2)
-		return TEST_KO;
 	}  
 	// -> SI tous pairs => on peut effectuer un cycle eulérien
 	if(sommetsImpairs == 0)
 	{
 	    *res = 1;
 	    
-	}  // -> SI deux sommets sont impairs => un cycle chinois est possible
-	else if (sommetsImpairs == 2)
+	}  // -> SI on a un nombre pair de sommets impairs
+	else if (sommetsImpairs % 2 == 0)
 	{
 	    *res = 0;
 	} // SINON : le graphe n'est pas eulérien
@@ -287,6 +302,7 @@ TypVoisins* cycleEulerien(int idGraphe, int x)
 	if(tailleListe(&lTmp) > 0) 
 	{
 	    concateneListe(&nRes, lTmp);
+	    supprimeListe(&lTmp);
 	}
 	else
 	{
@@ -295,6 +311,9 @@ TypVoisins* cycleEulerien(int idGraphe, int x)
 	
 	tmp = tmp -> voisinSuivant;
     }
+     
+     supprimeListe(&res);
+     supprimeListe(&tmp);     
      
     // Retourner la concaténation de tous les résultats
     return nRes;
@@ -322,6 +341,8 @@ erreur calculCycleEulerien(int idGraphe,int idHeuristique)
 	    printf("CYCLE EULERIEN TROUVE POUR LE GRAPHE : \n\n ");
 	    afficheVoisins(&test);
 	    printf("\n\n");
+	    supprimeListe(&test);
+	    freeParcoursChinois();
 	}
 	
     }
@@ -334,6 +355,8 @@ erreur calculCycleEulerien(int idGraphe,int idHeuristique)
     {
 	// Erreur
     }
+    
+    free(tparc);
     
     return res;  
 }

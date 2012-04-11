@@ -18,8 +18,12 @@
 /** Nombre d'heuristique implantées */
 #define NB_HEURISTIQUE 0
 
-/** Tableau indiquant le nombre d'arêtes */
+/** Matrices d'adjacence pour les deux graphes. C(x,y) représente le nombre d'arêtes entre le sommet x et le sommet y */
 int **nbAretes[NB_GRAPHES];
+
+/** Matrices des pondérations. Chaque case contient une liste de pondérations entre deux sommets (cas où plusieurs arêtes de poids différents
+ existent entre deux sommets) */
+TypVoisins ***pondAretes[NB_GRAPHES];
 
 /**
  * ----------------------------------------------------------
@@ -136,20 +140,11 @@ erreur calculCycleEulerien(
 	int idHeuristique
 	);			// Todo
 
+
 /**
- * Affiche un cycle Eulérien.
- * Exporte l'affichage en un fichier .dot
- *
- * @param idGraphe	ID du graphe (1 ou 2)
- * @param idHeuristique ID de l'heuristique (1 à NB_HEURISTIQUE)
- * @return		
+ * Implémentation de Floyd-Warshall de recherche du plus court chemin
+ * Utilisé pour la résolution du postier chinois
  */
-erreur afficheCycleEulerien(
-	int idGraphe,
-	int idHeuristique
-	);
-
-
-
+int plusCourtChemin(int idGraphe, int dep, int arr);
 
 #endif
