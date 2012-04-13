@@ -3,6 +3,7 @@ package db;
 import db.data.*;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.TreeSet;
 
 /**
@@ -508,8 +509,6 @@ public class DataBase {
         while (rs.next()) {
             ids.add( (rs.getObject(1) == null) ? 0 : (Integer) rs.getObject(1) );
         }
-        
-        System.out.println(ids);
 
         st.close();
         return ids;
@@ -540,11 +539,34 @@ public class DataBase {
             role = rs.getString("ROLE");
             tjs.add(new TJ(idTome,idAuteur,role));
         }
-        
-        System.out.println(tjs);
 
         st.close();
         return tjs;
+    }
+    
+     
+    /**
+     * Récupère les ID des éditions de l'utilisateur
+     *
+     * @return Les id dans une liste
+     * @throws SQLException
+     */
+    public synchronized LinkedList<Integer> getBDtheque() throws SQLException {
+        LinkedList<Integer> ids = new LinkedList<Integer>();
+
+        
+
+        String sql = "SELECT ID_EDITION AS id FROM BD_USER";
+
+        Statement st = conn.createStatement();
+        ResultSet rs = st.executeQuery(sql);
+
+        while (rs.next()) {
+            ids.offer( (rs.getObject(1) == null) ? 0 : (Integer) rs.getObject(1) );
+        }
+
+        st.close();
+        return ids;
     }
 
     /**

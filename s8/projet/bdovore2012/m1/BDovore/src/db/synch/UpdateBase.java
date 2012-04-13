@@ -167,7 +167,6 @@ public class UpdateBase extends Thread
 
                 // Mise à jour du pourcentage effectué
                 majListener(cptBoucle * tailleLot * 100 / total);
-                System.out.println("Progression : "+(cptBoucle * tailleLot * 100 / total)+"%");
                 
                 // Initialisation de la taille de chaque lot de données
                 // + gestion de la taille = 0 (sinon : boucle infinie)

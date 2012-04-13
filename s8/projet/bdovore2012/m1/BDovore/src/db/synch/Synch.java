@@ -1,13 +1,8 @@
 package db.synch;
 
 import db.DataBase;
-import db.SynchQuery;
+import db.data.User;
 import java.net.Proxy;
-import java.rmi.RemoteException;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JProgressBar;
 import util.UpdateBaseListener;
 import wsdl.server.*;
 
@@ -34,15 +29,18 @@ public class Synch
      * Proxy pour la connection à internet
      */
     private Proxy proxy;
-    /*
+    /**
      * Objet 'intelligent' de création des requêtes
      */
     private Update update;
-    
-    /*
-     * Thread d'update
+    /**
+     * Thread d'update des éditions de la base de recherche
      */
     private UpdateBase updateBase;
+    /**
+     * Thread d'update des editions de l'utilisateur
+     */
+    private UpdateUser updateUser;
     
     //
     // Constructeurs
@@ -91,14 +89,12 @@ public class Synch
         // Mise en place du thread
         updateBase = new UpdateBase(update, db, port, listener);
         updateBase.start();
-        //updateBase();
-        updateBDtheque();
     }
     
     /**
-     * Arrete le thread
+     * Arrete le thread de mise à jour globale
      */
-    public void cancel()
+    public void cancelGlobal()
     {
         updateBase.cancel();
     }
@@ -106,8 +102,18 @@ public class Synch
     /**
      * Met à jour la bdtheque de l'utilisateur
      */
-    public void updateBDtheque()
+    public void updateBDtheque(User user)
     {
+        updateUser = new UpdateUser(db, user, update, port);
+        updateUser.start();
+    }
+  
+    /**
+     * Arrete le thread de mise à jour globale
+     */
+    public void cancelUser()
+    {
+        updateUser.cancel();
     }
 
     //
@@ -142,4 +148,6 @@ public class Synch
     {
         this.proxy = proxy;
     }
+
+    
 }

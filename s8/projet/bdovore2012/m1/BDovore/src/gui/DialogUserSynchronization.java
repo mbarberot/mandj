@@ -1,5 +1,6 @@
 package gui;
 
+import db.synch.Synch;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -14,15 +15,18 @@ public class DialogUserSynchronization extends JDialog {
     private JLabel labInfo;
     private JTable tabConflict;
     private JButton btnChooseLocal, btnChooseServer, btnOk, btnCancel;
+    private Synch synch;
 
     /**
      * Constructeur
      * @param owner Fenetre parente
      * @param modal 
      */
-    public DialogUserSynchronization(Window owner, Dialog.ModalityType modal) {
+    public DialogUserSynchronization(Window owner, Dialog.ModalityType modal, Synch synch) {
         super(owner, modal);
-
+        
+        this.synch = synch;
+        
         createGUI();
 
         setTitle("Synchronisation avec mon compte BDovore");
@@ -111,18 +115,41 @@ public class DialogUserSynchronization extends JDialog {
                 chooseServerForAll();
             }
         });
+        
+     
 
         JPanel ctrlPane = new JPanel(new FlowLayout());
         ctrlPane.add(btnChooseLocal);
         ctrlPane.add(btnChooseServer);
         ctrlPane.add(btnOk);
         ctrlPane.add(btnCancel);
+        
+        
+           // <<<<<<<<< TMP
+        JButton btnBegin = new JButton("Synchroniser");
+        btnBegin.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e)
+            {
+                synchronize();
+            }
+        });
+        ctrlPane.add(btnBegin);
+        // <<<<<<<<<<< TMP
+        
 
         JPanel contentPane = new JPanel(new BorderLayout());
         contentPane.add(labInfo, BorderLayout.NORTH);
         contentPane.add(scrollPane, BorderLayout.CENTER);
         contentPane.add(ctrlPane, BorderLayout.SOUTH);
         setContentPane(contentPane);
+        
+        
+    }
+    
+    private void synchronize()
+    {
+        synch.updateBDtheque(FrameMain.currentUser);
     }
 
     /**

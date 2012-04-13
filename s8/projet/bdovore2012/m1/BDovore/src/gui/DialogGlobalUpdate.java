@@ -137,7 +137,7 @@ public class DialogGlobalUpdate extends JDialog implements UpdateBaseListener
      */
     public void cancel()
     {
-        synch.cancel();
+        synch.cancelGlobal();
         JOptionPane.showMessageDialog(null, "Mise à jour annulée", "Pensez à finir votre mise à jour plus tard !", JOptionPane.INFORMATION_MESSAGE);
         dispose();
     }

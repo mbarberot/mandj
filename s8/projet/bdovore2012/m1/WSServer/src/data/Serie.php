@@ -15,7 +15,7 @@
 			$this->idSerie = $nIdSerie;
 			$this->nomSerie = $nNom;
 			($nNbTomes == NULL)?  $this->nbTomes = 1 : $this->nbTomes = $nNbTomes;
-			($nFlgFini == NULL)? $this->nbTomes = 0 : $this->flgFini = $nFlgFini;
+			($nFlgFini == NULL)? $this->flgFini = 0 : $this->flgFini = $nFlgFini;
 			($nHistoire == NULL)? $this->histoire = $nHistoire= "" : $this->histoire = $nHistoire;
 		}
 	}
