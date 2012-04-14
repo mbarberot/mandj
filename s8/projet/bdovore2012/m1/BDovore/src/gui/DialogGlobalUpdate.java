@@ -27,6 +27,7 @@ public class DialogGlobalUpdate extends JDialog implements UpdateBaseListener
     private Proxy proxy;
     // Objet utilisé pour la mise à jour (cf WebService & WSDL)
     private Synch synch;
+    private boolean started;
 
     /**
      * Constructeur
@@ -47,6 +48,7 @@ public class DialogGlobalUpdate extends JDialog implements UpdateBaseListener
 
         this.proxy = p;
         this.synch = synch;
+        this.started = false;
 
         this.updateMsg = new JLabel("Cliquer le bouton START pour commencer.");
 
@@ -72,7 +74,9 @@ public class DialogGlobalUpdate extends JDialog implements UpdateBaseListener
         contentPane.add(ctrlPane, BorderLayout.SOUTH);
         setContentPane(contentPane);
 
-        addWindowListener(new WindowListener() {
+        addWindowListener(new WindowListener()
+        {
+
             public void windowClosing(WindowEvent e)
             {
                 cancel();
@@ -83,9 +87,8 @@ public class DialogGlobalUpdate extends JDialog implements UpdateBaseListener
             public void windowDeiconified(WindowEvent e) {}
             public void windowActivated(WindowEvent e) {}
             public void windowDeactivated(WindowEvent e) {}
-        }
-        );
-   
+        });
+
         setTitle("Mise à jour globale");
         setResizable(false);
         pack();
@@ -101,8 +104,10 @@ public class DialogGlobalUpdate extends JDialog implements UpdateBaseListener
         try
         {
             synch.updateGlobal(this);
+            started = true;
         } catch (Exception ex)
         {
+            started = false;
             ex.printStackTrace();
             JOptionPane.showMessageDialog(
                     null,
@@ -137,7 +142,11 @@ public class DialogGlobalUpdate extends JDialog implements UpdateBaseListener
      */
     public void cancel()
     {
-        synch.cancelGlobal();
+        if (started)
+        {
+            synch.cancelGlobal();
+            started = false;
+        }
         JOptionPane.showMessageDialog(null, "Mise à jour annulée", "Pensez à finir votre mise à jour plus tard !", JOptionPane.INFORMATION_MESSAGE);
         dispose();
     }

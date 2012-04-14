@@ -3,54 +3,79 @@ package db.synch;
 import db.DataBase;
 import db.SynchQuery;
 import db.data.TJ;
+import java.rmi.RemoteException;
 import java.sql.SQLException;
 import java.util.TreeSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import wsdl.server.*;
 
 /**
- * Fonctions d'update 'intelligentes'
+ * Fonctions d'update 'intelligentes'.<br/>
+ * Cette classe implémente la construction de requêtes SQL permettant 
+ * l'insertion de données dans la base de données en respectant les contraintes
+ * d'intégrités référentielles.<br/>
+ * Les fonctions n'ajoutent pas d'éléments dajà présents dans la base et 
+ * ajoutent les informations manquante pour les clés étrangères.<br/>
+ * Enfin, les informations manquantes sont téléchargée depuis le Webservice.<br/>
  *
  * @author Barberot Mathieu & Racenet Joan
  */
 public class Update
 {
-    /** La base de donnée à utiliser */
+
+    /**
+     * La base de donnée à utiliser
+     */
     private DataBase db;
-    
-    /** Tous id_genre de la base locale */
+    /**
+     * Interface du webservice
+     */
+    private BDovore_PortType webservice;
+    /**
+     * Tous id_genre de la base locale
+     */
     private TreeSet<Integer> allIdGenre;
-    /** Tous id_serie de la base locale */
+    /**
+     * Tous id_serie de la base locale
+     */
     private TreeSet<Integer> allIdSerie;
-    /** Tous id_auteur de la base locale */
+    /**
+     * Tous id_auteur de la base locale
+     */
     private TreeSet<Integer> allIdAuteur;
-    /** Tous id_editeur de la base locale */
+    /**
+     * Tous id_editeur de la base locale
+     */
     private TreeSet<Integer> allIdEditeur;
-    /** Tous id_edition de la base locale */
+    /**
+     * Tous id_edition de la base locale
+     */
     private TreeSet<Integer> allIdEdition;
-    /** Tous id_tome de la base locale */
+    /**
+     * Tous id_tome de la base locale
+     */
     private TreeSet<Integer> allIdTome;
-    /** Tous les couples de TJ_TOME_AUTEUR */
+    /**
+     * Tous les couples de TJ_TOME_AUTEUR
+     */
     private TreeSet<TJ> allTJ;
 
-    
     /**
      * Constructeur
-     * 
+     *
      * @param db - Base de données locale
-     * @throws SQLException 
+     * @throws SQLException
      */
-    public Update(DataBase db) throws SQLException
+    public Update(DataBase db, BDovore_PortType webservice) throws SQLException
     {
         this.db = db;
+        this.webservice = webservice;
         init();
     }
-    
+
     /**
      * Initialise les variable allFoo
-     * 
-     * @throws SQLException 
+     *
+     * @throws SQLException
      */
     private void init() throws SQLException
     {
@@ -58,164 +83,217 @@ public class Update
         this.allIdSerie = db.getAllID("SERIE");
         this.allIdGenre = db.getAllID("GENRE");
         this.allIdEditeur = db.getAllID("EDITEUR");
-        this.allIdEdition = db.getAllID("EDITION"); 
+        this.allIdEdition = db.getAllID("EDITION");
         this.allIdTome = db.getAllID("TOME");
         this.allTJ = db.getAllTJ();
     }
 
     /**
-     * Retourne la requête d'insertion de l'édition
-     * 
-     * @param dEdition L'édition
+     * Retourne la requête d'insertion de l'édition.
+     *
+     * @param idEdition ID_EDITION
      * @return La requête sql
      */
-    public String edition(DetailsEdition dEdition)
+    public String updateEdition(int idEdition) throws RemoteException
     {
-        String str = "";
-        Integer newId = new Integer(dEdition.getIdEdition());
-        if(!allIdEdition.contains(newId))
+        String sql = "";
+        DetailsEdition dEdition;
+        Integer newId = new Integer(idEdition);
+        if (!allIdEdition.contains(newId))
         {
-            str = SynchQuery.insertEdition(dEdition);
+            dEdition = webservice.getDetailsEdition(idEdition);
+
+            sql += updateEditeur(dEdition.getIdEditeur());
+            sql += updateTome(dEdition.getIdTome());
+          
+            sql += SynchQuery.insertEdition(dEdition);
+
             allIdEdition.add(newId);
         }
-        return str;
+        return sql;
     }
 
     /**
      * Retourne la requête d'insertion de l'éditeur
-     * 
-     * @param dEditeur L'édition
+     *
+     * @param idEditeur ID_EDITEUR
      * @return La requête SQL
      */
-    public String editeur(DetailsEditeur dEditeur)
+    public String updateEditeur(int idEditeur) throws RemoteException
     {
-        String str = "";
-        Integer newId = new Integer(dEditeur.getIdEditeur());
+        String sql = "";
+        DetailsEditeur dEditeur;
+        Integer newId = new Integer(idEditeur);
         if (!allIdEditeur.contains(newId))
         {
-            str = SynchQuery.insertEditeur(dEditeur);
+            dEditeur = webservice.getDetailsEditeur(idEditeur);
+
+            sql += SynchQuery.insertEditeur(dEditeur);
             allIdEditeur.add(newId);
         }
-        return str;
+        return sql;
     }
 
     /**
      * Retourne la requête d'insertion dans la table TJ_TOME_AUTEUR
-     * 
-     * @param idTome    ID_TOME
-     * @param idAuteur  ID_AUTEUR
-     * @param role      ROLE
-     * @return          La requête SQL
+     *
+     * @param idTome ID_TOME
+     * @param idAuteur ID_AUTEUR
+     * @param role ROLE
+     * @return La requête SQL
      */
-    public String tj(int idTome, int idAuteur, String role)
+    public String updateTj(int idTome, int idAuteur, String role) throws RemoteException
     {
-        String str = "";
+        String sql = "";
         TJ newTJ = new TJ(idTome, idAuteur, role);
         if (!allTJ.contains(newTJ))
         {
-            str = SynchQuery.insertTjTomeAuteur(idTome, idAuteur, role);
+            sql += updateAuteur(idAuteur);
+            sql += SynchQuery.insertTjTomeAuteur(idTome, idAuteur, role);
             allTJ.add(newTJ);
-        }       
-        return str;
+        }
+        return sql;
     }
 
     /**
      * Retourne la requête d'insertion du tome
-     * 
-     * @param dVolume   Le tome
-     * @return          La requête SQL
+     *
+     * @param dVolume Le tome
+     * @return La requête SQL
      */
-    public String volume(DetailsVolume dVolume)
+    public String updateTome(int idTome) throws RemoteException
     {
-        String str = "";
-        Integer newId = new Integer(dVolume.getIdTome());
+        String sql = "";
+        DetailsVolume dTome;
+        Integer newId = new Integer(idTome);
         if (!allIdTome.contains(newId))
         {
-             str = SynchQuery.insertVolume(dVolume);
-             allIdTome.add(newId);
-       }
-        return str;
+            dTome = webservice.getDetailsTome(idTome);
+            
+            sql += updateGenre(dTome.getIdGenre());
+            sql += updateSerie(dTome.getIdSerie());
+//            sql += updateAuteur(dTome.getIdAuteur());
+            
+            sql += SynchQuery.insertVolume(dTome);
+            
+            sql += process_tj(idTome);
+            
+            allIdTome.add(newId);
+        }
+        return sql;
     }
 
     /**
      * Retourne la requête d'insertion de l'auteur
-     * 
-     * @param dAuteur   L'auteur
-     * @return          La requête SQL
+     *
+     * @param dAuteur L'auteur
+     * @return La requête SQL
      */
-    public String auteur(DetailsAuteur dAuteur)
+    public String updateAuteur(int idAuteur) throws RemoteException
     {
-        String str = "";
-        Integer newId = new Integer(dAuteur.getIdAuteur());
+        String sql = "";
+        DetailsAuteur dAuteur;
+        Integer newId = new Integer(idAuteur);
         if (!allIdAuteur.contains(newId))
         {
-            str = SynchQuery.insertAuteur(dAuteur);
+            dAuteur = webservice.getDetailsAuteur(idAuteur);
+            sql += SynchQuery.insertAuteur(dAuteur);
             allIdAuteur.add(newId);
         }
 
-        return str;
+        return sql;
     }
 
     /**
      * Retourne la requête d'insertion de la série
-     * 
-     * @param dSerie    La série
-     * @return          La requête SQL
+     *
+     * @param dSerie La série
+     * @return La requête SQL
      */
-    public String serie(DetailsSerie dSerie)
+    public String updateSerie(int idSerie) throws RemoteException
     {
-        String str = "";
-        Integer newId = new Integer(dSerie.getIdSerie());
+        String sql = "";
+        DetailsSerie dSerie;
+        Integer newId = new Integer(idSerie);
         if (!allIdSerie.contains(newId))
         {
-            str = SynchQuery.insertSerie(dSerie);
+            dSerie = webservice.getDetailsSerie(idSerie);
+ 
+            sql += SynchQuery.insertSerie(dSerie);
             allIdSerie.add(newId);
         }
 
-        return str;
+        return sql;
     }
 
     /**
      * Retourne la requête d'insertion du genre
-     * 
-     * @param idGenre   ID_GENRE
-     * @param nomGenre  TITRE
+     *
+     * @param idGenre ID_GENRE
+     * @param nomGenre TITRE
      * @return La requête SQL
      */
-    public String genre(int idGenre, String nomGenre)
+    public String updateGenre(int idGenre) throws RemoteException
     {
         String str = "";
+        String nomGenre;
         Integer newId = new Integer(idGenre);
 
         if (!allIdGenre.contains(newId))
         {
+            nomGenre = webservice.getGenre(idGenre);
             str = SynchQuery.insertGenre(idGenre, nomGenre);
             allIdGenre.add(newId);
         }
         return str;
     }
 
-    /**
-     * Vérifie si une donnée particulière est dans la base de donnée. Utilisée en interne avec un count, elle retourne vrai si le résultat du count > 0
-     * @param sql Une requête de type "SELECT COUNT(..."
-     * @return true si le count > 0, faux sinon
-     */
-    private boolean isAlreadyInDataBase(String sql)
-    {
-        int amount = 0;
-        try
-        {
-            amount = db.getCount(sql);
-        } catch (SQLException ex)
-        {
-            Logger.getLogger(Update.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
-        return amount > 0;
-    }
-    
     public int getLastIdEdition() throws SQLException
     {
         return db.getLastID("EDITION");
+    }
+    
+   
+    private String process_tj(int idTome) throws RemoteException
+    {
+        int j,id;
+        String sql = "";
+        String[] coloristes, dessinateurs, scenaristes;
+                        
+        coloristes = webservice.getColoristesTome(idTome).split(";");
+        dessinateurs = webservice.getDessinateursTome(idTome).split(";");
+        scenaristes = webservice.getScenaristesTome(idTome).split(";");
+
+        if (coloristes.length > 0)
+        {
+            for (j = 1; j < coloristes.length; j++)
+            {
+                id = Integer.parseInt(coloristes[j]);
+                sql += updateAuteur(id) + "\n";
+                sql += updateTj(idTome, id, "Coloriste") + "\n";
+            }
+        }
+
+        if (dessinateurs.length > 0)
+        {
+            for (j = 1; j < dessinateurs.length; j++)
+            {
+                id = Integer.parseInt(dessinateurs[j]);
+                sql += updateAuteur(id) + "\n";
+                sql += updateTj(idTome, id, "Dessinateur") + "\n";
+            }
+        }
+
+        if (scenaristes.length > 0)
+        {
+            for (j = 1; j < scenaristes.length; j++)
+            {
+                id = Integer.parseInt(scenaristes[j]);
+                sql += updateAuteur(id) + "\n";
+                sql += updateTj(idTome, id, "Scenariste") + "\n";
+            }
+        }
+        return sql;
     }
 }

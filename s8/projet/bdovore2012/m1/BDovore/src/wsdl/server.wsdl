@@ -165,16 +165,16 @@
 		</wsdl:part>
 	</wsdl:message>
 	<wsdl:message name="getEditionsManquantesRequest">
-		<wsdl:part name="lastId" type="xsd:int"></wsdl:part>
+		<wsdl:part name="lastId" type="xsd:long"></wsdl:part>
 	</wsdl:message>
 	<wsdl:message name="getEditionsManquantesResponse">
 		<wsdl:part name="editionsManquantes" type="xsd:string"></wsdl:part>
 	</wsdl:message>
         <wsdl:message name="getNbEditionsManquantesRequest">
-		<wsdl:part name="lastId" type="xsd:int"></wsdl:part>
+		<wsdl:part name="lastId" type="xsd:long"></wsdl:part>
 	</wsdl:message>
 	<wsdl:message name="getNbEditionsManquantesResponse">
-		<wsdl:part name="nbEditionsManquantes" type="xsd:int"></wsdl:part>
+		<wsdl:part name="nbEditionsManquantes" type="xsd:long"></wsdl:part>
 	</wsdl:message>
 	<wsdl:message name="getIdUserRequest">
 		<wsdl:part name="userName" type="xsd:string"></wsdl:part>

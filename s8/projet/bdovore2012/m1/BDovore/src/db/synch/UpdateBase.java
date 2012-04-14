@@ -108,18 +108,20 @@ public class UpdateBase extends Thread
     @Override
     public void run()
     {
-        int lastID,         // Dernier id_edition de la base
-                len,        // Nb éditions à ajouter durant l'itération courante
-                cptBoucle,  // Nombre de boucle
-                total,      // Nombre d'éditions manquantes
-                tailleLot;  // Nb édition reçues maximum par itération
+        long lastID;         // Dernier id_edition de la base
+        
+        int len, // Nb éditions à ajouter durant l'itération courante
+                cptBoucle, // Nombre de boucle
+                total, // Nombre d'éditions manquantes
+                tailleLot, // Nb édition reçues maximum par itération
+                currentProgress;
 
-        String res,             // Chaine au format CVS pour la réception des id_edition manquants 
-                genre,          // Nom du genre
-                coloristes[],   // Id des coloristes
+        String res, // Chaine au format CVS pour la réception des id_edition manquants 
+                genre, // Nom du genre
+                coloristes[], // Id des coloristes
                 dessinateurs[], // Id des dessinateurs
-                scenaristes[],  // Id des scénaristes
-                sql,            // Requête SQL qui sera construite
+                scenaristes[], // Id des scénaristes
+                sql, // Requête SQL qui sera construite
                 editions[];     // Editions manquantes passées du CSV en un tableau
 
         DetailsEdition dEdition;    // Objet edition du webservice
@@ -135,9 +137,9 @@ public class UpdateBase extends Thread
         {
             // Initialisation
             cptBoucle = 0;
-            tailleLot = 0;
-            total = 0;
-            
+            tailleLot = 1;
+            total = 1;
+            currentProgress = 0;
             
 
             // Boucle de mise à jour
@@ -145,14 +147,16 @@ public class UpdateBase extends Thread
             {
                 sql = "";
 
+                if(currentProgress == 100) { canceled = true; }
                 if(canceled) { break; }
+                
                 
                 // Récupération de l'ID du dernier tome de la base
                 lastID = update.getLastIdEdition();
                 
                 // Dans la première itération on prend le nombre total
                 // d'éditions manquantes
-                if(cptBoucle == 0)
+                if(cptBoucle == 1)
                 {
                     total = port.getNbEditionsManquantes(lastID);
                 }
@@ -164,9 +168,6 @@ public class UpdateBase extends Thread
 
                 // Nombre d'ID_EDITION reçus :
                 len = editions.length;
-
-                // Mise à jour du pourcentage effectué
-                majListener(cptBoucle * tailleLot * 100 / total);
                 
                 // Initialisation de la taille de chaque lot de données
                 // + gestion de la taille = 0 (sinon : boucle infinie)
@@ -183,31 +184,17 @@ public class UpdateBase extends Thread
                 // + création de la requête SQL avec l'objet Update
                 for (int i = 0; i < len; i++)
                 {
-                    // Récupération des détails
-                    dEdition = port.getDetailsEdition(Integer.parseInt(editions[i]));
-                    dEditeur = port.getDetailsEditeur(dEdition.getIdEditeur());
-                    dTome = port.getDetailsTome(dEdition.getIdTome());
-                    dSerie = port.getDetailsSerie(dTome.getIdSerie());
-                    dAuteur = port.getDetailsAuteur(dTome.getIdAuteur());
-                    coloristes = (port.getColoristesTome(dTome.getIdTome())).split(";");
-                    dessinateurs = (port.getDessinateursTome(dTome.getIdTome())).split(";");
-                    scenaristes = (port.getScenaristesTome(dTome.getIdTome())).split(";");
-                    genre = port.getGenre(dTome.getIdGenre());
-
-                    // Création de la requête
-                    sql += update.genre(dTome.getIdGenre(), genre) + "\n";
-                    sql += update.serie(dSerie) + "\n";
-                    sql += update.auteur(dAuteur) + "\n";
-                    sql += update.volume(dTome) + "\n";
-                    sql += tj_tome_auteur(dTome.getIdTome(), coloristes, dessinateurs, scenaristes) + "\n";
-                    sql += update.editeur(dEditeur) + "\n";
-                    sql += update.edition(dEdition) + "\n";
+                    sql += update.updateEdition(Integer.parseInt(editions[i])) + "\n";
+                    
                 }
-
-                
 
                 // Execution de la requête
                 this.db.update(sql);
+                
+                // Mise à jour du pourcentage effectué
+                currentProgress = cptBoucle * tailleLot * 100 / total ;
+                System.out.println("[cptBoucle] "+cptBoucle+" * [tailleLot] "+tailleLot+" * 100 / [total] "+total+" = [currentProgress] "+currentProgress);
+                majListener(currentProgress);
 
                 // Incrémentation du compteur de boucle pour éviter 
                 // les boucles infinies si aucune données à récupérer
@@ -241,7 +228,7 @@ public class UpdateBase extends Thread
      * @param scenaristes Les ID_AUTEUR ayant pour rôle 'Scenariste'
      * @return La requête SQL
      * @throws RemoteException
-     */
+     *
     private String tj_tome_auteur(int idTome, String[] coloristes, String[] dessinateurs, String[] scenaristes) throws RemoteException
     {
         int j;
@@ -279,4 +266,5 @@ public class UpdateBase extends Thread
         }
         return sql;
     }
+    * */
 }

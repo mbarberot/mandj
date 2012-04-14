@@ -69,7 +69,7 @@ public class Synch
         try
         {
             this.port = new BDovoreLocator().getBDovore_Port();
-            this.update = new Update(db);
+            this.update = new Update(db,port);
         } catch (Exception ex)
         {
             ex.printStackTrace();

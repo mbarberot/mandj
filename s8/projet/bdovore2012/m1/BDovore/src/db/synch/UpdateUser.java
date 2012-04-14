@@ -4,7 +4,6 @@ import db.DataBase;
 import db.data.User;
 import java.rmi.RemoteException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -90,7 +89,7 @@ public class UpdateUser extends Thread
     
     private void transaction(Integer id, boolean inLocal, boolean inServer)
     {
-        System.out.println("[ID - "+id+"] * [Local ? "+inLocal+"] * [Server ? "+inServer+"]");
+        
     }
     
     /**
