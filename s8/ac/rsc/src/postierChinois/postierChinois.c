@@ -82,9 +82,8 @@ erreur peupleTabAretes(int idGraphe)
 	
 	// Initialisation des valeurs : 1 si une arête existe entre i et j, 0 sinon
 	    for(j = 0 ; j < nbSom ; j++)
-	    {		
-		tab[i][j] = compteOccurences(g -> aretes[i], j + 1);
-
+	    {	      
+		tab[i][j] = (rechercheVoisin(g->aretes[i], j+1) != NULL)? 1 : 0;
 	    }
     }    
 
@@ -368,7 +367,7 @@ int getNbVoisinsAccessibles(int idGraphe, int sommet)
     return nbVoisins;
 }
 
-int plusCourtChemin(int idGraphe, int m[][], int p[][])
+int plusCourtChemin(int idGraphe, int *m[], int *p[])
 {
     TypGraphe *g = graphes[idGraphe - 1];
     int nbSom = g -> nbMaxSommets;
@@ -423,7 +422,7 @@ TypVoisins* sommetsImpairs(int idGraphe)
     
     for(i = 0 ; i < g ->nbMaxSommets ; i++)
     {
-	calculerDegreSommet(idGraphe, i + 1, &pariteCurrent)
+	calculerDegreSommet(idGraphe, i + 1, &pariteCurrent);
 	if((pariteCurrent / 2) % 2 == 1)
 	{
 	    ajouteVoisin(&res, i + 1, 0, NULL);
@@ -432,6 +431,7 @@ TypVoisins* sommetsImpairs(int idGraphe)
     
     return res;
 }
+
 
 void listeCouplage(TypVoisins *ls, TypVoisins *res)
 {
@@ -467,4 +467,12 @@ void listeCouplage(TypVoisins *ls, TypVoisins *res)
       }   
     }
     
+}
+
+
+void doCouplageOptimal(int idGraphe)
+{
+  // Récupérer la liste des sommets impairs
+  // Calcul du couplage de poids optimal
+  // Duplication des arêtes en conséquence
 }

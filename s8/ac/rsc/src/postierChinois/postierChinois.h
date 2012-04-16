@@ -160,10 +160,18 @@ erreur calculCycleEulerien(
  * @param m : matrice contenant la pondération du plus court chemin entre deux sommets
  * @param p : matrice contenant le sommet précédent du plus court chemin entre deux sommets
  */
-int plusCourtChemin(int idGraphe, int m[][], int p[][]);
+int plusCourtChemin(int idGraphe, int *m[], int *p[]);
 
 /**
- * Teste tous les couples de sommets impairs possibles, et calcul celui de poids optimal
+ * Evalue la valeur de couplage de la liste passée en paramètre
+ * @param couples : le couplage à évaluer
+ * @param m : la matrice de pondération
+ */
+int evalueCouplage(TypVoisins *couples, int *m[]);
+
+/**
+ * Teste tous les couples de sommets impairs possibles, et calcule celui de poids optimal.
+ * La fonction duplique les arêtes en conséquent.
  * @param idGraphe : le graphe de référence
  */
 void doCouplageOptimal(int idGraphe);
