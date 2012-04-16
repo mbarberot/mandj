@@ -24,8 +24,6 @@ int tailleListe(TypVoisins**l);
 int compareListes(TypVoisins** l1, TypVoisins** l2);
 int ajouteVoisinNonTries(TypVoisins** l, int numVoisin, int poidsVoisin, void* info);
 void concateneListe(TypVoisins** l1, TypVoisins* l2);
-int compteOccurences(TypVoisins** l, int voisin);
-TypVoisins* getDoublons(TypVoisins** l, int voisin);
 int minPoids(TypVoisins** l, int voisin);
 #endif
 

@@ -21,9 +21,6 @@
 /** Matrices d'adjacence pour les deux graphes. C(x,y) représente le nombre d'arêtes entre le sommet x et le sommet y */
 int **nbAretes[NB_GRAPHES];
 
-/** Matrices des pondérations. Chaque case contient une liste de pondérations entre deux sommets (cas où plusieurs arêtes de poids différents
- existent entre deux sommets) */
-TypVoisins ***pondAretes[NB_GRAPHES];
 
 /**
  * ----------------------------------------------------------
@@ -97,6 +94,21 @@ erreur supprimeArete(
     int s1,
     int s2
        );
+
+/**
+ * Renvoie la liste des sommets de degrés impairs (ls) classés par numéro de sommet
+ * @param ls : la liste des sommets de degrés impairs
+ * @param res : la liste resultante
+ */
+void listeCouplage(TypVoisins *ls, TypVoisins *res);
+
+/**
+ * Retourne la liste des degrés de sommets impairs du graphe
+ * @param idGraphe : le graphe dont on veut tester les sommets
+ * @return : la liste de tous les sommets impairs
+ */
+TypVoisins* sommetsImpairs(int idGraphe);
+
 
 /**
  * ----------------------------------

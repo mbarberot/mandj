@@ -62,16 +62,12 @@ erreur peupleTabAretes(int idGraphe)
     
     // Allocation de la mémoire pour les tableaux
     nbAretes[idGraphe - 1] = (int**) malloc(nbSom*sizeof(int));
-    pondAretes[idGraphe - 1]  = (TypVoisins***) malloc(nbSom*sizeof(TypVoisins));
     
     // Utilisation du pointeur tab pour plus de clareté
     // et vérification de l'allocation
     tab = nbAretes[idGraphe - 1];
     if(tab == NULL) { return PROBLEME_MEMOIRE; }
-    
-    // Et de même pour les pondérations
-    pond = pondAretes[idGraphe - 1];
-    if(pond == NULL) { return PROBLEME_MEMOIRE; }
+
     
     // Peuplement du tableau :
     //	    - parcours du tableau d'arêtes du graphe
@@ -82,19 +78,13 @@ erreur peupleTabAretes(int idGraphe)
 	
 	if(tab[i] == NULL)
 	    return PROBLEME_MEMOIRE;
-	
-	// Initialisation de la matrice de pondérations
-	pond[i] = (TypVoisins**)malloc(nbSom * sizeof(TypVoisins));
-	
-	if(pond[i] == NULL) { return PROBLEME_MEMOIRE; }
+
 	
 	// Initialisation des valeurs : 1 si une arête existe entre i et j, 0 sinon
 	    for(j = 0 ; j < nbSom ; j++)
 	    {		
 		tab[i][j] = compteOccurences(g -> aretes[i], j + 1);
-		
-		// Allocation pour les pondérations	
-		pond[i][j] = getDoublons(g -> aretes[i], j + 1);
+
 	    }
     }    
 
@@ -127,15 +117,13 @@ erreur freeParcoursChinois()
 		for( k = 0 ; k < nbSom ; k++)
 		{
 		    free(nbAretes[i][j][k]);
-		    supprimeListe(&pondAretes[i][j][k]);
 		 }
 		free(nbAretes[i][j]);
-		free(pondAretes[i][j]);
+
 	    }
 	    
 	    // On libere le 'graphe' i
 	    free(nbAretes[i]);
-	    free(pondAretes[i]);
 	    
 	}
     }
@@ -379,3 +367,89 @@ int getNbVoisinsAccessibles(int idGraphe, int sommet)
     
     return nbVoisins;
 }
+
+int plusCourtChemin(int idGraphe, int m[][], int p[][])
+{
+    TypGraphe *g = graphes[idGraphe - 1];
+    int nbSom = g -> nbMaxSommets;
+    
+    /* itérateurs */
+    int x, y, z;
+    
+    /* Initialisation */
+    for(x = 0 ; x < nbSom ; x++)
+    {
+	for(y = 0 ; y < nbSom ; y++)
+	{
+	    TypVoisins *tmp = rechercheVoisin(g -> aretes[x], y + 1);
+	    
+	    if(x == y)
+	    {
+		m[x][y] = 0;
+	    }
+	    else
+	    {
+		m[x][y] = (tmp == NULL)? -1 : tmp -> poidsVoisin;
+	    }
+	    
+	    p[x][y] = y + 1;
+	}
+    }
+    
+    /* Boucle de calcul */
+    for(x = 0 ; x < nbSom ; x++)
+    {
+	for(y = 0; y < nbSom ; y++)
+	{
+	    for(z = 0 ; z < nbSom; z++)
+	    {
+		if(m[x][z] != -1 && m[y][z] != -1 && m[x][z] + m[z][y] < m[x][y])
+		{
+		    m[x][y] = m[x][z]+ m[z][y];
+		    p[x][y] = p[z][y];
+		}
+	    }	    
+	}
+    }
+}
+
+
+TypVoisins* sommetsImpairs(int idGraphe)
+{
+    TypGraphe *res = NULL;
+    TypGraphe *g = graphes[idGraphe - 1];
+    int i;
+    int pariteCurrent = 0;
+    
+    for(i = 0 ; i < g ->nbMaxSommets ; i++)
+    {
+	calculerDegreSommet(idGraphe, i + 1, &pariteCurrent)
+	if((pariteCurrent / 2) % 2 == 1)
+	{
+	    ajouteVoisin(&res, i + 1, 0, NULL);
+	}
+    }
+    
+    return res;
+}
+
+void listeCouplage(TypVoisins *ls, TypVoisins *res)
+{
+    
+    TypVoisins *current = ls;
+    
+    while(current != NULL)
+    {
+	TypVoisins *poss = current -> voisinSuivant;
+	
+	while(poss != NULL)
+	{
+	    ajouteVoisinNonTries(&res, current->voisin, 0, NULL);
+	    ajouteVoisinNonTries(&res, poss->voisin, 0, NULL);
+	    poss = poss -> voisinSuivant;
+	}
+	
+	current = current -> voisinSuivant;
+    }   
+    
+}'

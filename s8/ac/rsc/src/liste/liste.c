@@ -42,11 +42,11 @@ int ajouteVoisin(TypVoisins** l, int numVoisin, int poidsVoisin, void* info){
     if(l != NULL)
     {
 	// pas de doublon
-	/*
+
 	if(rechercheVoisin(l,numVoisin) != NULL)
 	{
 	    return -1;
-	}*/
+	}
 	
 	// cas du premier élément
 	// --> il faut modifier l
@@ -308,45 +308,6 @@ void concateneListe(TypVoisins** l1, TypVoisins* l2)
     }
 }
 
-/**
- * Compte le nombre de fois où voisin apparaît dans l
- */
-int compteOccurences(TypVoisins** l, int voisin)
-{
-    int res = 0;
-    TypVoisins *tmp = l;
-    
-    while(tmp != NULL)
-    {
-	if(tmp->voisin == voisin)
-	{
-	    res ++;
-	}
-	tmp = tmp -> voisinSuivant;
-    }
-    
-    return res;
-}
-
-/**
- * Renvoie une liste chainée de doublons
- */
-TypVoisins* getDoublons(TypVoisins** l, int voisin)
-{
-    TypVoisins *res = NULL;
-    TypVoisins *tmp = l;
-    
-    while(tmp != NULL)
-    {
-	if(tmp -> voisin == voisin)
-	{
-	    ajouteVoisinNonTries(&res, tmp -> voisin, tmp -> poidsVoisin, tmp -> info);
-	}
-	tmp = tmp -> voisinSuivant;
-    }
-    
-    return res;
-}
 
 /**
  * Renvoie le sommet de poids minimal d'une liste
