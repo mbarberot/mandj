@@ -48,12 +48,10 @@ erreur initParcoursChinois(int idGraphe)
 
 erreur peupleTabAretes(int idGraphe)
 {
-    int i,j,k,	    // Itérateurs
+    int i,j,	    // Itérateurs
     nbSom,	    // Nombre de sommet du graphe
     **tab;
     
-    TypVoisins*** pond;
-
     // Récupération 
     //	    - du graphe
     //	    - du nombre de sommets
@@ -83,7 +81,7 @@ erreur peupleTabAretes(int idGraphe)
 	// Initialisation des valeurs : 1 si une arête existe entre i et j, 0 sinon
 	    for(j = 0 ; j < nbSom ; j++)
 	    {	      
-		tab[i][j] = (rechercheVoisin(g->aretes[i], j+1) != NULL)? 1 : 0;
+		tab[i][j] = (rechercheVoisin(&g->aretes[i], j+1) != NULL)? 1 : 0;
 	    }
     }    
 
@@ -92,7 +90,7 @@ erreur peupleTabAretes(int idGraphe)
 
 erreur freeParcoursChinois()
 {
-    int i,j,k,	    // Iterateurs
+    int i,j,	    // Iterateurs
     nbSom;	    // Nombre de sommets
     
     TypGraphe *g;   // Les graphes
@@ -113,12 +111,7 @@ erreur freeParcoursChinois()
 	    // Pour chaque sommet
 	    for(j = 0; j < nbSom; j++)
 	    {		
-		for( k = 0 ; k < nbSom ; k++)
-		{
-		    free(nbAretes[i][j][k]);
-		 }
 		free(nbAretes[i][j]);
-
 	    }
 	    
 	    // On libere le 'graphe' i
@@ -336,7 +329,19 @@ erreur calculCycleEulerien(int idGraphe,int idHeuristique)
     else if(*tparc == 0)
     {
 	// Cycle chinois
-	// res = cycleChinois(int idGraphe, int idHeuristique);
+	switch(idHeuristique)
+	{
+	    case 1 :
+		doCouplageOptimal(idGraphe);
+		break;
+	}
+	
+	TypVoisins *test = cycleEulerien(idGraphe, 1);
+	printf("CYCLE CHINOIS TROUVE POUR LE GRAPHE : \n\n ");
+	afficheVoisins(&test);
+	printf("\n\n");
+	supprimeListe(&test);
+	freeParcoursChinois();
     }
     else
     {
@@ -380,7 +385,7 @@ int plusCourtChemin(int idGraphe, int *m[], int *p[])
     {
 	for(y = 0 ; y < nbSom ; y++)
 	{
-	    TypVoisins *tmp = rechercheVoisin(g -> aretes[x], y + 1);
+	    TypVoisins *tmp = rechercheVoisin(&g -> aretes[x], y + 1);
 	    
 	    if(x == y)
 	    {
@@ -415,7 +420,7 @@ int plusCourtChemin(int idGraphe, int *m[], int *p[])
 
 TypVoisins* sommetsImpairs(int idGraphe)
 {
-    TypGraphe *res = NULL;
+    TypVoisins *res = NULL;
     TypGraphe *g = graphes[idGraphe - 1];
     int i;
     int pariteCurrent = 0;
@@ -437,6 +442,7 @@ void listeCouplage(TypVoisins *ls, TypVoisins *res)
 {
     
     TypVoisins *current = ls;
+    TypVoisins *clone;
 
     if(ls != NULL)
     {
@@ -449,7 +455,7 @@ void listeCouplage(TypVoisins *ls, TypVoisins *res)
 	  
 	  // On fait une copie de la liste ls pour pouvoir travailler sans soucis avec les autres couples possibles
 	  // sans détruire la liste avec les appels récursifs
-	  TypVoisins *clone = cloneListe(&res);
+	  clone = cloneListe(&res);
 	  
 	  
 	  //On ajoute dans la liste resultat le couple (x,y) => (current, poss)
@@ -467,12 +473,94 @@ void listeCouplage(TypVoisins *ls, TypVoisins *res)
       }   
     }
     
+    //Libération de la mémoire
+    supprimeListe(&clone);
 }
 
 
 void doCouplageOptimal(int idGraphe)
 {
+    
+  int som1, som2;
+  
   // Récupérer la liste des sommets impairs
+  TypVoisins *s_impairs = sommetsImpairs(idGraphe);
+  int pp_impair = s_impairs -> voisin; // Le plus petit sommet impair 
+  
+  // Liste utilisée pour stocker le couplage en cours
+  TypVoisins *c_couple;
+  
+  // Liste utilisée pour stocker le meilleur couplage
+  TypVoisins *b_couple;
+  
+  int b_score;
+  int c_score = 0;
+  
+  // Calcul des plus courts chemins
+  int size = graphes[idGraphe - 1] -> nbMaxSommets;
+  int m[size][size], p[size][size];
+  plusCourtChemin(idGraphe, m, p);
+  
   // Calcul du couplage de poids optimal
+  while(s_impairs != NULL)
+  {
+      // On constitue le couplage en cours
+      do 
+      {
+	  ajouteVoisinNonTries(&c_couple, s_impairs -> voisin, s_impairs -> poidsVoisin, s_impairs -> info);
+	  s_impairs = s_impairs -> voisinSuivant;
+      }while(s_impairs -> voisin != pp_impair);
+      
+      // Calcul de la valeur de couplage et màj des variables temporaires
+      if(c_score == 0)
+      {
+	  b_score = evalueCouplage(c_couple, m);
+      }else if((c_score = evalueCouplage(c_couple, m)) < b_score)
+      {
+	  b_score = c_score;
+	  b_couple = c_couple;
+      }
+      
+      s_impairs = s_impairs -> voisinSuivant;
+  }
+  
   // Duplication des arêtes en conséquence
+  while(b_couple != NULL)
+  {
+      // Récupération des deux sommets du couple
+      som1 = b_couple -> voisin;
+      b_couple = b_couple -> voisinSuivant;
+      
+      som2 = b_couple -> voisin;
+      
+      // Duplication des arêtes
+      nbAretes[idGraphe - 1][som1 - 1][som2 - 1]++;
+      nbAretes[idGraphe - 1][som2 - 1][som1 - 1]++;
+      
+      b_couple = b_couple -> voisinSuivant;
+  }
+}
+
+int evalueCouplage(TypVoisins *couples, int *m[])
+{
+    int res = 0;
+    int som1, som2;
+    
+    TypVoisins *tmp = couples;
+    
+    while(tmp != NULL)
+    {
+	// Récupération du premier sommet
+	som1 = tmp -> voisin;	
+	tmp = tmp -> voisinSuivant;
+	
+	// Récupération du second sommet
+	som2 = tmp -> voisin;
+	
+	// Evaluation
+	res = res + m[som1 - 1][som2 - 1];
+	
+	tmp = tmp -> voisinSuivant;
+    }
+    return res;
 }
