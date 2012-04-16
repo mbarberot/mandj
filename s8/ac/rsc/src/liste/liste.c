@@ -330,3 +330,19 @@ int minPoids(TypVoisins** l, int voisin)
     return min;
 }
 
+/**
+ * Retourne une copie de la liste passée en paramètre
+ */
+TypVoisins* cloneListe(TypVoisins** l)
+{
+  TypVoisins *clone;
+  TypVoisins *tmp = l;
+  
+  while(tmp != NULL)
+  {
+    ajouteVoisinNonTries(&clone, tmp -> voisin, tmp -> poidsVoisin, tmp -> info);
+    tmp = tmp -> voisinSuivant;
+  }
+  
+  return clone;
+}

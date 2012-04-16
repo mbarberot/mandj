@@ -437,19 +437,34 @@ void listeCouplage(TypVoisins *ls, TypVoisins *res)
 {
     
     TypVoisins *current = ls;
-    
-    while(current != NULL)
+
+    if(ls != NULL)
     {
-	TypVoisins *poss = current -> voisinSuivant;
+      
+      while(current != NULL)
+      {
 	
-	while(poss != NULL)
-	{
-	    ajouteVoisinNonTries(&res, current->voisin, 0, NULL);
-	    ajouteVoisinNonTries(&res, poss->voisin, 0, NULL);
-	    poss = poss -> voisinSuivant;
-	}
-	
-	current = current -> voisinSuivant;
-    }   
+	  // On prend un y > x (on suppose la liste triée par ordre croissant)
+	  TypVoisins *poss = current -> voisinSuivant;
+	  
+	  // On fait une copie de la liste ls pour pouvoir travailler sans soucis avec les autres couples possibles
+	  // sans détruire la liste avec les appels récursifs
+	  TypVoisins *clone = cloneListe(&res);
+	  
+	  
+	  //On ajoute dans la liste resultat le couple (x,y) => (current, poss)
+	  ajouteVoisinNonTries(&res, current->voisin, current->poidsVoisin, current->info);
+	  ajouteVoisinNonTries(&res, poss->voisin, poss->poidsVoisin, poss->info);
+	  
+	  // On supprime le couple dans la liste clonée avant l'appel récursif sur celle-ci
+	  supprimeVoisin(&clone, current->voisin);
+	  supprimeVoisin(&clone, poss->voisin);
+	  
+	  listeCouplage(clone, res);
+	  
+
+	  current = current -> voisinSuivant;
+      }   
+    }
     
-}'
+}

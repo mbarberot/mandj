@@ -156,7 +156,16 @@ erreur calculCycleEulerien(
 /**
  * Implémentation de Floyd-Warshall de recherche du plus court chemin
  * Utilisé pour la résolution du postier chinois
+ * @param idGraphe : le graphe de référence
+ * @param m : matrice contenant la pondération du plus court chemin entre deux sommets
+ * @param p : matrice contenant le sommet précédent du plus court chemin entre deux sommets
  */
-int plusCourtChemin(int idGraphe, int dep, int arr);
+int plusCourtChemin(int idGraphe, int m[][], int p[][]);
+
+/**
+ * Teste tous les couples de sommets impairs possibles, et calcul celui de poids optimal
+ * @param idGraphe : le graphe de référence
+ */
+void doCouplageOptimal(int idGraphe);
 
 #endif

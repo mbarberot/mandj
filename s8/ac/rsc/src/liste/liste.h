@@ -25,5 +25,7 @@ int compareListes(TypVoisins** l1, TypVoisins** l2);
 int ajouteVoisinNonTries(TypVoisins** l, int numVoisin, int poidsVoisin, void* info);
 void concateneListe(TypVoisins** l1, TypVoisins* l2);
 int minPoids(TypVoisins** l, int voisin);
+TypVoisins* cloneListe(TypVoisins** l);
+
 #endif
 
