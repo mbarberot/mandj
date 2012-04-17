@@ -332,6 +332,7 @@ erreur calculCycleEulerien(int idGraphe,int idHeuristique)
 	switch(idHeuristique)
 	{
 	    case 1 :
+		printf("Déterminer un couplage optimal \n");
 		doCouplageOptimal(idGraphe);
 		break;
 	}
@@ -372,7 +373,7 @@ int getNbVoisinsAccessibles(int idGraphe, int sommet)
     return nbVoisins;
 }
 
-int plusCourtChemin(int idGraphe, int *m[], int *p[])
+void plusCourtChemin(int idGraphe, int *m[], int *p[])
 {
     TypGraphe *g = graphes[idGraphe - 1];
     int nbSom = g -> nbMaxSommets;
@@ -387,13 +388,13 @@ int plusCourtChemin(int idGraphe, int *m[], int *p[])
 	{
 	    TypVoisins *tmp = rechercheVoisin(&g -> aretes[x], y + 1);
 	    
-	    if(x == y)
+	    if(x == y || tmp == NULL)
 	    {
 		m[x][y] = 0;
 	    }
 	    else
 	    {
-		m[x][y] = (tmp == NULL)? -1 : tmp -> poidsVoisin;
+		m[x][y] = tmp -> poidsVoisin;
 	    }
 	    
 	    p[x][y] = y + 1;
@@ -401,16 +402,19 @@ int plusCourtChemin(int idGraphe, int *m[], int *p[])
     }
     
     /* Boucle de calcul */
-    for(x = 0 ; x < nbSom ; x++)
+    for(z = 0 ; z < nbSom ; z++)
     {
-	for(y = 0; y < nbSom ; y++)
+	for(x = 0; x < nbSom ; x++)
 	{
-	    for(z = 0 ; z < nbSom; z++)
+	    for(y = 0 ; y < nbSom; y++)
 	    {
-		if(m[x][z] != -1 && m[y][z] != -1 && m[x][z] + m[z][y] < m[x][y])
+		if(m[x][z] != 0 && m[z][y] != 0 && x != y) 
 		{
-		    m[x][y] = m[x][z]+ m[z][y];
-		    p[x][y] = p[z][y];
+		    if(m[x][z] + m[z][y] < m[x][y] || m[x][y] == 0)
+		    {
+			m[x][y] = m[x][z]+ m[z][y];
+			p[x][y] = p[z][y];
+		    }
 		}
 	    }	    
 	}
@@ -418,9 +422,8 @@ int plusCourtChemin(int idGraphe, int *m[], int *p[])
 }
 
 
-TypVoisins* sommetsImpairs(int idGraphe)
+void sommetsImpairs(int idGraphe, TypVoisins **res)
 {
-    TypVoisins *res = NULL;
     TypGraphe *g = graphes[idGraphe - 1];
     int i;
     int pariteCurrent = 0;
@@ -430,51 +433,53 @@ TypVoisins* sommetsImpairs(int idGraphe)
 	calculerDegreSommet(idGraphe, i + 1, &pariteCurrent);
 	if((pariteCurrent / 2) % 2 == 1)
 	{
-	    ajouteVoisin(&res, i + 1, 0, NULL);
+	    ajouteVoisin(res, i + 1, 0, NULL);
+
 	}
     }
     
-    return res;
 }
 
 
-void listeCouplage(TypVoisins *ls, TypVoisins *res)
+void listeCouplage(TypVoisins **ls, TypVoisins **res)
 {
     
-    TypVoisins *current = ls;
-    TypVoisins *clone;
-
-    if(ls != NULL)
+    if(*ls != NULL)
     {
+      TypVoisins *current = *ls;
+      TypVoisins *clone;
       
       while(current != NULL)
       {
 	
+	  printf("listeCouplage : entree boucle \n");
 	  // On prend un y > x (on suppose la liste triée par ordre croissant)
 	  TypVoisins *poss = current -> voisinSuivant;
 	  
 	  // On fait une copie de la liste ls pour pouvoir travailler sans soucis avec les autres couples possibles
 	  // sans détruire la liste avec les appels récursifs
-	  clone = cloneListe(&res);
+	  cloneListe(ls, &clone);
 	  
+	  printf("Liste clonee \n");
 	  
 	  //On ajoute dans la liste resultat le couple (x,y) => (current, poss)
-	  ajouteVoisinNonTries(&res, current->voisin, current->poidsVoisin, current->info);
-	  ajouteVoisinNonTries(&res, poss->voisin, poss->poidsVoisin, poss->info);
+	  ajouteVoisinNonTries(res, current->voisin, current->poidsVoisin, current->info);
+	  ajouteVoisinNonTries(res, poss->voisin, poss->poidsVoisin, poss->info);
 	  
 	  // On supprime le couple dans la liste clonée avant l'appel récursif sur celle-ci
 	  supprimeVoisin(&clone, current->voisin);
 	  supprimeVoisin(&clone, poss->voisin);
 	  
-	  listeCouplage(clone, res);
+	  listeCouplage(&clone, res);
 	  
 
 	  current = current -> voisinSuivant;
-      }   
+      }
+      //Libération de la mémoire
+	supprimeListe(&clone);
     }
     
-    //Libération de la mémoire
-    supprimeListe(&clone);
+    
 }
 
 
@@ -484,23 +489,57 @@ void doCouplageOptimal(int idGraphe)
   int som1, som2;
   
   // Récupérer la liste des sommets impairs
-  TypVoisins *s_impairs = sommetsImpairs(idGraphe);
-  int pp_impair = s_impairs -> voisin; // Le plus petit sommet impair 
+  TypVoisins *s_impairs = NULL; 
+  sommetsImpairs(idGraphe, &s_impairs);
+  printf("Voisins impairs : \n");
+  afficheVoisins(&s_impairs);
+  
+  // Le plus petit sommet impair 
+  int pp_impair = s_impairs -> voisin; 
+  printf("Plus petit sommet impair : %d \n", pp_impair);
   
   // Liste utilisée pour stocker le couplage en cours
-  TypVoisins *c_couple;
+  TypVoisins *c_couple = NULL;
   
   // Liste utilisée pour stocker le meilleur couplage
-  TypVoisins *b_couple;
+  TypVoisins *b_couple = NULL;
   
   int b_score;
   int c_score = 0;
   
   // Calcul des plus courts chemins
   int size = graphes[idGraphe - 1] -> nbMaxSommets;
-  int m[size][size], p[size][size];
+  int** m;
+  int** p;
+  int i,j;
+  
+  m = (int**)malloc(size * sizeof(int*));
+  p = (int**)malloc(size * sizeof(int*));
+  
+  for(i = 0 ; i < size ; i++)
+  {
+      m[i] = (int*)malloc(size * sizeof(int));
+      p[i] = (int*)malloc(size * sizeof(int));
+  }
+  
+  printf("Calcul de la matrice des plus courts chemins \n");
   plusCourtChemin(idGraphe, m, p);
   
+  for(i = 0 ; i < size ; i++)
+  {
+      for(j =0; j < size ; j++)
+      {
+	  printf(" %d ", m[i][j]);
+      }
+      printf("\n");
+  }
+  
+  
+  printf("Calcul des couplages \n");
+  listeCouplage(s_impairs, &c_couple);
+  afficheVoisins(&c_couple);
+  
+  printf("Calcul du couplage optimal \n");  
   // Calcul du couplage de poids optimal
   while(s_impairs != NULL)
   {
@@ -508,6 +547,7 @@ void doCouplageOptimal(int idGraphe)
       do 
       {
 	  ajouteVoisinNonTries(&c_couple, s_impairs -> voisin, s_impairs -> poidsVoisin, s_impairs -> info);
+	  printf("Ajout du sommet %d au couple en cours \n", s_impairs -> voisin);
 	  s_impairs = s_impairs -> voisinSuivant;
       }while(s_impairs -> voisin != pp_impair);
       
@@ -524,20 +564,23 @@ void doCouplageOptimal(int idGraphe)
       s_impairs = s_impairs -> voisinSuivant;
   }
   
-  // Duplication des arêtes en conséquence
-  while(b_couple != NULL)
+  if(b_couple != NULL)
   {
-      // Récupération des deux sommets du couple
-      som1 = b_couple -> voisin;
-      b_couple = b_couple -> voisinSuivant;
-      
-      som2 = b_couple -> voisin;
-      
-      // Duplication des arêtes
-      nbAretes[idGraphe - 1][som1 - 1][som2 - 1]++;
-      nbAretes[idGraphe - 1][som2 - 1][som1 - 1]++;
-      
-      b_couple = b_couple -> voisinSuivant;
+    // Duplication des arêtes en conséquence
+    while(b_couple != NULL)
+    {
+	// Récupération des deux sommets du couple
+	som1 = b_couple -> voisin;
+	b_couple = b_couple -> voisinSuivant;
+	
+	som2 = b_couple -> voisin;
+	
+	// Duplication des arêtes
+	nbAretes[idGraphe - 1][som1 - 1][som2 - 1]++;
+	nbAretes[idGraphe - 1][som2 - 1][som1 - 1]++;
+	
+	b_couple = b_couple -> voisinSuivant;
+    }
   }
 }
 

@@ -39,15 +39,16 @@ int ajouteVoisin(TypVoisins** l, int numVoisin, int poidsVoisin, void* info){
     *new;
     
     
-    if(l != NULL)
+    if(*l != NULL)
     {
+	
 	// pas de doublon
 
 	if(rechercheVoisin(l,numVoisin) != NULL)
 	{
 	    return -1;
 	}
-	
+
 	// cas du premier élément
 	// --> il faut modifier l
 	if(numVoisin < (*l)->voisin || (*l)->voisin == -1)
@@ -97,7 +98,27 @@ int ajouteVoisin(TypVoisins** l, int numVoisin, int poidsVoisin, void* info){
 	    q = p;
 	    p = p->voisinSuivant;
 	}
+	
+	// On est arrivé à la fin de la liste, mais le nouvel élément est > all
+	// => on le place à la fin
+	new = (TypVoisins*) malloc(sizeof(TypVoisins));
+	if(new != NULL)
+	{
+	    new->voisin = numVoisin;
+	    new->poidsVoisin = poidsVoisin;
+	    new->info = info;
+	    new->voisinSuivant = NULL;
+	    q->voisinSuivant = new;				
+	    return 1;
+	}
+	
     }
+    else
+    {
+	ajouteVoisinNonTries(l, numVoisin, poidsVoisin, info);
+	return 1;
+    }
+    
     return -1;
 }
 
@@ -333,16 +354,15 @@ int minPoids(TypVoisins** l, int voisin)
 /**
  * Retourne une copie de la liste passée en paramètre
  */
-TypVoisins* cloneListe(TypVoisins** l)
+void cloneListe(TypVoisins** l, TypVoisins** clone)
 {
-  TypVoisins *clone;
+
   TypVoisins *tmp = l;
   
   while(tmp != NULL)
   {
-    ajouteVoisinNonTries(&clone, tmp -> voisin, tmp -> poidsVoisin, tmp -> info);
+    ajouteVoisinNonTries(clone, tmp -> voisin, tmp -> poidsVoisin, tmp -> info);
     tmp = tmp -> voisinSuivant;
   }
   
-  return clone;
 }

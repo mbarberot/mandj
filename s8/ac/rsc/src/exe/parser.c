@@ -953,6 +953,8 @@ parserError interpreteChargerGraphe(char* cmd)
     return ARGUMENTS_INCORRECTS;
   }
   
+  afficheGraphe(1);
+  
   // Ecriture du résultat dans le fichier
   ecritureResultatCommande(numCom, err);
   

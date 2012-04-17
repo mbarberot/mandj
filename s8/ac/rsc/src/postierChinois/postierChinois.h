@@ -100,14 +100,14 @@ erreur supprimeArete(
  * @param ls : la liste des sommets de degrés impairs
  * @param res : la liste resultante
  */
-void listeCouplage(TypVoisins *ls, TypVoisins *res);
+void listeCouplage(TypVoisins **ls, TypVoisins **res);
 
 /**
  * Retourne la liste des degrés de sommets impairs du graphe
  * @param idGraphe : le graphe dont on veut tester les sommets
  * @return : la liste de tous les sommets impairs
  */
-TypVoisins* sommetsImpairs(int idGraphe);
+void sommetsImpairs(int idGraphe, TypVoisins **res);
 
 
 /**
@@ -160,7 +160,7 @@ erreur calculCycleEulerien(
  * @param m : matrice contenant la pondération du plus court chemin entre deux sommets
  * @param p : matrice contenant le sommet précédent du plus court chemin entre deux sommets
  */
-int plusCourtChemin(int idGraphe, int *m[], int *p[]);
+void plusCourtChemin(int idGraphe, int *m[], int *p[]);
 
 /**
  * Evalue la valeur de couplage de la liste passée en paramètre

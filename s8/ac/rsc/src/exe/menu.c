@@ -110,11 +110,7 @@ void actionChargerFichier(char *fileLoaded){
     {
 	printf("\nErreur de saisie \n");
 	fileLoaded = NULL;
-    } 
-
-    afficheGraphe(0);
-    afficheGraphe(1);
-
+    }
 }
 
 void actionRecharger(char *fileLoaded)
