@@ -147,6 +147,14 @@
 	<wsdl:message name="addUserBibliothequeResponse">
 		<wsdl:part name="isAdded" type="xsd:boolean"></wsdl:part>
 	</wsdl:message>
+        <wsdl:message name="delUserBibliothequeRequest">
+		<wsdl:part name="userName" type="xsd:string"></wsdl:part>
+		<wsdl:part name="userPass" type="xsd:string"></wsdl:part>
+		<wsdl:part name="idEdition" type="xsd:int"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="delUserBibliothequeResponse">
+		<wsdl:part name="isAdded" type="xsd:boolean"></wsdl:part>
+	</wsdl:message>
 	<wsdl:message name="Request">
 		<wsdl:part name="Request" type="xsd:string"></wsdl:part>
 	</wsdl:message>
@@ -165,16 +173,16 @@
 		</wsdl:part>
 	</wsdl:message>
 	<wsdl:message name="getEditionsManquantesRequest">
-		<wsdl:part name="lastId" type="xsd:int"></wsdl:part>
+		<wsdl:part name="lastId" type="xsd:long"></wsdl:part>
 	</wsdl:message>
 	<wsdl:message name="getEditionsManquantesResponse">
 		<wsdl:part name="editionsManquantes" type="xsd:string"></wsdl:part>
 	</wsdl:message>
         <wsdl:message name="getNbEditionsManquantesRequest">
-		<wsdl:part name="lastId" type="xsd:int"></wsdl:part>
+		<wsdl:part name="lastId" type="xsd:long"></wsdl:part>
 	</wsdl:message>
 	<wsdl:message name="getNbEditionsManquantesResponse">
-		<wsdl:part name="nbEditionsManquantes" type="xsd:int"></wsdl:part>
+		<wsdl:part name="nbEditionsManquantes" type="xsd:long"></wsdl:part>
 	</wsdl:message>
 	<wsdl:message name="getIdUserRequest">
 		<wsdl:part name="userName" type="xsd:string"></wsdl:part>
@@ -232,10 +240,10 @@
 		</wsdl:operation>
 		<wsdl:operation name="addUserBibliotheque">
 			<wsdl:input message="tns:addUserBibliothequeRequest"></wsdl:input>
-
-			
 		</wsdl:operation>
-
+                <wsdl:operation name="delUserBibliotheque">
+                        <wsdl:input message="tns:delUserBibliothequeRequest"></wsdl:input>
+                </wsdl:operation>
 		<wsdl:operation name="doProposal">
 			<wsdl:input message="tns:doProposalRequest"></wsdl:input>
 			<wsdl:output message="tns:doProposalResponse"></wsdl:output>
@@ -364,6 +372,16 @@
 		
 		<wsdl:operation name='addUserBibliotheque'>
 			<soap:operation soapAction='addUserBibliotheque' />
+			<wsdl:input>
+				<soap:body use='literal' namespace='namespace_adress' />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use='literal' namespace='namespace_adress' />
+			</wsdl:output>
+		</wsdl:operation>
+                
+                <wsdl:operation name='delUserBibliotheque'>
+			<soap:operation soapAction='delUserBibliotheque' />
 			<wsdl:input>
 				<soap:body use='literal' namespace='namespace_adress' />
 			</wsdl:input>

@@ -240,10 +240,10 @@
 		</wsdl:operation>
 		<wsdl:operation name="addUserBibliotheque">
 			<wsdl:input message="tns:addUserBibliothequeRequest"></wsdl:input>
-
-			
 		</wsdl:operation>
-
+                <wsdl:operation name="delUserBibliotheque">
+                        <wsdl:input message="tns:delUserBibliothequeRequest"></wsdl:input>
+                </wsdl:operation>
 		<wsdl:operation name="doProposal">
 			<wsdl:input message="tns:doProposalRequest"></wsdl:input>
 			<wsdl:output message="tns:doProposalResponse"></wsdl:output>
@@ -372,6 +372,16 @@
 		
 		<wsdl:operation name='addUserBibliotheque'>
 			<soap:operation soapAction='addUserBibliotheque' />
+			<wsdl:input>
+				<soap:body use='literal' namespace='namespace_adress' />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use='literal' namespace='namespace_adress' />
+			</wsdl:output>
+		</wsdl:operation>
+                
+                <wsdl:operation name='delUserBibliotheque'>
+			<soap:operation soapAction='delUserBibliotheque' />
 			<wsdl:input>
 				<soap:body use='literal' namespace='namespace_adress' />
 			</wsdl:input>

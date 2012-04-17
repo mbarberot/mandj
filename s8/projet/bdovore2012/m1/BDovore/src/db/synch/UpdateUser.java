@@ -201,7 +201,7 @@ public class UpdateUser extends Thread
                 case Edition.UPDATE:
                     break;
                 case Edition.DELETE:
-                    webservice.delUserBibiliotheque(user.getUsername(),user.getPassword(),idEd); 
+                    webservice.delUserBibliotheque(user.getUsername(),user.getPassword(),idEd); 
                     break; // Supprimer site
                 case Edition.DO_NOTHING:
                     db.update(update.updateBDUser(idEd,true,user.getUsername(), user.getPassword()));

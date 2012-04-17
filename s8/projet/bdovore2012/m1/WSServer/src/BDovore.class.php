@@ -100,7 +100,7 @@ class BDovore {
 		$dataDetails = mysql_fetch_assoc($reqGetDetailsEdition);
 		
 		// Création de l'objet contenant toutes les infos
-		return $dataDetails["ID_VOLUME"];
+		// return $dataDetails["ID_VOLUME"];
 		
 		$res = new Edition($idEdition,$dataDetails["ID_VOLUME"], $dataDetails["FLG_PRET"], $dataDetails["FLG_DEDICACE"], 
 		$dataDetails["FLG_ACHAT"], $dataDetails["DATE_AJOUT"], $dataDetails["IMG_COUV"], $dataDetails["ISBN"], $dataDetails["DATE_PARUTION"], 
@@ -343,6 +343,45 @@ class BDovore {
 		}
 
 	}
+        
+       /**
+	 * Supprime une édition à la bibliothèque d'un utilisateur.
+	 * @param String $userName
+	 * @param String $userPass
+	 * @param int $idEdition
+	 */
+	public function delUserBibliotheque($userName, $userPass, $idEdition){
+		// On récupère l'identifiant de l'utilisateur
+		$sqlGetUser = "SELECT ID_USER FROM user WHERE USERNAME = '{$userName}' AND PASSWORD =  '{$userPass}'";
+		$reqGetUser = mysql_query($sqlGetUser);
+
+		// On vérifie que la requete est bien effectuée
+		if(!$reqGetUser) {
+			throw  new SoapFault("ERREUR_REQUETE : id_user", $errors["ERREUR_REQUETE"]);
+		}
+
+		// On vérifie l'identification et renvoie une erreur si elle est mauvaise
+		if(mysql_num_rows($reqGetUser) != 1) {
+			throw new SoapFault("IDENTIFICATION_KO", $errors["IDENTIFICATION_KO"]);
+		}
+
+		// On récupère l'identifiant
+		$dataUser = mysql_fetch_assoc($reqGetUser);
+		$idUser = $dataUser['ID_USER'];
+		
+		
+		// Préparation de la requête SQL
+		$sqlDelEd = "DELETE FROM us_edition WHERE ID_USER = {$idUser} AND ID_EDITION = {$idEdition};";
+		
+		$reqDelEd = mysql_query($sqlDelEd);
+		
+		if(!$reqDelEd){
+			throw new SoapFault("ERREUR_REQUETE : insert_into", $errors["ERREUR_REQUETE"]);
+		}
+
+	}
+        
+        
 	
 	/** 
 	 * 
@@ -364,7 +403,7 @@ class BDovore {
 		/*
 		 * Permet de limiter le nombre de tuples à renvoyer
 		 */
-		$limit = 10;
+		$limit = 100;
 		
 		// Préparation de la requête
 		$sqlEdManquantes = "SELECT ID_EDITION FROM bd_edition WHERE ID_EDITION > {$lastId} LIMIT 0, {$limit}";
