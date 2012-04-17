@@ -31,6 +31,10 @@ public class Update
      */
     private BDovore_PortType webservice;
     /**
+     * Tous les id_edition de la bibliotheque
+     */
+    private TreeSet<Integer> allIdUser;
+    /**
      * Tous id_genre de la base locale
      */
     private TreeSet<Integer> allIdGenre;
@@ -58,17 +62,37 @@ public class Update
      * Tous les couples de TJ_TOME_AUTEUR
      */
     private TreeSet<TJ> allTJ;
+    /**
+     * Définit s'il faut, oui ou non, ajouter les informations relatives aux détails
+     * (Tables DETAILS_AUTEUR, DETAILS_EDITION, DETAILS_EDITEUR)
+     */
+    private boolean withDetails; 
 
     /**
-     * Constructeur
-     *
-     * @param db - Base de données locale
-     * @throws SQLException
+     * Constructeur simple, pas d'ajout de données dans les tables DETAILS_FOO
+     * 
+     * @param db Base de données locale
+     * @param webservice Interface du webservice
+     * @throws SQLException 
      */
     public Update(DataBase db, BDovore_PortType webservice) throws SQLException
     {
+        this(db,webservice,false);
+    }
+    
+    /**
+     * Constructeur Complet
+     * 
+     * @param db Base de données locale
+     * @param webservice Interface du webservice
+     * @param withDetails Flag : true = ajout de données dans les tables DETAILS_FOO
+     * @throws SQLException 
+     */
+    public Update(DataBase db, BDovore_PortType webservice, boolean withDetails) throws SQLException
+    {
         this.db = db;
         this.webservice = webservice;
+        this.withDetails = withDetails;
         init();
     }
 
@@ -79,6 +103,7 @@ public class Update
      */
     private void init() throws SQLException
     {
+        this.allIdUser = db.getAllID("BD_USER");
         this.allIdAuteur = db.getAllID("AUTEUR");
         this.allIdSerie = db.getAllID("SERIE");
         this.allIdGenre = db.getAllID("GENRE");
@@ -87,6 +112,36 @@ public class Update
         this.allIdTome = db.getAllID("TOME");
         this.allTJ = db.getAllTJ();
     }
+    
+    public String updateBDUser(int idEdition, boolean ajouter, String nom, String pwd) throws RemoteException
+    {
+        String sql ="";
+        DetailsEdition dEdition;
+        Integer newId = new Integer(idEdition);
+        
+        if(allIdUser.contains(newId))
+        {
+            System.out.println("contains -> true, ajouter ->"+ajouter);
+            if(!ajouter)
+            {
+                sql = SynchQuery.delBDUser(idEdition);
+            }
+            else
+            {
+                dEdition = webservice.getDetailsEditionUser(idEdition, nom, pwd);
+                sql = SynchQuery.setBDUser(dEdition);
+            }
+        }
+        else if(ajouter)
+        {
+            dEdition = webservice.getDetailsEditionUser(idEdition, nom, pwd);
+            sql = SynchQuery.addBDUser(dEdition);
+        }
+        
+        return sql;
+    }
+    
+    
 
     /**
      * Retourne la requête d'insertion de l'édition.
@@ -102,11 +157,13 @@ public class Update
         if (!allIdEdition.contains(newId))
         {
             dEdition = webservice.getDetailsEdition(idEdition);
-
             sql += updateEditeur(dEdition.getIdEditeur());
-            sql += updateTome(dEdition.getIdTome());
-          
-            sql += SynchQuery.insertEdition(dEdition);
+            sql += updateTome(dEdition.getIdTome());         
+            sql += SynchQuery.insertEdition(dEdition);           
+            if(withDetails)
+            {
+                sql += SynchQuery.insertDetailsEdition(dEdition);
+            }
 
             allIdEdition.add(newId);
         }
@@ -127,7 +184,6 @@ public class Update
         if (!allIdEditeur.contains(newId))
         {
             dEditeur = webservice.getDetailsEditeur(idEditeur);
-
             sql += SynchQuery.insertEditeur(dEditeur);
             allIdEditeur.add(newId);
         }
@@ -168,16 +224,12 @@ public class Update
         Integer newId = new Integer(idTome);
         if (!allIdTome.contains(newId))
         {
-            dTome = webservice.getDetailsTome(idTome);
-            
+            dTome = webservice.getDetailsTome(idTome);          
             sql += updateGenre(dTome.getIdGenre());
             sql += updateSerie(dTome.getIdSerie());
-//            sql += updateAuteur(dTome.getIdAuteur());
-            
+//            sql += updateAuteur(dTome.getIdAuteur());            
             sql += SynchQuery.insertVolume(dTome);
-            
             sql += process_tj(idTome);
-            
             allIdTome.add(newId);
         }
         return sql;
@@ -198,6 +250,10 @@ public class Update
         {
             dAuteur = webservice.getDetailsAuteur(idAuteur);
             sql += SynchQuery.insertAuteur(dAuteur);
+            if(withDetails)
+            {
+                sql += SynchQuery.insertDetailsAuteur(dAuteur);
+            }
             allIdAuteur.add(newId);
         }
 
@@ -218,8 +274,11 @@ public class Update
         if (!allIdSerie.contains(newId))
         {
             dSerie = webservice.getDetailsSerie(idSerie);
- 
             sql += SynchQuery.insertSerie(dSerie);
+            if(withDetails)
+            {
+                sql += SynchQuery.insertDetailsSerie(dSerie);
+            }
             allIdSerie.add(newId);
         }
 
@@ -296,4 +355,5 @@ public class Update
         }
         return sql;
     }
+    
 }

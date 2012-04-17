@@ -2,12 +2,13 @@ package gui;
 
 import db.SearchQuery;
 import db.data.Album;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dialog;
+import java.awt.FlowLayout;
+import java.awt.Window;
 import java.awt.event.*;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.table.TableColumn;
 
@@ -466,13 +467,23 @@ public class PanelDBExplorer extends JPanel {
     }
 
     /**
-     * Affiche tous les albums. 
+     * Affiche tous les albums.
+     * Attention, cette fonction n'affiche pas vraiment tous les albums disponible.
+     * Depuis 2012, le seul moyen d'afficher tous les albums est d'utiliser '*'
+     * comme unique mot-clé d'une d'une recherche.
+     * 
      */
     private void printAllAvailableAlbums() {
 
-        getResultQuery = SearchQuery.searchNothing(SearchQuery.SEARCH_IN_ALL, SearchQuery.GET_FIELDS, "t.TITRE", SearchQuery.ORDER_ASC);
-        getCountQuery = SearchQuery.searchNothing(SearchQuery.SEARCH_IN_ALL, SearchQuery.GET_MAX, "t.TITRE", SearchQuery.ORDER_ASC);
-
+        
+        // Fonctionnalité désactivée !
+        // On ne veut pas une requête sur les 70000 editions de la base !
+        
+        getResultQuery = "";    // SearchQuery.searchNothing(SearchQuery.SEARCH_IN_ALL, SearchQuery.GET_FIELDS, "t.TITRE", SearchQuery.ORDER_ASC);
+        getCountQuery = "";     //SearchQuery.searchNothing(SearchQuery.SEARCH_IN_ALL, SearchQuery.GET_MAX, "t.TITRE", SearchQuery.ORDER_ASC);
+        
+        // On va donc juste "vider" les résultats précédents
+        
         refreshAll();
     }
 

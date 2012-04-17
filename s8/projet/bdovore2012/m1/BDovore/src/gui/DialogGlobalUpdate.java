@@ -39,12 +39,8 @@ public class DialogGlobalUpdate extends JDialog implements UpdateBaseListener
      */
     public DialogGlobalUpdate(Window owner, Dialog.ModalityType modal, Proxy p, Synch synch)
     {
-        super();
-        // super(owner, modal); 
-        // a été remplacé par  l'actuel appel au constructeur vide de la super-
-        // classe car il forçait le programme a être 'bloqué' pendant la mise à
-        // jour. Or nous avons voulu passer cette tâche en "arrière plan".
-        // M.Barberot & J.Racenet
+        super(owner);
+        
 
         this.proxy = p;
         this.synch = synch;
@@ -55,10 +51,16 @@ public class DialogGlobalUpdate extends JDialog implements UpdateBaseListener
         btnStart = new JButton("Start", new ImageIcon("img/restore.png"));
         btnStart.addActionListener(new ActionListener()
         {
-
             public void actionPerformed(ActionEvent ev)
             {
-                update();
+                if(!started)
+                {
+                    update();
+                }
+                else
+                {
+                    cancel(false);
+                }
             }
         });
 
@@ -79,7 +81,7 @@ public class DialogGlobalUpdate extends JDialog implements UpdateBaseListener
 
             public void windowClosing(WindowEvent e)
             {
-                cancel();
+                cancel(true);
             }
             public void windowOpened(WindowEvent e) {}
             public void windowClosed(WindowEvent e) {}
@@ -105,6 +107,8 @@ public class DialogGlobalUpdate extends JDialog implements UpdateBaseListener
         {
             synch.updateGlobal(this);
             started = true;
+            btnStart.setText("Stop");
+            btnStart.setIcon(new ImageIcon("img/close.png"));
         } catch (Exception ex)
         {
             started = false;
@@ -140,14 +144,19 @@ public class DialogGlobalUpdate extends JDialog implements UpdateBaseListener
     /**
      * Stoppe la mise à jour de la base de données.
      */
-    public void cancel()
+    public void cancel(boolean quit)
     {
         if (started)
         {
             synch.cancelGlobal();
             started = false;
+            btnStart.setText("Start");
+            btnStart.setIcon(new ImageIcon("img/restore.png"));   
         }
-        JOptionPane.showMessageDialog(null, "Mise à jour annulée", "Pensez à finir votre mise à jour plus tard !", JOptionPane.INFORMATION_MESSAGE);
-        dispose();
+        
+        JOptionPane.showMessageDialog(null, "Mise à jour interrompue", "Pensez à finir votre mise à jour plus tard !", JOptionPane.INFORMATION_MESSAGE);
+        
+        if(quit) { dispose(); }
+
     }
 }

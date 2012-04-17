@@ -6,14 +6,11 @@ import wsdl.server.*;
  * Cette classe contient toutes les requêtes nécessaires aux fonctions de
  * synchronisation
  *
- * @author kawa
+ * @author Barberot Mathieu & Racenet Joan
  */
 public class SynchQuery
 {
-
-    // TODO
-    // Insertion des détails_auteur, détails_editeur, détails_serie
-    // Présence d'un info(genre,série,auteur...) dans la table correspondante
+    
     /**
      * Retourne la requête pour insérer une édition dans la DB
      *
@@ -30,6 +27,20 @@ public class SynchQuery
                 + ((dEdition.getIdEditeur() < 0) ? "NULL" : dEdition.getIdEditeur()) + ","
                 + dEdition.getFlag_default()
                 + ");";
+    }
+    
+    /**
+     * Retourne la requête pour insérer les détails d'une édition dans la DB
+     * 
+     * @param dEdition Informations sur l'édition
+     * @return La requête SQL
+     */
+    public static String insertDetailsEdition(DetailsEdition dEdition)
+    {
+        return insertValues("DETAILS_EDITION","")
+                + dEdition.getIdEdition() + ","
+                + sql_string(dEdition.getImg_couv())
+                + ";";
     }
 
     /**
@@ -63,6 +74,22 @@ public class SynchQuery
                 + sql_string(dAuteur.getNom()) + ","
                 + sql_string(dAuteur.getPrenom())
                 + ");";
+    }
+    
+    /**
+     * Retourne la requête pour insérer les détails d'un auteur dans la DB
+     * 
+     * @param dAuteur Informations sur l'auteur
+     * @return La requête SQL
+     */
+    public static String insertDetailsAuteur(DetailsAuteur dAuteur)
+    {
+        return insertValues("DETAILS_AUTEUR", "")
+                + dAuteur.getIdAuteur() + ","
+                + sql_date(dAuteur.getDate_naissance()) + ","
+                + sql_date(dAuteur.getDate_deces()) + ","
+                + sql_string(dAuteur.getNationalite())
+                + ";";
     }
 
     /**
@@ -112,6 +139,22 @@ public class SynchQuery
                 + sql_string(dSerie.getNomSerie())
                 + ");";
     }
+    
+    /**
+     * Retounr la requête d'insertion des détails d'une série dans la DB
+     * 
+     * @param dSerie Informations d'une série
+     * @return La requête SQL
+     */
+    public static String insertDetailsSerie(DetailsSerie dSerie)
+    {
+        return insertValues("DETAILS_SERIE","")
+                + dSerie.getIdSerie() + ","
+                + dSerie.getNbTomes() + ","
+                + dSerie.getFlgFini() + ","
+                + sql_string(dSerie.getHistoire())
+                + ";";
+    }
 
     /**
      * Retourne la requête d'insertion d'un genre dans la DB
@@ -146,14 +189,16 @@ public class SynchQuery
 
     /**
      * Ajoute le mot clef "Date" et les guillemets simples (') autour d'une
-     * chaine
+     * chaine.<br/>
+     * L'année doit être comprise entre 0001 et 9999.
      *
      * @param str La chaine
-     * @return La chaine rretouchée
+     * @return La chaine retouchée
      */
     public static String sql_date(String str)
     {
-        return "DATE '" + str + "'";
+        if(str == null || str.equals("0000-00-00")) { str = "0001-01-01" ; }
+        return "DATE '" + str.substring(0,10) + "'";
     }
 
     /**
@@ -170,5 +215,64 @@ public class SynchQuery
                 + "WHERE ID_TOME = " + idTome + " \n"
                 + "AND ID_AUTEUR =" + idAuteur + " \n"
                 + "AND ROLE =" + sql_string(role);
+    }
+
+    /**
+     * Retourne la requête permettant de connaître la transaction relative à une édition
+     * 
+     * @param idEdition Edition concernée
+     * @return La requête SQL
+     */
+    public static String getTransaction(int idEdition)
+    {
+        return "SELECT * FROM TRANSACTION WHERE ID_EDITION = "+idEdition+";";
+    }
+
+    /**
+     * 
+     * 
+     * @param idEdition
+     * @return 
+     */
+    public static String synchInfo(int idEdition)
+    {
+        return "SELECT "
+                + "TITRE, "
+                + "NUM_TOME, "
+                + "NOM_SERIE \n"
+                + "FROM TOME t, SERIE s \n"
+                + "INNER JOIN EDITION ed ON ed.ID_TOME = t.ID_TOME \n"
+                + "INNER JOIN BD_USER bd ON bd.ID_EDITION = ed.ID_EDITION \n"
+                + "WHERE t.ID_SERIE = s.ID_SERIE "
+                + "AND bd.ID_EDITION = "+idEdition+"; \n";
+    }
+    
+    public static String addBDUser (DetailsEdition dEdition)
+    {
+        return insertValues("BD_USER", "")
+                + dEdition.getIdEdition() + ","
+                + (dEdition.getFlag_pret() != 0) + ","
+                + (dEdition.getFlag_dedicace() != 0) + ","
+                + (dEdition.getFlag_aAcheter() != 0) + ","
+                + sql_date(dEdition.getDate_ajout())
+                + ");";
+        
+    }
+    
+    public static String delBDUser (int idEdition)
+    {
+        return "DELETE FROM BD_USER WHERE ID_EDITION ="+idEdition+";"; 
+    }
+    
+    public static String setBDUser (DetailsEdition dEdition)
+    {
+        return "UPDATE BD_USER SET"
+                + "FLG_PRET = " + (dEdition.getFlag_pret() != 0) + ","
+                + "FLG_DEDICACE = " + (dEdition.getFlag_dedicace() != 0) + ","
+                + "FLG_AACHETER = " + (dEdition.getFlag_aAcheter() != 0) + ","
+                + "DATE_AJOUT = " + sql_date(dEdition.getDate_ajout())
+                + "WHERE ID_EDITION = "+dEdition.getIdEdition()
+                + ";";
+        
     }
 }

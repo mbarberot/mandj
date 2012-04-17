@@ -14,6 +14,7 @@ public class DialogUserSynchronization extends JDialog {
     
     private JLabel labInfo;
     private JTable tabConflict;
+    private TableModelSynchConflict tabModel;
     private JButton btnChooseLocal, btnChooseServer, btnOk, btnCancel;
     private Synch synch;
 
@@ -43,7 +44,11 @@ public class DialogUserSynchronization extends JDialog {
         labInfo.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 18));
         labInfo.setText("Conflits détectés entre la base de données locale / serveur");
 
-        tabConflict = new JTable(new TableModelSynchConflict());
+        tabModel = new TableModelSynchConflict();
+        synchronize();
+        
+        
+        tabConflict = new JTable(tabModel);
         tabConflict.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         tabConflict.getColumnModel().getColumn(6).setCellRenderer(new CellRendererDescConflict());
@@ -89,6 +94,8 @@ public class DialogUserSynchronization extends JDialog {
                 enlargeSelectedRow(ev);
             }
         });
+        
+        
 
         JScrollPane scrollPane = new JScrollPane(tabConflict);
 
@@ -123,21 +130,7 @@ public class DialogUserSynchronization extends JDialog {
         ctrlPane.add(btnChooseServer);
         ctrlPane.add(btnOk);
         ctrlPane.add(btnCancel);
-        
-        
-           // <<<<<<<<< TMP
-        JButton btnBegin = new JButton("Synchroniser");
-        btnBegin.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e)
-            {
-                synchronize();
-            }
-        });
-        ctrlPane.add(btnBegin);
-        // <<<<<<<<<<< TMP
-        
-
+       
         JPanel contentPane = new JPanel(new BorderLayout());
         contentPane.add(labInfo, BorderLayout.NORTH);
         contentPane.add(scrollPane, BorderLayout.CENTER);
@@ -149,7 +142,13 @@ public class DialogUserSynchronization extends JDialog {
     
     private void synchronize()
     {
-        synch.updateBDtheque(FrameMain.currentUser);
+        try 
+        {
+            synch.updateBDtheque(FrameMain.currentUser,tabModel).join();
+        } catch(InterruptedException ex)
+        {
+            ex.printStackTrace();
+        }
     }
 
     /**

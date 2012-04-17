@@ -3,6 +3,7 @@ package db.synch;
 import db.DataBase;
 import db.data.User;
 import java.net.Proxy;
+import util.UpdateBDUserListener;
 import util.UpdateBaseListener;
 import wsdl.server.*;
 
@@ -29,10 +30,6 @@ public class Synch
      * Proxy pour la connection à internet
      */
     private Proxy proxy;
-    /**
-     * Objet 'intelligent' de création des requêtes
-     */
-    private Update update;
     /**
      * Thread d'update des éditions de la base de recherche
      */
@@ -65,11 +62,10 @@ public class Synch
     {
         this.db = db;
         this.proxy = proxy;
-        this.update = null;
         try
         {
             this.port = new BDovoreLocator().getBDovore_Port();
-            this.update = new Update(db,port);
+            
         } catch (Exception ex)
         {
             ex.printStackTrace();
@@ -86,9 +82,10 @@ public class Synch
      */
     public void updateGlobal(UpdateBaseListener listener)
     {
-        // Mise en place du thread
-        updateBase = new UpdateBase(update, db, port, listener);
-        updateBase.start();
+      
+            updateBase = new UpdateBase(db, port, listener);
+            updateBase.start();
+       
     }
     
     /**
@@ -102,10 +99,11 @@ public class Synch
     /**
      * Met à jour la bdtheque de l'utilisateur
      */
-    public void updateBDtheque(User user)
+    public UpdateUser updateBDtheque(User user, UpdateBDUserListener listener)
     {
-        updateUser = new UpdateUser(db, user, update, port);
+        updateUser = new UpdateUser(db, user, port, listener);
         updateUser.start();
+        return updateUser;
     }
   
     /**

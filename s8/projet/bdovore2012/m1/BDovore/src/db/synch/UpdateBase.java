@@ -16,23 +16,32 @@ import wsdl.server.*;
  */
 public class UpdateBase extends Thread
 {
-    /** Etat du thread */
+
+    /**
+     * Etat du thread
+     */
     private boolean canceled;
-    /** Base de données locale */
+    /**
+     * Base de données locale
+     */
     private DataBase db;
-    /** Objet de mise à jour 'intelligent' */
+    /**
+     * Objet de mise à jour 'intelligent'
+     */
     private Update update;
-    /** Interface du WebService */
+    /**
+     * Interface du WebService
+     */
     private BDovore_PortType port;
-    /** 
-     * Elements d'interface qui observent le thread. (Pattern Observer)
-     * Permet par exemple la mise à jour d'une barre de progression
+    /**
+     * Elements d'interface qui observent le thread. (Pattern Observer) Permet
+     * par exemple la mise à jour d'une barre de progression
      */
     private ArrayList<UpdateBaseListener> listener;
-   
 
-     /**
+    /**
      * Constructeur
+     *
      * @param update Objet d'update intelligent
      * @param db Base de donnée à mettre à jour
      * @param port Objet d'interfaçage du webservice
@@ -44,17 +53,25 @@ public class UpdateBase extends Thread
         this.port = port;
         this.listener = new ArrayList<UpdateBaseListener>();
     }
-    
+
     /**
      * Constructeur
+     *
      * @param update Objet d'update intelligent
      * @param db Base de donnée à mettre à jour
      * @param port Objet d'interfaçage du webservice
      * @param listener Observateur du thread
      */
-    public UpdateBase(Update update, DataBase db, BDovore_PortType port, UpdateBaseListener listener)
+    public UpdateBase(DataBase db, BDovore_PortType port, UpdateBaseListener listener)
     {
-        this.update = update;
+        this.update = null;
+        try
+        {
+            this.update = new Update(db, port);
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        }
         this.db = db;
         this.port = port;
         this.listener = new ArrayList<UpdateBaseListener>();
@@ -63,31 +80,32 @@ public class UpdateBase extends Thread
 
     /**
      * Ajoute un nouvel observateur au thread
+     *
      * @param listener Nouvel observateur du thread
      */
     public void addListener(UpdateBaseListener listener)
     {
         this.listener.add(listener);
     }
-    
+
     /**
      * Supprime un observateur du thread
+     *
      * @param listener L'observateur à supprimer
      */
     public void removeListener(UpdateBaseListener listener)
     {
         this.listener.remove(listener);
     }
-    
+
     private void majListener(int value)
     {
-        for(UpdateBaseListener l : listener)
+        for (UpdateBaseListener l : listener)
         {
             l.progression(value);
         }
     }
-            
-    
+
     /**
      * Stoppe le thread.
      */
@@ -98,40 +116,34 @@ public class UpdateBase extends Thread
 
     /**
      * Retourne l'état du thread
+     *
      * @return true si le thread a été arreté, false sinon.
      */
     public boolean isCanceled()
     {
         return canceled;
     }
- 
+
     @Override
     public void run()
     {
-        long lastID;         // Dernier id_edition de la base
-        
+        long lastID, // Dernier id_edition de la base
+                total;      // Nombre d'éditions manquantes
+
+
         int len, // Nb éditions à ajouter durant l'itération courante
                 cptBoucle, // Nombre de boucle
-                total, // Nombre d'éditions manquantes
                 tailleLot, // Nb édition reçues maximum par itération
-                currentProgress;
+                currentProgress;    // Pourcentage d'avancement de la tâche
+
+
 
         String res, // Chaine au format CVS pour la réception des id_edition manquants 
-                genre, // Nom du genre
-                coloristes[], // Id des coloristes
-                dessinateurs[], // Id des dessinateurs
-                scenaristes[], // Id des scénaristes
                 sql, // Requête SQL qui sera construite
                 editions[];     // Editions manquantes passées du CSV en un tableau
 
-        DetailsEdition dEdition;    // Objet edition du webservice
-        DetailsVolume dTome;        // Objet tome du webservice
-        DetailsSerie dSerie;        // Objet série du webservice
-        DetailsAuteur dAuteur;      // Objet auteur du webservice (+ dTj pour la table TJ_TOME_AUTEUR)
-        DetailsEditeur dEditeur;    // Objet editeur du webservice
-
         sql = "";
-        
+
         // Synchronisation
         try
         {
@@ -140,27 +152,35 @@ public class UpdateBase extends Thread
             tailleLot = 1;
             total = 1;
             currentProgress = 0;
-            
+
 
             // Boucle de mise à jour
             do
             {
                 sql = "";
 
-                if(currentProgress == 100) { canceled = true; }
-                if(canceled) { break; }
-                
-                
-                // Récupération de l'ID du dernier tome de la base
-                lastID = update.getLastIdEdition();
-                
-                // Dans la première itération on prend le nombre total
-                // d'éditions manquantes
-                if(cptBoucle == 1)
+                if (currentProgress == 100)
                 {
-                    total = port.getNbEditionsManquantes(lastID);
+                    canceled = true;
                 }
                 
+                if (canceled)
+                {
+                    break;
+                }
+
+
+                // Récupération de l'ID du dernier tome de la base
+                lastID = update.getLastIdEdition();
+
+                // Dans la première itération on prend le nombre total
+                // d'éditions manquantes
+                if (cptBoucle == 1)
+                {
+                    total = port.getNbEditionsManquantes(lastID);
+                    total = (total > 0)? total : 1 ;
+                }
+
                 // Récupération des editiones manquantes
                 res = port.getEditionsManquantes(lastID);
                 // CSV -> String[]
@@ -168,32 +188,29 @@ public class UpdateBase extends Thread
 
                 // Nombre d'ID_EDITION reçus :
                 len = editions.length;
-                
+
                 // Initialisation de la taille de chaque lot de données
                 // + gestion de la taille = 0 (sinon : boucle infinie)
                 if (cptBoucle == 0)
                 {
                     tailleLot = len;
-                } 
-                else if (tailleLot == 0)
-                {
-                    break;
                 }
-
-                // Récupération des informations depuis le webservice
-                // + création de la requête SQL avec l'objet Update
-                for (int i = 0; i < len; i++)
+                
+                if(editions[0].length() > 0)
                 {
-                    sql += update.updateEdition(Integer.parseInt(editions[i])) + "\n";
-                    
+                    // Récupération des informations depuis le webservice
+                    // + création de la requête SQL avec l'objet Update
+                    for (int i = 0; i < len; i++)
+                    {
+                        sql += update.updateEdition(Integer.parseInt(editions[i])) + "\n";
+                    }
                 }
 
                 // Execution de la requête
                 this.db.update(sql);
-                
+
                 // Mise à jour du pourcentage effectué
-                currentProgress = cptBoucle * tailleLot * 100 / total ;
-                System.out.println("[cptBoucle] "+cptBoucle+" * [tailleLot] "+tailleLot+" * 100 / [total] "+total+" = [currentProgress] "+currentProgress);
+                currentProgress = (int) (cptBoucle * tailleLot * 100 / total);
                 majListener(currentProgress);
 
                 // Incrémentation du compteur de boucle pour éviter 
@@ -201,7 +218,7 @@ public class UpdateBase extends Thread
                 // len == 0 & tailleLot == 0
                 cptBoucle++;
 
-                
+
             } while (len == tailleLot);
 
         } catch (RemoteException ex)
@@ -210,7 +227,7 @@ public class UpdateBase extends Thread
             System.out.println(sql);
             ex.printStackTrace();
             canceled = true;
-            
+
         } catch (SQLException ex)
         {
             // Affichage temporaire
@@ -219,52 +236,4 @@ public class UpdateBase extends Thread
             canceled = true;
         }
     }
-
-    /**
-     * Gere les requêtes d'insertion dans la table TJ_TOME_AUTEUR
-     * @param idTome ID_TOME
-     * @param coloristes Les ID_AUTEUR ayant pour rôle 'Coloriste'
-     * @param dessinateurs Les ID_AUTEUR ayant pour rôle 'Dessinateur'
-     * @param scenaristes Les ID_AUTEUR ayant pour rôle 'Scenariste'
-     * @return La requête SQL
-     * @throws RemoteException
-     *
-    private String tj_tome_auteur(int idTome, String[] coloristes, String[] dessinateurs, String[] scenaristes) throws RemoteException
-    {
-        int j;
-        DetailsAuteur dTj;
-        String sql = "";
-
-        if (coloristes.length > 1)
-        {
-            for (j = 1; j < coloristes.length; j++)
-            {
-                dTj = port.getDetailsAuteur(Integer.parseInt(coloristes[j]));
-                sql += update.auteur(dTj) + "\n";
-                sql += update.tj(idTome, dTj.getIdAuteur(), "Coloristes") + "\n";
-            }
-        }
-
-        if (dessinateurs.length > 1)
-        {
-            for (j = 1; j < dessinateurs.length; j++)
-            {
-                dTj = port.getDetailsAuteur(Integer.parseInt(dessinateurs[j]));
-                sql += update.auteur(dTj) + "\n";
-                sql += update.tj(idTome, dTj.getIdAuteur(), "Dessinateur") + "\n";
-            }
-        }
-
-        if (scenaristes.length > 1)
-        {
-            for (j = 1; j < scenaristes.length; j++)
-            {
-                dTj = port.getDetailsAuteur(Integer.parseInt(scenaristes[j]));
-                sql += update.auteur(dTj) + "\n";
-                sql += update.tj(idTome, dTj.getIdAuteur(), "Scenariste") + "\n";
-            }
-        }
-        return sql;
-    }
-    * */
 }

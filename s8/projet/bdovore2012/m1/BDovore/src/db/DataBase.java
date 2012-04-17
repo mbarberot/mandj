@@ -5,6 +5,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.TreeSet;
+import wsdl.server.DetailsEdition;
 
 /**
  * Objet principale de la base. Ouvre/ferme la base, et exécute des requêtes.
@@ -422,6 +423,8 @@ public class DataBase {
                 break;
         }
 
+        System.out.println(sql);
+        
         // S'il y a une modification effectuée sur la table user, on met à jour la table transaction
         if (edition.getUpdate() != Edition.DO_NOTHING) {
             try {
@@ -494,22 +497,34 @@ public class DataBase {
      * @return Les id d'une table
      * @throws SQLException
      */
-    public synchronized TreeSet<Integer> getAllID(String table) throws SQLException {
+    public synchronized TreeSet<Integer> getAllID(String table) throws SQLException 
+    {
         TreeSet<Integer> ids = new TreeSet<Integer>();
+        String sql;
 
-        if (!Tables.ids.containsKey(table)) {
-            return null;
+        if (!Tables.ids.containsKey(table)) 
+        {
+            if(table.equals("BD_USER"))
+            {
+                sql = "SELECT ID_EDITION AS id FROM BD_USER;";
+            }
+            else
+            {
+                return null;
+            }
         }
-
-        String sql = "SELECT " + Tables.ids.get(table) + " AS id FROM " + table;
-
+        else
+        {
+            sql = "SELECT " + Tables.ids.get(table) + " AS id FROM " + table +";" ;
+        }
+        
         Statement st = conn.createStatement();
         ResultSet rs = st.executeQuery(sql);
 
         while (rs.next()) {
-            ids.add( (rs.getObject(1) == null) ? 0 : (Integer) rs.getObject(1) );
+            ids.add(new Integer(rs.getInt("id")));
         }
-
+        
         st.close();
         return ids;
     }
@@ -556,17 +571,65 @@ public class DataBase {
 
         
 
-        String sql = "SELECT ID_EDITION AS id FROM BD_USER";
+        String sql = "SELECT ID_EDITION FROM BD_USER";
 
         Statement st = conn.createStatement();
         ResultSet rs = st.executeQuery(sql);
 
         while (rs.next()) {
-            ids.offer( (rs.getObject(1) == null) ? 0 : (Integer) rs.getObject(1) );
+            ids.offer(new Integer(rs.getInt("ID_EDITION")));
         }
 
         st.close();
         return ids;
+    }
+    
+    public synchronized DetailsEdition getBDUser(int idEdition) throws SQLException {
+        DetailsEdition ed = new DetailsEdition();
+        
+        
+        String sql = "SELECT * FROM BD_USER WHERE ID_EDITION = "+idEdition+";";
+        
+        Statement st = conn.createStatement();
+        ResultSet rs = st.executeQuery(sql);
+        
+        if(rs.next())
+        {
+            ed.setIdEdition(rs.getInt("ID_EDITION"));
+            ed.setFlag_pret((rs.getBoolean("FLG_PRET")?1:0));
+            ed.setFlag_dedicace((rs.getBoolean("FLG_DEDICACE")?1:0));
+            ed.setFlag_aAcheter((rs.getBoolean("FLG_AACHETER")?1:0));
+            ed.setDate_ajout((rs.getDate("DATE_AJOUT")).toString());
+        }
+        
+        st.close();
+        return ed;
+    }
+    
+    public synchronized Object[] getSynchInfo(int idEdition) throws SQLException
+    {
+        Object[] o = new Object[3];
+        String sql = SynchQuery.synchInfo(idEdition);
+        
+        Statement st = conn.createStatement();
+        ResultSet rs = st.executeQuery(sql);
+        
+        if(rs.next())
+        {
+            o[0] = rs.getString("TITRE");
+            o[1] = rs.getString("NOM_SERIE");
+            o[2] = (rs.getInt("NUM_TOME")+"");
+        }
+        else
+        {
+            o[0] = "";
+            o[1] = "";
+            o[2] = "";
+        }
+        
+        st.close();
+        
+        return o;
     }
 
     /**
@@ -611,19 +674,20 @@ public class DataBase {
      * @return int correspondant a TYPE_MODIF dans la BD TRANSACTION, 0 si le
      * resultat de la requete est vide
      */
-    public synchronized int getTypeTransaction(String sql) throws SQLException {
+    public synchronized int getTypeTransaction(int idEdition) throws SQLException {
 
         int modifPresente = 0;
+        String sql = SynchQuery.getTransaction(idEdition);
+        
 
         Statement st = conn.createStatement();
         ResultSet rs = st.executeQuery(sql);
 
         if (rs.next()) {
-            modifPresente = (Integer) rs.getObject(1);
+            modifPresente = rs.getInt("TYPE");
         }
 
         st.close();
-        System.out.println("modifPresente: " + modifPresente + "\n");
         return modifPresente;
     }
 
@@ -636,25 +700,19 @@ public class DataBase {
      * @param typeModif : le type de la transaction
      * @throws SQLException
      */
-    public void updateTransaction(int idEdition, int typeModif) throws SQLException {
-
-        String sql = "SELECT TYPE "
-                + "FROM TRANSACTION T "
-                + "WHERE T.ID_EDITION=" + idEdition;
-        // Type de modification présente :
-        //  0(aucune modif)
-        //  1(ajout)
-        //  2(modif)
-        //  3(suppression)
-        int typeModifOld = getTypeTransaction(sql);
-
-        sql = "";
+    public void updateTransaction(int idEdition, int typeModif) throws SQLException 
+    {    
+        int typeModifOld = getTypeTransaction(idEdition);
+        System.out.println(typeModifOld);
+        
+        String sql = "";
+        
         // On regarde le type de transaction dans notre base
         // Pour chaque type de transaction on regarde le type de modification passé
         //  en argument par la méthode
         //
         switch (typeModifOld) {
-            case 0: // Ajout
+            case Edition.INSERT: // Ajout
                 switch (typeModif) {
                     case Edition.INSERT: // AJOUT + AJOUT => IMPOSSIBLE
                         break;
@@ -670,7 +728,7 @@ public class DataBase {
                 }
                 break;
 
-            case 1: // Modification
+            case Edition.UPDATE: // Modification
                 switch (typeModif) {
                     case Edition.INSERT: // MODIFICATION + AJOUT => IMPOSSIBLE
                         break;
@@ -686,7 +744,7 @@ public class DataBase {
                 }
                 break;
 
-            case 2: // Suppression
+            case Edition.DELETE: // Suppression
                 switch (typeModif) {
 
                     case Edition.INSERT: // SUPRESSION + AJOUT => AJOUT
@@ -701,7 +759,7 @@ public class DataBase {
                 }
                 break;
 
-            case 3: // Rien
+            case Edition.DO_NOTHING: // Rien
                 switch (typeModif) {
                     case Edition.INSERT: // RIEN + AJOUT => AJOUT
                         sql = "INSERT INTO TRANSACTION (ID_EDITION,TYPE,DATE)"
@@ -717,7 +775,7 @@ public class DataBase {
                 break;
 
         }
-        
+        System.out.println(sql);
         update(sql);
 
 
@@ -898,4 +956,6 @@ public class DataBase {
 
         System.out.println("Base de données compactée");
     }
+
+   
 }
