@@ -100,7 +100,7 @@ erreur supprimeArete(
  * @param ls : la liste des sommets de degrés impairs
  * @param res : la liste resultante
  */
-void listeCouplage(TypVoisins **ls, TypVoisins **res);
+void listeCouplage(int idGraphe, TypVoisins *ls, TypVoisins **res);
 
 /**
  * Retourne la liste des degrés de sommets impairs du graphe
@@ -109,7 +109,10 @@ void listeCouplage(TypVoisins **ls, TypVoisins **res);
  */
 void sommetsImpairs(int idGraphe, TypVoisins **res);
 
-
+/**
+ * Retourne le couplage de poids minimal
+ */
+TypVoisins* calculeCoupleOptimal(int idGraphe, TypVoisins *couples);
 /**
  * ----------------------------------
  * Fonctions traitant les algorithmes

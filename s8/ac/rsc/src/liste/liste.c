@@ -356,11 +356,11 @@ int minPoids(TypVoisins** l, int voisin)
  */
 void cloneListe(TypVoisins** l, TypVoisins** clone)
 {
-
-  TypVoisins *tmp = l;
+    
+  TypVoisins *tmp = *l;
   
   while(tmp != NULL)
-  {
+  { 
     ajouteVoisinNonTries(clone, tmp -> voisin, tmp -> poidsVoisin, tmp -> info);
     tmp = tmp -> voisinSuivant;
   }
