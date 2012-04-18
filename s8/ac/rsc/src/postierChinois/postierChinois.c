@@ -441,12 +441,12 @@ void sommetsImpairs(int idGraphe, TypVoisins **res)
 }
 
 
-void listeCouplage(TypVoisins **ls, TypVoisins **res)
+void listeCouplage(TypVoisins *ls, TypVoisins **res)
 {
     
     if(*ls != NULL)
     {
-      TypVoisins *current = *ls;
+      TypVoisins *current = ls;
       TypVoisins *clone;
       
       while(current != NULL)
@@ -458,8 +458,8 @@ void listeCouplage(TypVoisins **ls, TypVoisins **res)
 	  
 	  // On fait une copie de la liste ls pour pouvoir travailler sans soucis avec les autres couples possibles
 	  // sans détruire la liste avec les appels récursifs
-	  cloneListe(ls, &clone);
-	  
+	  printf("Clonage de la liste \n");
+	  cloneListe(&ls, &clone);	  
 	  printf("Liste clonee \n");
 	  
 	  //On ajoute dans la liste resultat le couple (x,y) => (current, poss)
@@ -470,7 +470,7 @@ void listeCouplage(TypVoisins **ls, TypVoisins **res)
 	  supprimeVoisin(&clone, current->voisin);
 	  supprimeVoisin(&clone, poss->voisin);
 	  
-	  listeCouplage(&clone, res);
+	  listeCouplage(clone, res);
 	  
 
 	  current = current -> voisinSuivant;
