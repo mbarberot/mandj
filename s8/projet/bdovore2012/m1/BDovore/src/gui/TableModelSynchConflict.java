@@ -1,5 +1,6 @@
 package gui;
 
+import db.data.Edition;
 import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 import util.UpdateBDUserListener;
@@ -15,7 +16,7 @@ public class TableModelSynchConflict extends AbstractTableModel implements Updat
 {
     private static final long serialVersionUID = 1L;
     
-    String[] columnNames = { "Serveur", "Local", "Rien", "Titre", "Série", "No. Tome", "Etat Serveur", "Etat Local" };
+    String[] columnNames = { "Serveur", "Local", "Rien", "Titre", "Série", "No. Tome", "Etat Serveur", "Etat Local", "Action" };
     ArrayList<Object[]> datas;
 
     public TableModelSynchConflict()
@@ -62,6 +63,11 @@ public class TableModelSynchConflict extends AbstractTableModel implements Updat
             i++;
         }
         return o;
+    }
+    
+    public ArrayList<Object[]> getConflicts()
+    {
+        return datas;
     }
 
     public boolean isCellEditable(int row, int col)

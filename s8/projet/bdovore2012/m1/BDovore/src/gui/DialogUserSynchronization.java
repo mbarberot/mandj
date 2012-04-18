@@ -3,6 +3,7 @@ package gui;
 import db.synch.Synch;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.TableColumn;
 
@@ -122,6 +123,21 @@ public class DialogUserSynchronization extends JDialog {
                 chooseServerForAll();
             }
         });
+        btnOk.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e)
+            {
+                applyChanges();
+            }
+        });
+        btnCancel.addActionListener(new ActionListener() {
+
+            public void actionPerformed(ActionEvent e)
+            {
+                dispose();
+            }
+        });
+        
         
      
 
@@ -156,9 +172,6 @@ public class DialogUserSynchronization extends JDialog {
      * @param ev 
      */
     private void updateAlbumPriority(MouseEvent ev) {
-        //TODO: Quand la méthode qui renvoie la liste de conflits est finie,
-        //il faudra enlever la méthode getDatas() du modèle,
-        //et on manipulera directement le résultat retourné par le moteur de bd.
         try {
             JTable source = (JTable) ev.getSource();
             int selectedRow = source.getSelectedRow();
@@ -197,9 +210,6 @@ public class DialogUserSynchronization extends JDialog {
      * Choisit l'option qui garde toutes les modifications locales et les applique au compte BDovore en ligne
      */
     private void chooseLocalForAll() {
-        //TODO: Quand la méthode qui renvoie la liste de conflits est finie,
-        //il faudra enlever la méthode getDatas() du modèle,
-        //et on manipulera directement le résultat retourné par le moteur de bd. 
         try {
             Object[][] datas = ((TableModelSynchConflict) tabConflict.getModel()).getDatas();
             for (int i = 0; i < datas.length; i++) {
@@ -217,9 +227,6 @@ public class DialogUserSynchronization extends JDialog {
      * Choisit l'option qui garde toutes les modification sur le compte en ligne et les applique en local
      */
     private void chooseServerForAll() {
-        //TODO: Quand la méthode qui renvoie la liste de conflits est finie,
-        //il faudra enlever la méthode getDatas() du modèle,
-        //et on manipulera directement le résultat retourné par le moteur de bd. 
         try {
             Object[][] datas = ((TableModelSynchConflict) tabConflict.getModel()).getDatas();
             for (int i = 0; i < datas.length; i++) {
@@ -231,5 +238,12 @@ public class DialogUserSynchronization extends JDialog {
         } catch (ClassCastException ex) {
             ex.printStackTrace();
         }
+    }
+    
+    private void applyChanges()
+    {
+        // Demander à Synch d'appliquer les choix de l'utilisateur
+        ArrayList<Object[]> conflicts = ((TableModelSynchConflict)tabConflict.getModel()).getConflicts();
+        synch.applyChanges(conflicts);
     }
 }

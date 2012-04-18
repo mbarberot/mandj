@@ -33,6 +33,34 @@ public class Edition {
     public static final int INSERT = 1;
     public static final int UPDATE = 2;
     public static final int DELETE = 3;
+    
+    /**
+     * Retourne un chaîne correspondant à l'action donnée.
+     * 
+     * @param action Une des constantes d'Edition : DO_NOTHING, INSERT, UPDATE ou DELETE
+     * @return Une chaîne de caractère, respectivement "Rien", "Ajout", "Mise à jour" ou "Suppression"
+     */
+    public static String getStringForAction(int action)
+    {
+        String str = "";
+
+        switch (action)
+        {
+            case Edition.INSERT:
+                str = "Ajout";
+                break;
+            case Edition.UPDATE:
+                str = "Mise à jour";
+                break;
+            case Edition.DELETE:
+                str = "Suppression";
+                break;
+            case Edition.DO_NOTHING:
+                str = "Aucune action";
+                break;
+        }
+        return str;
+    }
 
     /**
      * Constructeur de la classe

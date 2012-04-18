@@ -3,6 +3,7 @@ package db.synch;
 import db.DataBase;
 import db.data.User;
 import java.net.Proxy;
+import java.util.ArrayList;
 import util.UpdateBDUserListener;
 import util.UpdateBaseListener;
 import wsdl.server.*;
@@ -112,6 +113,11 @@ public class Synch
     public void cancelUser()
     {
         updateUser.cancel();
+    }
+    
+    public void applyChanges(ArrayList<Object[]> conflicts)
+    {
+        updateUser.applyChanges(conflicts);
     }
 
     //

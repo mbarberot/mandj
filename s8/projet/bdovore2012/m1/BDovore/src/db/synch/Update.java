@@ -121,7 +121,6 @@ public class Update
         
         if(allIdUser.contains(newId))
         {
-            System.out.println("contains -> true, ajouter ->"+ajouter);
             if(!ajouter)
             {
                 sql = SynchQuery.delBDUser(idEdition);
