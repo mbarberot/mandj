@@ -128,6 +128,7 @@ public class DialogUserSynchronization extends JDialog {
             public void actionPerformed(ActionEvent e)
             {
                 applyChanges();
+                dispose();
             }
         });
         btnCancel.addActionListener(new ActionListener() {
@@ -138,6 +139,7 @@ public class DialogUserSynchronization extends JDialog {
             }
         });
         
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         
      
 

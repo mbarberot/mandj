@@ -147,6 +147,14 @@
 	<wsdl:message name="addUserBibliothequeResponse">
 		<wsdl:part name="isAdded" type="xsd:boolean"></wsdl:part>
 	</wsdl:message>
+         <wsdl:message name="setUserBibliothequeRequest">
+		<wsdl:part name="userName" type="xsd:string"></wsdl:part>
+		<wsdl:part name="userPass" type="xsd:string"></wsdl:part>
+		<wsdl:part name="detailsEdition" type="tns:detailsEdition"></wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="setUserBibliothequeResponse">
+		<wsdl:part name="isAdded" type="xsd:boolean"></wsdl:part>
+	</wsdl:message>
         <wsdl:message name="delUserBibliothequeRequest">
 		<wsdl:part name="userName" type="xsd:string"></wsdl:part>
 		<wsdl:part name="userPass" type="xsd:string"></wsdl:part>
@@ -167,11 +175,11 @@
 	<wsdl:message name="doProposalResponse">
 		<wsdl:part name="proposalIsOk" type="xsd:boolean"></wsdl:part>
 	</wsdl:message>
-	<wsdl:message name="addUserBibliothequeResponse1">
+	<!--wsdl:message name="addUserBibliothequeResponse1">
 		<wsdl:part name="date"
 			type="xsd:string">
 		</wsdl:part>
-	</wsdl:message>
+	</wsdl:message-->
 	<wsdl:message name="getEditionsManquantesRequest">
 		<wsdl:part name="lastId" type="xsd:long"></wsdl:part>
 	</wsdl:message>
@@ -240,6 +248,9 @@
 		</wsdl:operation>
 		<wsdl:operation name="addUserBibliotheque">
 			<wsdl:input message="tns:addUserBibliothequeRequest"></wsdl:input>
+		</wsdl:operation>
+                <wsdl:operation name="setUserBibliotheque">
+			<wsdl:input message="tns:setUserBibliothequeRequest"></wsdl:input>
 		</wsdl:operation>
                 <wsdl:operation name="delUserBibliotheque">
                         <wsdl:input message="tns:delUserBibliothequeRequest"></wsdl:input>
@@ -372,6 +383,16 @@
 		
 		<wsdl:operation name='addUserBibliotheque'>
 			<soap:operation soapAction='addUserBibliotheque' />
+			<wsdl:input>
+				<soap:body use='literal' namespace='namespace_adress' />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use='literal' namespace='namespace_adress' />
+			</wsdl:output>
+		</wsdl:operation>
+                
+                <wsdl:operation name='setUserBibliotheque'>
+			<soap:operation soapAction='setUserBibliotheque' />
 			<wsdl:input>
 				<soap:body use='literal' namespace='namespace_adress' />
 			</wsdl:input>

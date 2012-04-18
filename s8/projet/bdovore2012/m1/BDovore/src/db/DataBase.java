@@ -588,7 +588,11 @@ public class DataBase {
         DetailsEdition ed = new DetailsEdition();
         
         
-        String sql = "SELECT * FROM BD_USER WHERE ID_EDITION = "+idEdition+";";
+        String sql = "SELECT * "
+                + "FROM BD_USER bd "
+                + "INNER JOIN DETAILS_EDITION ed ON ed.ID_EDITION = bd.ID_EDITION "
+                + "WHERE bd.ID_EDITION = "+idEdition+" "
+                + ";";
         
         Statement st = conn.createStatement();
         ResultSet rs = st.executeQuery(sql);
@@ -600,6 +604,7 @@ public class DataBase {
             ed.setFlag_dedicace((rs.getBoolean("FLG_DEDICACE")?1:0));
             ed.setFlag_aAcheter((rs.getBoolean("FLG_AACHETER")?1:0));
             ed.setDate_ajout((rs.getDate("DATE_AJOUT")).toString());
+            ed.setImg_couv(rs.getString("IMG_COUV"));
         }
         
         st.close();

@@ -16,7 +16,7 @@ public class TableModelSynchConflict extends AbstractTableModel implements Updat
 {
     private static final long serialVersionUID = 1L;
     
-    String[] columnNames = { "Serveur", "Local", "Rien", "Titre", "Série", "No. Tome", "Etat Serveur", "Etat Local", "Action" };
+    String[] columnNames = { "Serveur", "Local", "Rien", "Titre", "Série", "No. Tome", "Etat Serveur", "Etat Local"};
     ArrayList<Object[]> datas;
 
     public TableModelSynchConflict()

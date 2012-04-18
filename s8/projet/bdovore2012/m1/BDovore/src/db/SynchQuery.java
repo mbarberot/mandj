@@ -266,7 +266,7 @@ public class SynchQuery
     
     public static String setBDUser (DetailsEdition dEdition)
     {
-        return "UPDATE BD_USER SET"
+        return "UPDATE BD_USER SET "
                 + "FLG_PRET = " + (dEdition.getFlag_pret() != 0) + ","
                 + "FLG_DEDICACE = " + (dEdition.getFlag_dedicace() != 0) + ","
                 + "FLG_AACHETER = " + (dEdition.getFlag_aAcheter() != 0) + ","

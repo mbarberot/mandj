@@ -65,7 +65,7 @@ public class UpdateUser extends Thread
     public void run()
     {
         Integer id;
-       
+
         try
         {
             if (canceled)
@@ -106,7 +106,7 @@ public class UpdateUser extends Thread
                     transaction(id, true, false);
                 }
 
-                        
+
             }
 
 
@@ -161,14 +161,15 @@ public class UpdateUser extends Thread
                     switch (typeTransaction)
                     {
                         case Edition.INSERT:
-                            addRow(fillRow(idEd, inLocal, inServer, typeTransaction));
+                            addRow(fillRow(idEd, inLocal, inServer));
                             break;
                         case Edition.UPDATE:
-                            addRow(fillRow(idEd, inLocal, inServer, typeTransaction));
+                            addRow(fillRow(idEd, inLocal, inServer));
                             break;
                         case Edition.DELETE:
                             break;
                         case Edition.DO_NOTHING:
+                            addRow(fillRow(idEd, inLocal, inServer));
                             break;
                     }
                 }
@@ -180,12 +181,12 @@ public class UpdateUser extends Thread
                         webservice.addUserBibliotheque(user.getUsername(), user.getPassword(), idEd);
                         break; // Ajouter site
                     case Edition.UPDATE:
-                        addRow(fillRow(idEd, inLocal, inServer, typeTransaction));
+                        addRow(fillRow(idEd, inLocal, inServer));
                         break; // Demande utilisateur
                     case Edition.DELETE:
                         break;
                     case Edition.DO_NOTHING:
-                        db.update(update.updateBDUser(idEd,false,user.getUsername(), user.getPassword()));
+                        db.update(update.updateBDUser(idEd, false, user.getUsername(), user.getPassword()));
                         break; // Supprimer local
                 }
             }
@@ -198,33 +199,35 @@ public class UpdateUser extends Thread
                 case Edition.UPDATE:
                     break;
                 case Edition.DELETE:
-                    webservice.delUserBibliotheque(user.getUsername(),user.getPassword(),idEd); 
+                    webservice.delUserBibliotheque(user.getUsername(), user.getPassword(), idEd);
                     break; // Supprimer site
                 case Edition.DO_NOTHING:
-                    db.update(update.updateBDUser(idEd,true,user.getUsername(), user.getPassword()));
+                    db.update(update.updateBDUser(idEd, true, user.getUsername(), user.getPassword()));
                     break; // Ajouter local
             }
         }
-        
+
     }
 
     /**
      * Crée une ligne pour l'affichage des conflits dans l'interface.
-     * 
+     *
      * @param id ID_EDITION
-     * @param inLocal true si l'édition est présente dans la bdtheque locale, false sinon
-     * @param inServer true si l'édition est présente dans la bdtheque distante, false sinon
+     * @param inLocal true si l'édition est présente dans la bdtheque locale,
+     * false sinon
+     * @param inServer true si l'édition est présente dans la bdtheque distante,
+     * false sinon
      * @return Une ligne du tableau de conflits
-     * @throws SQLException 
+     * @throws SQLException
      */
-    private Object[] fillRow(int id, boolean inLocal, boolean inServer, int action) throws SQLException
+    private Object[] fillRow(int id, boolean inLocal, boolean inServer) throws SQLException
     {
         // Récupérer le titre, la série et le numéro du tome
         Object[] o = db.getSynchInfo(id);
-        
+
         return new Object[]
                 {
-                    new Boolean(false),
+                    new Boolean(false),  
                     new Boolean(false),
                     new Boolean(true),
                     new String((String) o[0]),
@@ -232,11 +235,9 @@ public class UpdateUser extends Thread
                     new String((String) o[2]),
                     new String(inLocal ? "Présent" : "Absent"),
                     new String(inServer ? "Présent" : "Absent"),
-                    new String(Edition.getStringForAction(action)),
                     new Integer(id),
-                    new Boolean(inLocal),
-                    new Boolean(inServer),
-                    new Integer(action)
+                    new Boolean(inServer)
+
                 };
     }
 
@@ -288,7 +289,7 @@ public class UpdateUser extends Thread
 
     /**
      * Ajoute un observateur
-     * 
+     *
      * @param listener Nouvel observateur
      */
     public void addListener(UpdateBDUserListener listener)
@@ -298,7 +299,7 @@ public class UpdateUser extends Thread
 
     /**
      * Supprime un observateur
-     * 
+     *
      * @param listener Observateur à supprimer
      */
     public void removeListener(UpdateBDUserListener listener)
@@ -308,7 +309,7 @@ public class UpdateUser extends Thread
 
     /**
      * Ajoute une ligne à tous les observateurs
-     * 
+     *
      * @param row Nouvelle ligne
      */
     public void addRow(Object[] row)
@@ -321,100 +322,102 @@ public class UpdateUser extends Thread
     }
 
     /**
-     * Appliquer les résultats des conflits
+     * Applique les choix de l'utilisateur pour les conflits
+     * 
+     * @param conflicts Liste des conflits
      */
     public void applyChanges(ArrayList<Object[]> conflicts)
     {
         int idEdition;
-        int action;
-        boolean inLocal;
         boolean inServer;
         boolean choixLocal;
         boolean choixServeur;
-        
-        for(Object[] tab : conflicts)
+
+        for (Object[] tab : conflicts)
         {
-            inLocal = ((Boolean)tab[10]).booleanValue();
-            inServer = ((Boolean)tab[11]).booleanValue();
-            choixLocal = ((Boolean)tab[0]).booleanValue();
-            choixServeur = ((Boolean)tab[1]).booleanValue();
-            idEdition = ((Integer)tab[9]).intValue();
-            action = ((Integer)tab[12]).intValue();
-            
-            if(choixServeur)
+            // Cast des info utiles
+            choixLocal = ((Boolean) tab[0]).booleanValue();
+            choixServeur = ((Boolean) tab[1]).booleanValue();
+            idEdition = ((Integer) tab[9]).intValue();
+            inServer = ((Boolean) tab[10]).booleanValue();
+
+            try
             {
-                apply(true,action,idEdition);
-            }
-            else if(choixLocal)
-            {
-                apply(false,action,idEdition);
-            }
-            
-        }
-        
-        
-        /*
-         * [0]Boolean choix local ?
-         * [1]Boolean choix serveur ?
-         * [2]Boolean choix rien ?
-         * [3]String 
-         * [4]String
-         * [5]String
-         * [6]String
-         * [7]String
-         * [8]String
-         * [9]Integer idEdition
-         * [10]Boolean dans base locale ?
-         * [11]Boolean dans base distante ?
-         * [12]Integer action
-         */
-        
-    }
-    
-    private void apply (boolean applyLocal, int action, int idEdition) throws RemoteException, SQLException
-    {
-        if(applyLocal)
-        {
-            String sql;
-            switch(action)
-            {
-                case Edition.INSERT : 
-                    sql = update.updateBDUser(idEdition, true, user.getUsername(), user.getPassword());
-                    break;
-                case Edition.UPDATE :
-                    sql = update.updateBDUser(idEdition, true, user.getUsername(), user.getPassword());
-                    break;
-                case Edition.DELETE :
-                    sql = update.updateBDUser(idEdition, false, user.getUsername(), user.getPassword());
-                    break;
-                case Edition.DO_NOTHING :
-                    sql = "";
-                    break;
-                default :
-                    sql = "";
-            }
-            db.update(sql);
-        }
-        else
-        {
-            DetailsEdition dEd = db.getBDUser(idEdition);
-            switch(action)
-            {
+                if (choixServeur)
+                {
+                    // L'utilisateur choisit d'utiliser la version du serveur
+                    apply(true, inServer, idEdition);
+
+                } else if (choixLocal)
+                {
+                    // L'utilisateur choisit d'utiliser la version locale
+                    apply(false, inServer, idEdition);
+                }
+                // else : L'utilisateur choisit de ne rien faire
                 
-                case Edition.INSERT : 
-                    webservice.addUserBibliotheque(user.getUsername(), user.getPassword(), idEdition);
-                    // break;
-                case Edition.UPDATE :
-                    webservice.setUserBibliotheque(user.getUsername(), user.getPassword(), dEd);
-                    break;
-                case Edition.DELETE :
-                    webservice.delUserBibliotheque(user.getUsername(), user.getPassword(), idEdition);
-                    break;
-                case Edition.DO_NOTHING :
-                    break;
+            } catch (RemoteException ex)
+            {
+                Logger.getLogger(UpdateUser.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SQLException ex)
+            {
+                Logger.getLogger(UpdateUser.class.getName()).log(Level.SEVERE, null, ex);
             }
+
         }
-        
+
+
     }
 
+    /**
+     * Applique une modification pour un conflit
+     * 
+     * @param applyLocal true si les modification seront effectuées sur la base locale, false si elle seront effectuées sur la base distante.
+     * @param inServer true si l'édition est dans la bdtheque distante, false sinon.
+     * @param idEdition ID_EDITION
+     * @throws RemoteException
+     * @throws SQLException 
+     */
+    private void apply(boolean applyLocal, boolean inServer, int idEdition) throws RemoteException, SQLException
+    {
+        
+        if (applyLocal)
+        {
+            // Modification sur la base Locale
+            String sql;
+            
+            if(!inServer)
+            {
+                // L'édition à été supprimée de la bdtheque distante.
+                // On répercute cette information
+                sql = update.updateBDUser(idEdition, false, user.getUsername(), user.getPassword());
+            }
+            else
+            {
+                // L'édition distante est la plus à jour.
+                // On ajoute cette édition.
+                // L'objet Update fera le nécessaire (insert ou update)
+                sql = update.updateBDUser(idEdition, true, user.getUsername(), user.getPassword());
+            }
+            
+            // Requête
+            db.update(sql);
+            
+        } 
+        else
+        {
+            // Modifications sur la base distante
+            
+            // On récupère l'édition de la base locale, la plus à jour
+            DetailsEdition dEd = db.getBDUser(idEdition);
+            
+            if(!inServer)
+            {
+                // Si l'edition ne fait pas partie de la bdtheque distante, on l'ajoute
+                webservice.addUserBibliotheque(user.getUsername(), user.getPassword(), idEdition);
+            }
+            // Puis, quoi qu'il en soit, on met à jour les flags car la fonction d'ajout ci-dessus ne permet pas de les
+            // ajouter mais seulement de créer une entrée < idUser , idEdition >
+            webservice.setUserBibliotheque(user.getUsername(), user.getPassword(), dEd);
+        }
+    }
 }
