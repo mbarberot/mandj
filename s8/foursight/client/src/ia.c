@@ -13,23 +13,22 @@
 
 #include "ia.h"
 
-
 void *ia_calculeCoup(void *arg)
 {
-    printf("[] - Thread !\n");
-    //while(1);
-    (void)arg;
-    pthread_exit(NULL);
-}
+    int i,
+	alea,
+	found,
+	tirage[15];
 
+    char *debug; 
 
-/*
-// Calcul un coup "débile"
-ia_err ia_calculeCoup(Data data)
-{
-    TypCoupReq *coup = data.coup;
+    TypCoupReq *coup;
+    TypPosition *pos;
 
-    system("sleep 10");
+    Shared_vars *data;
+
+    data = (Shared_vars*)arg;
+    coup = data->coup;
 
     if(coup == NULL)
     {
@@ -39,17 +38,10 @@ ia_err ia_calculeCoup(Data data)
 	    printf("[DEBUG] Argument coup == NULL\n");
 	    printf("-----------------------------\n");
 	}
-	return IA_ERR;
+	pthread_exit(NULL);
     }
 
-    int i,
-	alea,
-	found,
-	tirage[15];
-
-    char *debug; 
-
-    TypPosition *pos = (TypPosition*) malloc(sizeof(TypPosition));
+    pos = (TypPosition*) malloc(sizeof(TypPosition));
     if(pos == NULL)
     {	
 	if(DEBUG)
@@ -58,8 +50,9 @@ ia_err ia_calculeCoup(Data data)
 	    printf("[DEBUG] Impossible d'allouer la mémoire\n");
 	    printf("---------------------------------------\n");
 	}
-	return IA_ERR;
+	pthread_exit(NULL);
     }
+
 
     for(i = 0; i < 15; i++) { tirage[i] = 0; }
 
@@ -68,19 +61,26 @@ ia_err ia_calculeCoup(Data data)
     while(!found) 
     {
 	do {
-	    alea = rand()%15;
-	} while(tirage[alea] > 0);
+	    alea = rand()%16;
+	} while(tirage[alea] > 0);	
 	
-	tirage[alea]++;
+	tirage[alea]++;	
 
 	switch(plateau[alea])
 	{
-	    case VIDE :
+	    case VIDE :		
 		if(joueur->blanc > 0) 
 		{
 		    coup->typePiece = BLANC; 
 		    found = 1;
 		    debug = "blanc";
+		}
+		else if((joueur->rouge == 0 && joueur->jaune > 0)||(joueur->rouge > 0 && joueur->jaune == 0))
+		{
+		    coup->typePiece = VIDE;
+		    coup->propCoup = PASSE;
+		    found = 1;
+		    debug = "vide";
 		}
 		break;
 	    case BLANC :
@@ -113,9 +113,16 @@ ia_err ia_calculeCoup(Data data)
     pos->ligne = alea/4;
     pos->colonne = alea%4;
 
+    pthread_mutex_lock(&data->mutex);
+    
     coup->caseArrivee = *pos;
-    coup->propCoup = POSE;
+    if(coup->propCoup != PASSE) coup->propCoup = POSE;
+
+    data->fini++;
+    data->ia_first++;
+    
+
+    pthread_mutex_unlock(&data->mutex);
 
     return IA_OK;
 }
-*/

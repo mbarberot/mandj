@@ -58,7 +58,7 @@ jeu_err jeu_init()
     if(DEBUG)
     {
 	printf("[DEBUG] jeu_init\n");
-	jeu_afficherJeu();
+	jeu_afficherJeu(VRAI);
     }
 
     return JEU_OK;
@@ -148,18 +148,18 @@ jeu_err jeu_ajouterCoup(TypCoupReq coup, TypBooleen moi)
 
 
 
-jeu_err jeu_afficherJeu()
+jeu_err jeu_afficherJeu(TypBooleen isJoueurPlaying)
 {
     jeu_err err ;
-
+    
     printf("\n");
-    err = jeu_afficherJoueur(*joueur,FAUX);
+    err = jeu_afficherJoueur(*joueur,FAUX,isJoueurPlaying);
     if(err == JEU_OK) 
     {
 	printf("\n");
 	jeu_afficherPlateau();
 	printf("\n");
-	err = jeu_afficherJoueur(*adversaire,VRAI);
+	err = jeu_afficherJoueur(*adversaire,VRAI,(isJoueurPlaying ? FAUX : VRAI));
 	printf("\n");
     }
 
@@ -167,11 +167,15 @@ jeu_err jeu_afficherJeu()
 }
 
 
-jeu_err jeu_afficherJoueur(Joueur j, TypBooleen adv)
+jeu_err jeu_afficherJoueur(Joueur j, TypBooleen adv, TypBooleen isPlaying)
 {
     int i;
 
-    printf("%s\n",((adv)?"Adversaire":"Joueur"));
+    printf("%s%s%s",
+	   ((isPlaying)?"** " : ""),
+	   ((adv)?"Adversaire" : "Joueur"),
+	   ((isPlaying)?" **\n" : "\n")
+	   );
     
     for(i = 0; i < j.blanc; i++)
     {

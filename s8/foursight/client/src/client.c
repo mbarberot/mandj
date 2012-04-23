@@ -29,9 +29,11 @@ void client_perror(TypErreur err)
 }
 
 
-client_err client_connexion(char machine[], int port, int *sockArbitre)
+client_err client_connexion(char *machine, int port, int *sockArbitre)
 {
     int sock;
+
+    printf("%s:%d\n",machine,port);
 
     // Connexion au serveur
     // + contrôle des erreurs
@@ -45,6 +47,12 @@ client_err client_connexion(char machine[], int port, int *sockArbitre)
 	    printf("----------------------------------------------\n");
 	}
 	return CONN_ERR;
+    }
+    else if(DEBUG)
+    {	
+	printf("[DEBUG] client_connexion \n");
+	printf("[DEBUG] Connexion établie !\n");
+	printf("---------------------------\n");
     }
 
     *sockArbitre = sock;

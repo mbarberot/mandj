@@ -131,7 +131,7 @@ jeu_err jeu_ajouterCoup(TypCoupReq coup, TypBooleen moi);
  * @return JEU_OK   L'intialisation s'est bien passée
  * @return JEU_ERR  Echec de l'initialisation
  */
-jeu_err jeu_afficherJeu();
+jeu_err jeu_afficherJeu(TypBooleen isJoueurPlaying);
 
 /**
  * Affiche le plateau
@@ -149,7 +149,7 @@ void jeu_afficherPlateau();
  * @return JEU_OK   L'intialisation s'est bien passée
  * @return JEU_ERR  Echec de l'initialisation
  */
-jeu_err jeu_afficherJoueur(Joueur j, TypBooleen adv);
+jeu_err jeu_afficherJoueur(Joueur j, TypBooleen adv, TypBooleen isPlaying);
 
 
 #endif

@@ -53,7 +53,7 @@ void client_perror(TypErreur err);
  * @return CONN_ERR	Erreur lors de la connexion
  */
 client_err client_connexion(
-	char machine[],
+	char *machine,
 	int port,
 	int *sockArbitre
 	);
