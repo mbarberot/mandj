@@ -61,8 +61,10 @@ void *ia_calculeCoup(void *arg)
     while(!found) 
     {
 	do {
-	    alea = rand()%16;
+	    alea = rand()%16;	   
 	} while(tirage[alea] > 0);	
+	
+	system("sleep 1");
 	
 	tirage[alea]++;	
 
@@ -75,7 +77,9 @@ void *ia_calculeCoup(void *arg)
 		    found = 1;
 		    debug = "blanc";
 		}
-		else if((joueur->rouge == 0 && joueur->jaune > 0)||(joueur->rouge > 0 && joueur->jaune == 0))
+		else if(
+		    ((joueur->rouge == 0 && joueur->jaune > 0) || (joueur->rouge > 0 && joueur->jaune == 0))
+		    && adversaire->rouge == 0 && adversaire->jaune == 0)
 		{
 		    coup->typePiece = VIDE;
 		    coup->propCoup = PASSE;

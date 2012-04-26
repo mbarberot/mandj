@@ -132,12 +132,12 @@ int main_partie(char *machine, int port, char login[])
 	return 1;
     }
 
-
-
     // Connexion à l'arbitre 
     // + contrôle des erreurs
     clientErr = client_connexion(machine,port,&sockArbitre);
     if(clientErr == CONN_ERR) { return 1; }
+    
+    data->socket = sockArbitre ;
 
     // Identification
     // + controle des erreurs
@@ -217,16 +217,16 @@ int main_partie(char *machine, int port, char login[])
 
 		    if(pthread_create(&thread_ia,NULL,ia_calculeCoup,(void*)data))
 		    {
-			if(DEBUG) { perror("[DEBUG] - pthread_create :"); }
+			if(DEBUG) { perror("[DEBUG] - pthread_create ( thread_ia ) :"); }
 			return EXIT_FAILURE;
 		    }
-
-		    //
-		    // TODO
-		    // Lancement du thread d'attente du timeout
-		    // 
-		    // Attente de la fin de l'un des thread 
-		    //
+		    
+		    // Lancement du thread d'attente d'un éventuel timeout
+		    if(pthread_create(&thread_client,NULL,client_attendTimeout,(void*)data))
+		    {
+			if(DEBUG) { perror("[DEBUG] - pthread_create ( thread_client ) : "); }
+			return EXIT_FAILURE;
+		    }
 
 		    int finThread = 0;
 		    int finIA = 0;
@@ -249,6 +249,7 @@ int main_partie(char *machine, int port, char login[])
 			// Le coup est initialisé
 
 			// On stoppe l'autre thread
+			pthread_cancel(thread_client);
 
 			if(DEBUG)
 			{
@@ -263,15 +264,17 @@ int main_partie(char *machine, int port, char login[])
 			// Le client à reçu un message de timeout
 
 			// On stoppe le thread de l'IA
+			pthread_cancel(thread_ia);
 
-			// Inutile de continuer : la partie est perdue
-			break;
+			// Inutile de continuer : la partie est perdue			
 			if(DEBUG)
 			{
 			    printf("[DEBUG] - main_partie()\n");
 			    printf("[DEBUG] - Fin naturelle du thread Timeout\n");
 			    printf("----------------------------------\n");
 			}
+			
+			break;
 		    }
 
 		    // A ce point du programme :

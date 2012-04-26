@@ -26,9 +26,14 @@ $(EXEC): $(OBJ)
 	$(CC) -o $@ -c $< $(CFLAGS) $(CPPFLAGS) $(LDFLAGS)
 
 clean:
-	rm *.o
+	rm $(SRCDIR)*.o
+	
+rmtemp:
+	rm $(SRCDIR)*~
+	rm *~
 
 reset:
 	rm $(BIN)$(EXEC) 
 
 veryclean: clean reset
+

@@ -22,6 +22,10 @@
 // Protocole de connexion au serveur
 #include "protocole.h"
 
+// Fonctions et structure utilitaire pour les threads
+#include "thread.h"
+
+
 typedef enum {
     CONN_OK,	CONN_ERR,
     IDENT_OK,	IDENT_ERR,  IDENT_LOGIN,
@@ -128,13 +132,11 @@ client_err client_attendCoup(
  * Attend un message de timeout de l'arbitre pendant le calcul du coup.
  * A n'utiliser que dans ce cas précis.
  *
- * @param sockArbitre	    Socket de communication avec l'arbitre
+ * @param arg 	Pointeur vers des données	    Socket de communication avec l'arbitre
  * @return COUP_TIMEOUT
  * @return COUP_ERR
  *
  */
-client_err client_estTimeout(
-	int sockArbitre
-	);
+void *client_attendTimeout(void *arg) ;
 
 #endif

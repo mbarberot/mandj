@@ -8,9 +8,103 @@
  * Racenet Joan
  * 
  */
+
+
 #define DEBUG 1
 
+#include <sys/select.h>
+
 #include "client.h"
+
+void *client_attendTimeout(void *arg)
+{
+    int sockArbitre,	// Socket de communication avec l'arbitre
+	err,		// Variable de stockage des erreurs
+	max;		// Valeur du socket maximum de fd_set + 1
+	
+    fd_set sock_set;	// Ensemble des sockets pour le select
+    Shared_vars *data;	// Variables partagées entres les threads
+    TypCoupRep* rep;	// Réponse de l'arbitre
+    
+    // Récupération des données partagées
+    // + utilisation du mutex pour éviter les problèmes
+    data = (Shared_vars*)arg;    
+    pthread_mutex_lock(&data->mutex);
+    sockArbitre = data->socket ;
+    pthread_mutex_unlock(&data->mutex);
+
+    // Initialisation de la réponse de l'arbitre
+    rep = (TypCoupRep*) malloc(sizeof(TypCoupRep));
+    if(rep == NULL )
+    {
+	if(DEBUG)
+	{
+	    printf("[DEBUG] - client_attendTimeout \n");
+	    printf("[DEBUG] - Impossible d'allouer la mémoire \n");
+	    printf("----------------------------------------- \n");
+	}
+	pthread_exit(NULL);
+    }
+    
+    // Calcul du max + 1
+    max = sockArbitre + 1 ;
+    
+    // Mise en place du select
+    FD_ZERO(&sock_set);
+    FD_SET(sockArbitre,&sock_set);
+    
+    // Select 
+    // + traitement des erreurs
+    err = select(max,&sock_set,NULL,NULL,NULL) ;
+    if( err < 0 ) 
+    {
+	if(DEBUG)
+	{
+	    printf("[DEBUG] - client_attendTimeout \n");
+	    perror("[DEBUG] - Erreur lors du select : ");
+	    printf("----------------------------------\n");
+	}
+    }
+    else if(FD_ISSET(sockArbitre,&sock_set))
+    {
+	//
+	// Réception d'un message de l'arbitre
+	//
+	
+	// Recv
+	// + traitement des erreurs
+	err = recv(sockArbitre,rep,sizeof(TypCoupRep),0);
+	if(err < 0)
+	{
+	    if(DEBUG)
+	    {
+		printf("[DEBUG] - client_attendTimeout \n");
+		perror("[DEBUG] - Erreur lors de la réception du timeout : ");
+		printf("-------------------------------------------------- \n");
+	    }
+	}
+	else if(rep->validCoup == TIMEOUT)
+	{
+	    //
+	    // L'arbitre nous signale le timeout
+	    // 
+	    
+	    // Mise à jour des booléens
+	    // + utilisation du mutex
+	    pthread_mutex_lock(&data->mutex);
+	    data->fini++;
+	    pthread_mutex_unlock(&data->mutex);
+	}	
+    }
+    
+    // Libération mémoire
+    free(rep);
+    
+    // Fin
+    pthread_exit(NULL);
+}
+
+
 
 
 void client_perror(TypErreur err)
