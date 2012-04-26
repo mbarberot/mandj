@@ -2,7 +2,8 @@
 BIN= bin/
 LIBDIR=lib/
 INC=include/
-SRCDIR=src/
+CDIR=src/c/
+JAVADIR=src/java/
 
 # Commandes de compilation
 CC=gcc
@@ -12,7 +13,7 @@ LDFLAGS=-L $(LIBDIR) -lsocket -lpthread
 EXEC = client
 
 # Sources necessaires
-SRC= $(wildcard $(SRCDIR)*.c) 
+SRC= $(wildcard $(CDIR)*.c) 
 OBJ= $(SRC:.c=.o)
 HDR= $(SRC:.c=.h)
 
