@@ -14,13 +14,14 @@
 // Librairie de manipulation des graphes
 #include "graphe.h"
 
-
 /** Nombre d'heuristique implantées */
 #define NB_HEURISTIQUE 0
 
 /** Matrices d'adjacence pour les deux graphes. C(x,y) représente le nombre d'arêtes entre le sommet x et le sommet y */
 int **nbAretes[NB_GRAPHES];
 
+/** Le fichier contenant le résultat du parcours chinois*/
+FILE *resPostier;
 
 /**
  * ----------------------------------------------------------
@@ -44,7 +45,8 @@ int getNbVoisinsAccessibles(int idGraphe, int sommet);
  * @return RES_OK
  */
 erreur initParcoursChinois(
-	int idGraphe
+	int idGraphe,
+	char *res_path
 	);
 
 /**
@@ -112,7 +114,13 @@ void sommetsImpairs(int idGraphe, TypVoisins **res);
 /**
  * Retourne le couplage de poids minimal
  */
-TypVoisins* calculeCoupleOptimal(int idGraphe, TypVoisins *couples);
+TypVoisins* calculeCoupleOptimal(TypVoisins *couples, int* m[]);
+
+/**
+ * Effectue la duplication des différentes arêtes trouvées dans le couplage 
+ */
+void duplicationCouplage(int idGraphe, TypVoisins *couples, int* p[]);
+
 /**
  * ----------------------------------
  * Fonctions traitant les algorithmes
@@ -148,13 +156,26 @@ TypVoisins* cycleEulerien(int idGraphe, int x);
  *
  * @param idGraphe	ID du graphe (1 ou 2)
  * @param idHeuristique ID de l'heuristique (1 à NB_HEURISTIQUE)
+ * @param res_path Le chemin du fichier d'entrée (où l'on stockera les fichiers résultats)
  * @return		
  */
 erreur calculCycleEulerien(
 	int idGraphe,
-	int idHeuristique
-	);			// Todo
+	int idHeuristique,
+	char *res_path
+	);
 
+/**
+ * Effectue les couplages en fonction de l'heuristique ainsi que le cycle eulérien
+ * @param idGraphe ID du graphe à traiter
+ * @param idHeuristique ( 0 : toutes les heuristiques, 1 : chemin optimal, 2 : premier couplage, 3 : aléatoire)
+ * @param res_path : le chemin du fichier d'entrée
+ */
+void goCycleChinois(
+    int idGraphe,
+    int idHeuristique,
+    char *res_path
+     );
 
 /**
  * Implémentation de Floyd-Warshall de recherche du plus court chemin
@@ -179,4 +200,26 @@ int evalueCouplage(TypVoisins *couples, int *m[]);
  */
 void doCouplageOptimal(int idGraphe);
 
+/**
+ * Fait le couplage de façon aléatoire
+ * @param idGraphe : le graphe de référence
+ */
+void doRandomCouplage(int idGraphe);
+
+/**
+ * Effectue le couplage en réduisant au maximum le nombre d'arêtes dupliquées
+ * @param idGraphe : le graphe de référence
+ */
+void doCouplageReductionNbAretes(int idGraphe);
+
+/**
+ * -------------------------------------------
+ * Fonctions de gestion des fichiers résultats
+ * -------------------------------------------
+ */
+void ecrireFichierRes(TypVoisins* res, int idGraphe, int idHeuristique);
+
+char* aretesToString(TypVoisins* aretes, int idGraphe);
+
+void ecrireFichierDot(int idGraphe, int idHeuristique, char* res_path);
 #endif

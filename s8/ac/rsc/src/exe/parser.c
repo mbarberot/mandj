@@ -61,6 +61,7 @@ parserError chargerFichier(char* path)
 	/* On peut alors fermer le fichier d'entree ...*/
 	fclose(entree);
 	
+	
 	/* Et ouvrir celui de résultat pour l'écriture */
 	char file_name[RES_MAX_LENGTH] = "";
 	strcat(file_name,path);
@@ -91,7 +92,7 @@ parserError chargerFichier(char* path)
 /**
  * Lit le fichier passé en paramètre, et renvoie son contenu sous forme de chaine de caractères
  * Pour plus de lisibilité, la fonction enlève les commentaires éventuellement présents dans le fichier de commande
- * @param nom: le nom du fichier
+ * @param content: le contenu du fichier
  * @return le contenu du fichier sous forme d'une chaine de caractères
  */
 void lectureFichier(char* content)
@@ -127,7 +128,6 @@ void lectureFichier(char* content)
 	    {
 		caractereActuel = fgetc(entree);
 	    }
-	    
 	}	
 	content[i] = '\0';
     }
@@ -172,7 +172,6 @@ void interpreteCommande(char* commandes)
 	    // Permet de vérifier que tmp est une commande valide
 	    int cmdOk = 0;
 	    parserError res = -1;	   
-	    
 	    // Commande creation
 	    if(strstr(tmp,"creation") != NULL)
 	    {
@@ -359,6 +358,7 @@ void interpreteCommande(char* commandes)
 	free(tmp);
 	ptr = strtok_r(NULL,sep,&bck);
     }
+    
 }
 
 /**
@@ -983,16 +983,15 @@ parserError interpreteCalculCycleEulerien(char* cmd)
     int nbArgs = sscanf(cmd, "%d:calculCycleEulerien(%d,%d)", &numCom, &arg1, &arg2);
     
     if(nbArgs == 3){
-        err = calculCycleEulerien(arg1, arg2);
-	//ecritureResultatCommande(numCom, err);
+        err = calculCycleEulerien(arg1, arg2, entree_path);
+	ecritureResultatCommande(numCom, err);
     }
     else
     {
-	/*ecritureResultatCommande(COMMANDE_INVALIDE, err);
-	return ARGUMENTS_INCORRECTS;*/
+	ecritureResultatCommande(COMMANDE_INVALIDE, err);
+	return ARGUMENTS_INCORRECTS;
     }
     
-    // Ecriture en .dot ?
     
     return TRAITEMENT_CMD_OK;
 }

@@ -119,7 +119,7 @@ void actionRecharger(char *fileLoaded)
     {
 	// Démarrer traitement
 	parserError err = chargerFichier(fileLoaded);
-
+	
 	// Récupération de l'erreur, et action en conséquent
 	switch(err)
 	{         
@@ -185,14 +185,15 @@ void actionSauvegarder(char *fileLoaded)
 	    }
 	    fputc(EOF,fnew);
 	    printf("Sauvegarde effectuée!\n");
+
 	}
 	else
 	{
 	    printf("Erreur lors de l'ouverture des fichiers\n");
 	}
 
-	fclose(fold);
-	fclose(fnew);
+	if(fold != NULL) fclose(fold);
+	if(fnew != NULL) fclose(fnew);
 
     }
     else
