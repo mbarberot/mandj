@@ -1,0 +1,177 @@
+\documentclass[11pt]{report} % { book | article | report }
+% -------------------- Langue --------------------
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+% -------------------- Marges, interlignes--------------------
+\usepackage[a4paper]{geometry}	% 
+%\usepackage{setspace}
+%\usepackage{layout}		% Layout
+%\usepackage{lscape}		% Orientation de la page
+% -------------------- Soulignement --------------------
+%\usepackage{soul}
+%\usepackage{ulem}
+% -------------------- Fontes --------------------
+%\usepackage{eurosym}		% Symbole Euro
+%\usepackage{bookman}
+%\usepackage{charter}
+\usepackage{newcent}
+%\usepackage{lmodern}
+%\usepackage{mathpazo}					
+%\usepackage{mathptmx}
+% -------------------- Code et citations --------------------
+%\usepackage{verbatim}		% Code
+%\usepackage{listings}		% Code avec coloration syntaxique
+%\usepackage{url}		% Urls
+%\usepackage{moreverb}
+% -------------------- Couleur --------------------
+%\usepackage{color}		% les couleurs
+%\usepackage{colortbl}		% les couleurs dans un tableau
+%\usepackage[svgnames]{xcolor}	% le package color, en mieux !
+% -------------------- Maths --------------------
+%\usepackage{amsmath}
+%\usepackage{amssymb}
+%\usepackage{mathrsfs}
+%\usepackage{asmthm}
+% -------------------- Images --------------------
+\usepackage{graphicx}		% Insertion d'images ou de pdf -> option : [pdftex]
+%\usepackage{wrapfig}		% Insérer des images dans un paragraphe
+% -------------------- Autres --------------------
+%\usepackage{makeidx}		% Création d'index
+%\usepackage{fancyhdr}		% Personnalisation des entetes
+%\usepackage{sfheaders}		% Mise sans-serif des titres
+%\usepackage{enumitem}		% Personnalisation des environnement enumerate	
+%\usepackage{pdfpages}
+%\usepackage[nottoc, notlof, notlot]{tocbibind}
+%\usepackage{tocvsec2}		% Donne le choix du départ de la numérotation
+
+
+% -- Avec le package listings
+% \lstset{language=java}
+% -- Avec le package tocvsec2 (dans le document)
+% \maxsecnumdepth{chapter}
+
+\include{utils}
+ 
+\newcommand{\imgpath}[1]{images/#1}
+
+
+\begin{document}
+\include{cover_first}
+\newpage
+
+\section*{Abstract}
+BDovore is a web site focused on comics strip that allow collector to manage their library. For several years, students in computer science develop a software with that web site.  
+\newpage
+
+\section*{Thanks}
+For their help, their advises and for having provided this subject, we would like to thank our tutors : Mr Bouquet et Mr Coqblin.
+\newpage
+
+\tableofcontents
+\newpage
+
+\chapter*{Introduction}
+Managing a library can be hard, especially for collectors wich could have hundreds of books. That is why web sites like BDovore\footnote{www.bdovore.com} have been created. BDovore is specialized in comics strip and allow his users to manage their libraries online. But as we are not always connected, UFR ST and BDovore started a project : a Java software that would provide the same functionalities as the website.
+
+
+\chapter{The Software}
+
+\section{The features}
+\subsection{Searching an album}
+As user will need to find his albums in the software, a research function was necessary. Really basic, it was only using a single keyword and the user had to take care of capital letters and accent. By example, the research ''asterix`` did not give any result !\\
+The result were displayed in a list with the title, the tome number, the series, the kind and the ISBN number. A double click show a window with details on the album.\\
+If your research had a lot of result, four buttons were available in the bottom of the list to go to the first, previous, next or last page.
+
+\subsection{Add or remove an album to the user library}
+One the window that appears on a double click, some checkbox are displayed. To add an album, the user can check the box named ''Owned``. Then three checkbox become available for details : is the album dedicated or lent ? User can also tick ''Not owned`` to remove it from his library or ''to buy`` to add it in his wish list.
+
+\subsection{See statistics}
+Once the user library is filled up, he can see statistics on that library. There is two different statistics. The first part, on the top, is displaying amounts of album in each type : albums in the library, owned and to buy. The second part show percentages on kind, editors, scriptwriter or cartoonist.
+
+\subsection{Configure the software}
+Finally, a configuration tool is provided for setting a proxy server or to enter account username and password for synchronizing.
+
+\section{Unachieved functionalities}
+\subsection{Update the research base}
+The research feature is working with a base of all albums of the web site. To keep it to date, a feature that download all new albums on the web site was planned but previous groups did not have the time to finish it.
+
+\subsection{Synchronizing user account}
+As user can add albums in the website or change albums on the software, the synchronizing feature had to get the two library, search the difference and update the two library. For ambiguous cases, a window show the differences and ask user to decide whether the online or the offline is the more up to date. All the reflections on the feature were done but the implementation was not.
+
+\section{???}
+%
+% The subject
+%
+
+
+\chapter{Discovering the software}
+\section{Understanding previous student's work}
+%
+% Understanding how the previous students made the software
+% Testing
+% Finish the synchronization
+%
+%
+\section{Lay the foundation}
+%
+% Last year, two groups of student worked on that software
+% => 2 different software
+% => All in one !
+%
+%
+%
+\section{Test and updates}
+%
+% Tests : 
+% search is crappy
+% synch does not worked
+% wsdl not or badly used
+%
+% update of the database
+% update of the 'search motor'
+%
+
+\chapter{Web service and Synchronization}
+\section{What is a web service?}
+%
+% Schema
+% A list of functionalities
+% Make a layer between the server and the client
+%
+\section{Why do we need it?}
+%
+% Simplify the development
+% Without it, if the server change, the software has to be updated.
+% With it, if the server change, the web service implementation will change in the server and the software will not need an update.
+%
+\section{The synchronization}
+%
+% with the research base
+% with user's account
+% 
+
+\chapter*{Conclusion}
+% New functionalities :
+% - synch for research base and user account
+%
+% Abandoned functionalities :
+% - nothing
+%
+% What we have done :
+% - a unique software (!= two old software)
+% - set up a web service
+% - implement it in the software
+%
+% What we haven't finished
+% - tests
+%
+% New functionalities to developp :
+% - manually add a comic strip
+
+
+\include{cover_fourth}
+
+
+\end{document}
+

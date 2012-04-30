@@ -1,0 +1,20 @@
+
+% Place des guillemets autour du texte
+% \guil{anything}
+\newcommand{\guil}[1]{\og #1 \fg}
+
+% Place un texte dans une fbox avec retour à la ligne automatique
+% \fboxln{anything}
+\newcommand{\fboxln}[1]{%
+  \fbox{%
+    \begin{minipage}{0.9\textwidth}%
+    #1%
+    \end{minipage}%
+  }
+}
+
+
+
+% Met un élément en gras
+% \strong{anything}
+\newcommand{\strong}[1]{\textbf{#1}}
