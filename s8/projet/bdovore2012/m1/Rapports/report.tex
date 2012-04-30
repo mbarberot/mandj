@@ -61,59 +61,65 @@
 \newpage
 
 \section*{Abstract}
-BDovore is a web site focused on comics strip that allow collector to manage their library. For several years, students in computer science develop a software with that web site.  
+BDovore is a website focused on comic books that allows collectors to manage their library. For several years, students in computer science have been developing a software in cooperation with that web site.  
 \newpage
 
 \section*{Thanks}
-For their help, their advises and for having provided this subject, we would like to thank our tutors : Mr Bouquet et Mr Coqblin.
+For their help, their advises and for having provided this subject, we would like to thank our tutors : Mr BOUQUET et Mr COQBLIN.
 \newpage
 
 \tableofcontents
 \newpage
 
 \chapter*{Introduction}
-Managing a library can be hard, especially for collectors wich could have hundreds of books. That is why web sites like BDovore\footnote{www.bdovore.com} have been created. BDovore is specialized in comics strip and allow his users to manage their libraries online. But as we are not always connected, UFR ST and BDovore started a project : a Java software that would provide the same functionalities as the website.
+Managing a library can be hard, especially for collectors who could possess hundreds of books. That is why websites like BDovore\footnote{www.bdovore.com} have been created. BDovore is specialized in comic books and allows its users to manage their library online. But because we are not always connected to the Internet, UFR ST and BDovore started a project : create a Java software you could use offline on your computer that would provide the same functionalities as the website.
 
 
 \chapter{The Software}
 
 \section{The features}
 \subsection{Searching an album}
-As user will need to find his albums in the software, a research function was necessary. Really basic, it was only using a single keyword and the user had to take care of capital letters and accent. By example, the research ''asterix`` did not give any result !\\
-The result were displayed in a list with the title, the tome number, the series, the kind and the ISBN number. A double click show a window with details on the album.\\
+As the user will need to find the albums he owns in the software, a research function was necessary. Really basic, it was only using a single keyword and the user had to take care of capital letters and other special characters, as accents. By example, the research ''asterix`` did not give any result, in contrary to ''Astérix`` !\\
+The results were displayed in a list with the title, the tome number, the series, the genre and the ISBN number. A double click shows a window with details about the album.\\
 If your research had a lot of result, four buttons were available in the bottom of the list to go to the first, previous, next or last page.
 
-\subsection{Add or remove an album to the user library}
-One the window that appears on a double click, some checkbox are displayed. To add an album, the user can check the box named ''Owned``. Then three checkbox become available for details : is the album dedicated or lent ? User can also tick ''Not owned`` to remove it from his library or ''to buy`` to add it in his wish list.
+\subsection{Add or remove an album oh the user library}
+Once the window has appear after a double click, some checkboxes are displayed. To add an album, the user has to check the box named ''Owned``. Then three checkboxes become available for details, which  enable the user to notice if the album is dedicated, lent or if he predict to buy it later.
 
 \subsection{See statistics}
-Once the user library is filled up, he can see statistics on that library. There is two different statistics. The first part, on the top, is displaying amounts of album in each type : albums in the library, owned and to buy. The second part show percentages on kind, editors, scriptwriter or cartoonist.
+Once the user library is filled up, he can see some statistics on that library. There is two different statistics : the first, on the top, is displaying amounts of album of each type (albums in the library, owned and to buy). The second shows percentages of genres, editors, scriptwriters or cartoonists.
 
 \subsection{Configure the software}
-Finally, a configuration tool is provided for setting a proxy server or to enter account username and password for synchronizing.
+Finally, a configuration tool is provided for setting a proxy server or to connect the user on its website's account (to synchronizing its library with the online one).
 
 \section{Unachieved functionalities}
 \subsection{Update the research base}
-The research feature is working with a base of all albums of the web site. To keep it to date, a feature that download all new albums on the web site was planned but previous groups did not have the time to finish it.
+The research feature is working with a database of all the albums which are listed on the website. To keep it to date, a feature that download all the new albums on the website was planned but previous groups did not have the time to finish it.
 
 \subsection{Synchronizing user account}
-As user can add albums in the website or change albums on the software, the synchronizing feature had to get the two library, search the difference and update the two library. For ambiguous cases, a window show the differences and ask user to decide whether the online or the offline is the more up to date. All the reflections on the feature were done but the implementation was not.
+As user can suggest albums on the website or change details of the albums on the software, the synchronizing feature had to get the two libraries, search the differences and update them. For ambiguous cases, a window show the differences and asks user to decide whether the online one or the offline one is the more up to date. All the reflections on the feature were done but were not integrated in the software.
 
-\section{???}
-%
-% The subject
-%
+\section{Our contribution}
+For the time we had to work on this project, our main goal was to finish to put in place the unachieved functionalities. In this purpose, we had to :
+\begin{itemize}
+\item Change the research tool, to make it more efficient and intuitive, so the user could write its requests like any search engine : the user would be able to make a request with several words in any orders and without caring about accents or syntax. He could also use some special characters and keywords to specify its research (like the ''*`` joker or the double quotes).
+\item % da web service
+\item % da synchro
+\item % small mods
+
+\end{itemize}
 
 
 \chapter{Discovering the software}
-\section{Understanding previous student's work}
+
+\section{Understanding previous students work}
 %
 % Understanding how the previous students made the software
 % Testing
 % Finish the synchronization
 %
 %
-\section{Lay the foundation}
+\section{Laying the foundation}
 %
 % Last year, two groups of student worked on that software
 % => 2 different software
