@@ -45,8 +45,7 @@ int getNbVoisinsAccessibles(int idGraphe, int sommet);
  * @return RES_OK
  */
 erreur initParcoursChinois(
-	int idGraphe,
-	char *res_path
+	int idGraphe	
 	);
 
 /**
@@ -111,15 +110,6 @@ void listeCouplage(int idGraphe, TypVoisins *ls, TypVoisins **res);
  */
 void sommetsImpairs(int idGraphe, TypVoisins **res);
 
-/**
- * Retourne le couplage de poids minimal
- */
-TypVoisins* calculeCoupleOptimal(TypVoisins *couples, int* m[]);
-
-/**
- * Effectue la duplication des différentes arêtes trouvées dans le couplage 
- */
-void duplicationCouplage(int idGraphe, TypVoisins *couples, int* p[]);
 
 /**
  * ----------------------------------
@@ -178,6 +168,44 @@ void goCycleChinois(
      );
 
 /**
+ * ----------------------------------------------------------------------------------
+ * Fonctions des couplages avec recherche de chemin basés sur l'algorithme "gourmand"
+ * ----------------------------------------------------------------------------------
+ */
+
+/**
+ * Fait le couplage en appliquant l'algorithme gourmand pour la duplication des arêtes. Les couples sont choisis dans l'ordre croissant des sommets
+ * @param idGraphe : le graphe de référence
+ */
+void doCouplageSommetsCroissants(int idGraphe);
+
+/**
+ * Fait le couplage en appliquant l'algorithme gourmand pour la duplication des arêtes. Les couples sont choisis aléatoirement
+ * @param idGraphe : le graphe de référence
+ */
+void doCouplageSommetsRandom(int idGraphe);
+
+/**
+ * Trouve un chemin entre som1 et som2 dans le graphe idGraphe et stocke les sommets traversés dans path
+ */
+void trouveCheminGourmand(int idGraphe, int som1, int som2, TypVoisins **path);
+
+
+/**
+ * -----------------------------------
+ * Fonctions liées au couplage optimal
+ * -----------------------------------
+ */
+
+
+/**
+ * Teste tous les couples de sommets impairs possibles, et calcule celui de poids optimal.
+ * La fonction duplique les arêtes en conséquent.
+ * @param idGraphe : le graphe de référence
+ */
+void doCouplageOptimal(int idGraphe);
+
+/**
  * Implémentation de Floyd-Warshall de recherche du plus court chemin
  * Utilisé pour la résolution du postier chinois
  * @param idGraphe : le graphe de référence
@@ -193,30 +221,26 @@ void plusCourtChemin(int idGraphe, int *m[], int *p[]);
  */
 int evalueCouplage(TypVoisins *couples, int *m[]);
 
-/**
- * Teste tous les couples de sommets impairs possibles, et calcule celui de poids optimal.
- * La fonction duplique les arêtes en conséquent.
- * @param idGraphe : le graphe de référence
- */
-void doCouplageOptimal(int idGraphe);
 
 /**
- * Fait le couplage de façon aléatoire
- * @param idGraphe : le graphe de référence
+ * Retourne le couplage de poids minimal
  */
-void doRandomCouplage(int idGraphe);
+TypVoisins* calculeCoupleOptimal(TypVoisins *couples, int* m[]);
 
 /**
- * Effectue le couplage en réduisant au maximum le nombre d'arêtes dupliquées
- * @param idGraphe : le graphe de référence
+ * Effectue la duplication des différentes arêtes trouvées dans le couplage 
  */
-void doCouplageReductionNbAretes(int idGraphe);
+void duplicationCouplage(int idGraphe, TypVoisins *couples, int* p[]);
+
 
 /**
  * -------------------------------------------
  * Fonctions de gestion des fichiers résultats
  * -------------------------------------------
  */
+
+void ouvertureFichierRes(char* res_path);
+
 void ecrireFichierRes(TypVoisins* res, int idGraphe, int idHeuristique);
 
 char* aretesToString(TypVoisins* aretes, int idGraphe);

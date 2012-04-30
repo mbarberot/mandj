@@ -16,7 +16,7 @@
 #include "postierChinois.h"
 
 
-erreur initParcoursChinois(int idGraphe, char *res_path)
+erreur initParcoursChinois(int idGraphe)
 {
     erreur err;
     
@@ -46,14 +46,7 @@ erreur initParcoursChinois(int idGraphe, char *res_path)
 	if((err = peupleTabAretes(idGraphe)) != RES_OK) { return err; }
     }
     
-    /* Préparation du fichier résultat */
-    resPostier = NULL;
     
-    char file_name[320] = "";    
-    strcat(file_name, res_path);
-    strcat(file_name, "_ResPostier.txt");
-        
-    resPostier = fopen(file_name, "w+");
 
     return RES_OK;
 }
@@ -131,8 +124,7 @@ erreur freeParcoursChinois()
 	    
 	}
     }
-    /* Fermeture du fichier */
-    fclose(resPostier);
+    
     return RES_OK;
 }
 
@@ -330,9 +322,16 @@ erreur calculCycleEulerien(int idGraphe,int idHeuristique, char *res_path)
     /* Un cycle chinois est possible */
     if(*tparc == 0)
     {
-	initParcoursChinois(idGraphe, res_path);
-	goCycleChinois(idGraphe, idHeuristique, res_path);
-	freeParcoursChinois();
+	if(idHeuristique == 0)
+	{
+	    goCycleChinois(idGraphe, idHeuristique, res_path);
+	}
+	else
+	{
+	    ouvertureFichierRes(res_path);
+	    goCycleChinois(idGraphe, idHeuristique, res_path);
+	    fclose(resPostier);
+	}
     }
     else
     {
@@ -350,7 +349,8 @@ erreur calculCycleEulerien(int idGraphe,int idHeuristique, char *res_path)
 void goCycleChinois(int idGraphe, int idHeuristique, char* res_path)
 {    
     /* Liste dans laquelle le parcours sera mémorisé */    
-    TypVoisins *parc = NULL;
+    TypVoisins *parc = NULL;    
+    
     
     /* Allocation mémoire du parcours chinois (si besoin est) */
     if(idHeuristique != -1)
@@ -360,26 +360,33 @@ void goCycleChinois(int idGraphe, int idHeuristique, char* res_path)
 	{
 	    /* Toutes les heuristiques */
 	    case 0:
-		goCycleChinois(idGraphe, 0, res_path);		
-		break;
+		ouvertureFichierRes(res_path);
+		goCycleChinois(idGraphe, 1, res_path);
+		goCycleChinois(idGraphe, 2, res_path);		
+		fclose(resPostier);
+		return;
 	    /* Couplage optimal */    
 	    case 1 :
+		initParcoursChinois(idGraphe);
 		doCouplageOptimal(idGraphe);		
 		break;
 	    case 2 :
-	    //doFirstCouplage(idGraphe);
-	    break;
+		initParcoursChinois(idGraphe);
+		doCouplageSommetsCroissants(idGraphe);
+		break;
 	    case 3 :
-	    //doRandomCouplage(idGraphe);
-	    break;
+		initParcoursChinois(idGraphe);
+		doCouplageSommetsRandom(idGraphe);
+		break;
 	    default:
 		printf("Cette heuristique n'existe pas ! \n"); return;
 		
 	}
 	
-	/* Quoiqu'il arrive : on écrit le résultat du couplage */
+	/* On écrit le résultat du couplage */
 	ecrireFichierDot(idGraphe,idHeuristique, res_path);	
     }
+    
     /* On peut effectuer le cycle eulérien */
     parc = cycleEulerien(idGraphe, 1);
 
@@ -387,8 +394,12 @@ void goCycleChinois(int idGraphe, int idHeuristique, char* res_path)
     /* Ecriture du resultat */
     ecrireFichierRes(parc,idGraphe, idHeuristique);
 
+    printf("Heuristique %d traitee \n", idHeuristique);
     /* Libération mémoire de la liste resultat */
-    supprimeListe(&parc);	
+    supprimeListe(&parc);
+    
+    /* Et du cycle chinois */
+    freeParcoursChinois();
     
 }
 
@@ -411,53 +422,7 @@ int getNbVoisinsAccessibles(int idGraphe, int sommet)
     return nbVoisins;
 }
 
-void plusCourtChemin(int idGraphe, int *m[], int *p[])
-{
-    TypGraphe *g = graphes[idGraphe - 1];
-    int nbSom = g -> nbMaxSommets;
-    
-    /* itérateurs */
-    int x, y, z;
-    
-    /* Initialisation */
-    for(x = 0 ; x < nbSom ; x++)
-    {
-	for(y = 0 ; y < nbSom ; y++)
-	{
-	    TypVoisins *tmp = rechercheVoisin(&g -> aretes[x], y + 1);
-	    
-	    if(x == y || tmp == NULL)
-	    {
-		m[x][y] = 0;
-	    }
-	    else
-	    {
-		m[x][y] = tmp -> poidsVoisin;
-	    }
-	    
-	    p[x][y] = x + 1;
-	}
-    }
-    
-    /* Boucle de calcul */
-    for(z = 0 ; z < nbSom ; z++)
-    {
-	for(x = 0; x < nbSom ; x++)
-	{
-	    for(y = 0 ; y < nbSom; y++)
-	    {
-		if(m[x][z] != 0 && m[z][y] != 0 && x != y) 
-		{
-		    if(m[x][z] + m[z][y] < m[x][y] || m[x][y] == 0)
-		    {
-			m[x][y] = m[x][z]+ m[z][y];
-			p[x][y] = p[z][y];
-		    }
-		}
-	    }	    
-	}
-    }
-}
+
 
 
 void sommetsImpairs(int idGraphe, TypVoisins **res)
@@ -479,37 +444,150 @@ void sommetsImpairs(int idGraphe, TypVoisins **res)
 }
 
 
-void listeCouplage(int idGraphe, TypVoisins *ls, TypVoisins **res)
+
+//////////////////////////////////////////////////////////////////
+/*
+ * 
+ * 
+ * 	FONCTIONS SPECIFIQUES AUX COUPLAGES VIA ALGO GOURMAND
+ * 
+ * 
+ */
+//////////////////////////////////////////////////////////////////
+
+void doCouplageSommetsCroissants(int idGraphe)
 {
-    if(ls == NULL)
-	return ;
-        
-    /* La liste étant triée, le minimum est le premier élément*/
-    TypVoisins *x = ls;
-    TypVoisins *y = x -> voisinSuivant;
+    /* Lister les sommets impairs */
+    TypVoisins *s_impairs = NULL;
+    sommetsImpairs(idGraphe, &s_impairs);
+
+   
+    TypVoisins *tmp = s_impairs;
     
-    /* Pour tous les autres éléments de la liste dont le numéro de sommet est plus grand que min */
-    while(y != NULL)
+    while(tmp != NULL)
     {
-	 /* Ajout de {x,y} dans la liste de résultat */
-	ajouteVoisinNonTries(res, x -> voisin, x -> poidsVoisin, NULL);
-	ajouteVoisinNonTries(res, y -> voisin, y -> poidsVoisin, NULL);
-	    
-	/* Appel de la fonction sur la liste privée de {x,y} */
-	TypVoisins *nls = NULL;
-	cloneListe(&ls, &nls);
-	supprimeVoisin(&nls, x -> voisin);
-	supprimeVoisin(&nls, y -> voisin);	
-	listeCouplage(idGraphe, nls, res);
+	/* On récupère les deux sommetsdu couple */
+	int som1 = tmp -> voisin;
+	tmp = tmp -> voisinSuivant;
 	
-	supprimeListe(&nls);
+	int som2 = tmp -> voisin;
 	
-	y = y -> voisinSuivant;
+	/* On récupère le chemin entre les deux */
+	TypVoisins *chemin = NULL;
+	trouveCheminGourmand(idGraphe, som1, som2, &chemin);
+	
+	TypVoisins *arr = chemin;
+	
+	/* On duplique les arêtes */
+	while(arr->voisinSuivant != NULL)
+	{
+	    dupliqueArete(idGraphe, arr -> voisin, arr -> voisinSuivant -> voisin);
+	    arr = arr -> voisinSuivant;
+	}
+	
+	supprimeListe(&chemin);
+	
+	/* On passe au chemin suivant*/	
+	tmp = tmp -> voisinSuivant;
     }
     
+    /* Libération mémoire */
+    supprimeListe(&s_impairs);
+
+}
+
+void doCouplageSommetsRandom(int idGraphe)
+{
+    /* Lister les sommets impairs */
+    TypVoisins *s_impairs = NULL;
+    sommetsImpairs(idGraphe, &s_impairs);
+    
+    printf("Sommet impairs : \n");
+    afficheVoisins(&s_impairs);
+   
+    TypVoisins *tmp = s_impairs;
+    
+    /* Initialisation de la graine pour le tirage aléatoire */
+    srand(time(NULL));
+    
+    int pos = 1;
+    
+    while(tmp != NULL)
+    {
+	
+	tmp = tmp -> voisinSuivant;
+    }
+}
+
+void trouveCheminGourmand(int idGraphe, int som1, int som2, TypVoisins **path)
+{
+    
+    TypGraphe *g = graphes[idGraphe - 1];
+    
+    /* On ajoute le premier sommet à la liste resultat */
+    ajouteVoisinNonTries(path, som1, 0, NULL);
+    
+    TypVoisins *tmp = *path;
+    TypVoisins *voisins;
+    
+    /* Si s2 est voisin direct de s1 */
+    if(rechercheVoisin (&g -> aretes[som1 -1], som2) != NULL)
+    {
+	ajouteVoisinNonTries(path, som2, 0, NULL);
+    }
+    else
+    {
+	/* Boucle principale de l'algo */
+	while(tmp -> voisin != som2)
+	{
+	    /* On récupère la liste des voisins du sommet en cours */
+	    TypVoisins *voisins = g -> aretes[tmp -> voisin - 1];	
+		    
+	    /* Chercher le voisin le plus proche ET non présent dans la liste resultat */
+	    int distMin = -1;
+	    int p_proche = -1;
+		    
+	    while(voisins != NULL)
+	    {
+		if(distMin == -1 && p_proche == -1)
+		{
+		    if(rechercheVoisin(path, voisins -> voisin) == NULL)
+		    {
+			distMin = voisins -> poidsVoisin;
+			p_proche = voisins -> voisin;
+		    }
+		}
+		else
+		{
+		    if(voisins -> poidsVoisin < distMin && rechercheVoisin(path, voisins -> voisin) == NULL && voisins -> voisin != -1)
+		    {
+			p_proche = voisins -> voisin;
+			distMin = voisins -> poidsVoisin;
+		    }
+		}
+		voisins = voisins -> voisinSuivant;
+	    }
+		    
+	    /* Ajout du voisin trouve dans la liste resultat */
+	    ajouteVoisinNonTries(path, p_proche, 0, NULL);
+	    
+	    
+	    tmp = tmp -> voisinSuivant;
+	}
+    }
     
 }
 
+
+//////////////////////////////////////////////////////////////////
+/*
+ * 
+ * 
+ * 	FONCTIONS SPECIFIQUES AU COUPLAGE OPTIMAL
+ * 
+ * 
+ */
+//////////////////////////////////////////////////////////////////
 
 void doCouplageOptimal(int idGraphe)
 {
@@ -564,6 +642,53 @@ void doCouplageOptimal(int idGraphe)
   supprimeListe(&b_couple);
 }
 
+void plusCourtChemin(int idGraphe, int *m[], int *p[])
+{
+    TypGraphe *g = graphes[idGraphe - 1];
+    int nbSom = g -> nbMaxSommets;
+    
+    /* itérateurs */
+    int x, y, z;
+    
+    /* Initialisation */
+    for(x = 0 ; x < nbSom ; x++)
+    {
+	for(y = 0 ; y < nbSom ; y++)
+	{
+	    TypVoisins *tmp = rechercheVoisin(&g -> aretes[x], y + 1);
+	    
+	    if(x == y || tmp == NULL)
+	    {
+		m[x][y] = 0;
+	    }
+	    else
+	    {
+		m[x][y] = tmp -> poidsVoisin;
+	    }
+	    
+	    p[x][y] = x + 1;
+	}
+    }
+    
+    /* Boucle de calcul */
+    for(z = 0 ; z < nbSom ; z++)
+    {
+	for(x = 0; x < nbSom ; x++)
+	{
+	    for(y = 0 ; y < nbSom; y++)
+	    {
+		if(m[x][z] != 0 && m[z][y] != 0 && x != y) 
+		{
+		    if(m[x][z] + m[z][y] < m[x][y] || m[x][y] == 0)
+		    {
+			m[x][y] = m[x][z]+ m[z][y];
+			p[x][y] = p[z][y];
+		    }
+		}
+	    }	    
+	}
+    }
+}
 
 TypVoisins* calculeCoupleOptimal(TypVoisins *couples, int* m[])
 {
@@ -631,7 +756,6 @@ TypVoisins* calculeCoupleOptimal(TypVoisins *couples, int* m[])
     return res;
 }
 
-
 int evalueCouplage(TypVoisins *couples, int *m[])
 {
     int res = 0;
@@ -691,21 +815,90 @@ void duplicationCouplage(int idGraphe, TypVoisins *couples, int* p[])
     }
 }
 
+void listeCouplage(int idGraphe, TypVoisins *ls, TypVoisins **res)
+{
+    if(ls == NULL)
+	return ;
+        
+    /* La liste étant triée, le minimum est le premier élément*/
+    TypVoisins *x = ls;
+    TypVoisins *y = x -> voisinSuivant;
+    
+    /* Pour tous les autres éléments de la liste dont le numéro de sommet est plus grand que min */
+    while(y != NULL)
+    {
+	 /* Ajout de {x,y} dans la liste de résultat */
+	ajouteVoisinNonTries(res, x -> voisin, x -> poidsVoisin, NULL);
+	ajouteVoisinNonTries(res, y -> voisin, y -> poidsVoisin, NULL);
+	    
+	/* Appel de la fonction sur la liste privée de {x,y} */
+	TypVoisins *nls = NULL;
+	cloneListe(&ls, &nls);
+	supprimeVoisin(&nls, x -> voisin);
+	supprimeVoisin(&nls, y -> voisin);	
+	listeCouplage(idGraphe, nls, res);
+	
+	/* Libération de la mémoire */
+	supprimeListe(&nls);
+	
+	y = y -> voisinSuivant;
+    }
+    
+    
+}
+
+/////////////////////////////////////////////////////////////////
+
 /*
  * Fonctions de gestion des fichiers résultats
  * Ecriture res :
  *	H(idHeuristique) = S1 --(Distance)--> S2 --> ...
  * 
  */
+
+//////////////////////////////////////////////////////////////////
+
+void ouvertureFichierRes(char* res_path)
+{
+    /* Préparation du fichier résultat */
+    resPostier = NULL;
+    
+    char file_name[320] = "";    
+    strcat(file_name, res_path);
+    strcat(file_name, "_ResPostier.txt");
+        
+    resPostier = fopen(file_name, "w+");
+}
+    
+
 void ecrireFichierRes(TypVoisins* res, int idGraphe, int idHeuristique)
 {
     /* 
      * On calcule la taille de la chaine de resultat
      */
     char *aretes = NULL; aretes = aretesToString(res, idGraphe);
-    char *res_str = malloc((strlen(aretes) + 10) * sizeof(char)); 
+    char *res_str = malloc((strlen(aretes) + 20) * sizeof(char)); 
     
-    sprintf(res_str, "H(%d) = ", idHeuristique);
+    /*
+     * Calcul de la longueur du chemin
+     */
+    int val_path = 0;
+    TypVoisins *tmp = res;
+    TypGraphe *g = graphes[idGraphe - 1];
+    
+    while(tmp != NULL)
+    {
+	if(tmp -> voisinSuivant != NULL)
+	{
+	    TypVoisins *current = rechercheVoisin(&g -> aretes[tmp -> voisin - 1], tmp -> voisinSuivant -> voisin);
+	    val_path = val_path + current -> poidsVoisin;
+	}
+	
+	tmp = tmp -> voisinSuivant;
+    }
+    
+    /* Formation de la chaine de caracteres */
+    sprintf(res_str, "H(%d) = %d : ", idHeuristique, val_path);
     strcat(res_str, aretes);
     
     
