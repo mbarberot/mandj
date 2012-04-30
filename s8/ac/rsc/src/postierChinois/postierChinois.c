@@ -362,7 +362,8 @@ void goCycleChinois(int idGraphe, int idHeuristique, char* res_path)
 	    case 0:
 		ouvertureFichierRes(res_path);
 		goCycleChinois(idGraphe, 1, res_path);
-		goCycleChinois(idGraphe, 2, res_path);		
+		goCycleChinois(idGraphe, 2, res_path);
+		goCycleChinois(idGraphe, 3, res_path);
 		fclose(resPostier);
 		return;
 	    /* Couplage optimal */    
@@ -393,8 +394,8 @@ void goCycleChinois(int idGraphe, int idHeuristique, char* res_path)
     
     /* Ecriture du resultat */
     ecrireFichierRes(parc,idGraphe, idHeuristique);
-
     printf("Heuristique %d traitee \n", idHeuristique);
+    
     /* Libération mémoire de la liste resultat */
     supprimeListe(&parc);
     
@@ -498,11 +499,21 @@ void doCouplageSommetsCroissants(int idGraphe)
 
 void doCouplageSommetsRandom(int idGraphe)
 {
+  
+    // Stocke le couplage en cours
+    int som1, som2;
+    
+    // itérateur
+    int i;
+    
+    // Utilisées pour le calcul aléatoire
+    int size;
+    int tirage;
+    
     /* Lister les sommets impairs */
     TypVoisins *s_impairs = NULL;
     sommetsImpairs(idGraphe, &s_impairs);
-    
-    printf("Sommet impairs : \n");
+
     afficheVoisins(&s_impairs);
    
     TypVoisins *tmp = s_impairs;
@@ -510,12 +521,57 @@ void doCouplageSommetsRandom(int idGraphe)
     /* Initialisation de la graine pour le tirage aléatoire */
     srand(time(NULL));
     
-    int pos = 1;
     
     while(tmp != NULL)
     {
 	
-	tmp = tmp -> voisinSuivant;
+	// on prend un premier sommet
+	som1 = tmp -> voisin;
+	
+	//on effectue un tirage aléatoire entre 1 et tailleListe - 1 pour trouver le deuxième
+	size = tailleListe(&s_impairs);
+	tirage;
+	
+	if(size > 2)
+	{
+	  tirage = rand() % (size - 2) + 1;
+	}
+	else
+	{
+	  tirage = 1;
+	}
+	
+	//on itère pour récupérer l'élement choisi
+	
+	for(i = 0 ; i < tirage ; i++)
+	{
+	  tmp = tmp -> voisinSuivant;
+	}
+	
+	som2 = tmp -> voisin;
+	
+	
+	// on trace le chemin
+	TypVoisins *path = NULL;
+	trouveCheminGourmand(idGraphe, som1, som2, &path);
+	
+	// on le duplique
+	TypVoisins *arr = path;
+	
+	while(arr->voisinSuivant != NULL)
+	{
+	    dupliqueArete(idGraphe, arr -> voisin, arr -> voisinSuivant -> voisin);
+	    arr = arr -> voisinSuivant;
+	}
+	
+	supprimeListe(&path);
+	
+	// on supprime les deux sommets de la liste
+	supprimeVoisin(&s_impairs, som1);
+	supprimeVoisin(&s_impairs, som2);
+	
+	// on replace le pointeur au début de la liste
+	tmp = s_impairs;
     }
 }
 
@@ -537,6 +593,7 @@ void trouveCheminGourmand(int idGraphe, int som1, int som2, TypVoisins **path)
     }
     else
     {
+
 	/* Boucle principale de l'algo */
 	while(tmp -> voisin != som2)
 	{
@@ -876,8 +933,9 @@ void ecrireFichierRes(TypVoisins* res, int idGraphe, int idHeuristique)
     /* 
      * On calcule la taille de la chaine de resultat
      */
-    char *aretes = NULL; aretes = aretesToString(res, idGraphe);
-    char *res_str = malloc((strlen(aretes) + 20) * sizeof(char)); 
+    char *aretes = NULL; 
+    aretes = aretesToString(res, idGraphe);
+    char *res_str = malloc((strlen(aretes) + 25) * sizeof(char)); 
     
     /*
      * Calcul de la longueur du chemin
