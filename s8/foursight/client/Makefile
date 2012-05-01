@@ -13,6 +13,7 @@
 SRCDIR=src/
 CDIR=$(SRCDIR)c/
 JAVADIR=$(SRCDIR)java/
+PROLOGDIR=$(SRCDIR)prolog/
 # - Chemin vers l'executable
 BINDIR=bin/
 # - Argument de l'executable
@@ -21,7 +22,7 @@ PORT=5555
 
 # Règles :
 # - Principale
-all: c java
+all: c java prolog
 
 # - Compilation de la partie C
 c :
@@ -30,7 +31,11 @@ c :
 # - Compilation de la partie Java
 java :
 	make -C $(JAVADIR)
-	
+
+# - Copie des fichiers prolog dans le repertoire bin/
+prolog :
+	make -C $(PROLOGDIR)
+
 # - Nettoyage des fichiers objets
 clean:
 	make -C $(CDIR) clean

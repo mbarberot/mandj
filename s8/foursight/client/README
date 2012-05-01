@@ -1,0 +1,33 @@
+*
+* Foursight
+*
+* Projet SCS - MOIA
+* 2011 - 2012
+*
+* Barberot Mathieu & Racenet Joan
+*
+* ---------------------------------------------------
+
+
+* ---------------------------------------------------
+* Lancer le jeu
+*
+*
+* Pour lancer le jeu, utilisez le script run.sh :
+
+    ./run.sh run
+ 
+ 
+* ---------------------------------------------------
+* Régler les chemins
+*
+* Fichiers à modifier :
+* - ./run.sh 		=> variable  LD_LIBRARY_PATH
+* - ./Makefile 		=> variables HOST et PORT
+* - ./src/c/Makefile 	=> variable  JDK_HOME
+* - ./src/c/ia.h	=> constante CLASSPATH
+* - ./src/java/Makefile => variable  JASPER
+* - ./src/java/IA.java 	=> constante PATH_TO_SICSTUS
+
+
+
