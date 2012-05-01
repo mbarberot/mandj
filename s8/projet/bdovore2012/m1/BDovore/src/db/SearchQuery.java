@@ -232,16 +232,19 @@ public class SearchQuery {
      * @param isDedicace
      * @param isAAcheter
      * @return
+     * 
+     * @deprecated Cette fonction est destinée à l'importation depuis un fichier
+     * csv. Non seulement elle n'a pas sa place ici car ce n'est pas une 
+     * requête de recherche mais une requête d'insertion mais en plus, elle
+     * n'est pas adaptée à la base de données actuelle et , enfin, l'importation
+     * depuis un fichier CSV est obsolete depuis l'implémentation de la 
+     * synchronisation avec le compte utilisateur et elle devrait être supprimée
      */
     public static String insertISBN(String search, String isPret, String isDedicace, String isAAcheter) {
 
         String isbn = CodeBarre.toBDovoreISBN(escape(search));
         String ean = CodeBarre.toBDovoreEAN(escape(search));
         String eanisbn = isbn + " " + ean; // FullText prend tout                                                                                               
-
-        //
-        // TODO : Utiliser la nouvelle DB 
-        //
 
         String sqlSearch = "SELECT t.ID_TOME, s.ID_SERIE, e.ID_EDITEUR, e.ID_COLLECTION, e.ID_EDITION, scenar.ID_AUTEUR, dess.ID_AUTEUR, g.ID_GENRE, '" + isPret + "', NULL, NULL, '" + isDedicace + "', e.FLG_TT, NULL, NULL, CURRENT_TIMESTAMP, '" + isAAcheter + "', NULL, NULL, 'N' \n"
                 + "FROM BD_EDITION e, FTL_SEARCH_DATA('" + eanisbn + "', 0, 0) FT \n"

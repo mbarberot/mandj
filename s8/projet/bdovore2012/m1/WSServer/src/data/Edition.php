@@ -46,6 +46,52 @@ class Edition{
 		($nflagDef == NULL)? $this->flag_default = 0 : $this->flag_default = $nflagDef;
 			
 	}
+        
+        public function getIdEdition() {
+            return $this->idEdition;
+        }
+
+        public function getIdTome() {
+            return $this->idTome;
+        }
+
+        public function getFlag_pret() {
+            return $this->flag_pret;
+        }
+
+        public function getFlag_dedicace() {
+            return $this->flag_dedicace;
+        }
+
+        public function getFlag_aAcheter() {
+            return $this->flag_aAcheter;
+        }
+
+        public function getDate_ajout() {
+            return $this->date_ajout;
+        }
+
+        public function getImg_couv() {
+            return $this->img_couv;
+        }
+
+        public function getIsbn() {
+            return $this->isbn;
+        }
+
+        public function getDate_parution() {
+            return $this->date_parution;
+        }
+
+        public function getIdEditeur() {
+            return $this->idEditeur;
+        }
+
+        public function getFlag_default() {
+            return $this->flag_default;
+        }
+
+
 
 }
 ?>

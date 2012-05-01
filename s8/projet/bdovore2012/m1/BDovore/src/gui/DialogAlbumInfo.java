@@ -59,7 +59,7 @@ public class DialogAlbumInfo extends JDialog {
 
         // Récupération des données dans la base locale
         try {
-            FrameMain.db.fillAlbum(crtAlbum);
+            FrameMain.db.fillAlbum(crtAlbum, FrameMain.synch);
             allScenarists = crtAlbum.getScenaristes();
             allDrawers = crtAlbum.getDessinateurs();
             allColorists = crtAlbum.getColoristes();
@@ -402,13 +402,15 @@ public class DialogAlbumInfo extends JDialog {
                 try {
                     Component c = (Component) ev.getSource();
                     Window owner = SwingUtilities.getWindowAncestor(c);
-                    int serialID = crtAlbum.getIdSerie().intValue();
+                    int albumID = crtAlbum.getId();
                     DialogSerialInfo dialogSerial = new DialogSerialInfo(owner,
                             Dialog.ModalityType.APPLICATION_MODAL,
-                            FrameMain.db.getSerie(serialID));
+                            FrameMain.db.getSerie(albumID));
                     dialogSerial.setVisible(true);
                 } catch (ClassCastException ex) {
+                    ex.printStackTrace();
                 } catch (SQLException ex) {
+                    ex.printStackTrace();
                 }
             }
         });
@@ -507,7 +509,7 @@ public class DialogAlbumInfo extends JDialog {
         }   
 
         try {
-            FrameMain.db.updateUserData(crtEdition);
+            FrameMain.db.updateUserData(crtEdition, FrameMain.synch);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Unable to update user data: edition", "Error",
                     JOptionPane.ERROR_MESSAGE);
@@ -556,52 +558,57 @@ public class DialogAlbumInfo extends JDialog {
     /**
      * Mise à jour de l'image de couverture de l'album
      */
-    private void updateCoverImage() {
-        String coverURL = null;
+    private void updateCoverImage() 
+    {
+        String cover = null;
         ImageIcon image = null;
-        coverURL = crtEdition.getCouvertureURL();
+        cover = crtEdition.getCouvertureURL();
 
-        if (coverURL == null) {
-            String reponseWS = "";
-            try {
-                /**
-                 * TODO: A décommenter pour recuperer les infos edition-urlimage
-                 */
-                //reponseWS = Updater.wS.getInfosManquantesEdition(FrameMain.currentUser.getUsername(),FrameMain.currentUser.getPassword(),edition.getId());
-                //FrameMain.up.update("DETAILS_EDITION", reponseWS);
-                coverURL = crtEdition.getCouvertureURL();
-            } catch (Exception e) {
+        if (cover == null) 
+        {
+            try
+            {
+                FrameMain.synch.updateEdition(crtEdition.getId());
+                FrameMain.db.fillAlbum(crtAlbum, FrameMain.synch);
+                allEditions = crtAlbum.getEditions();
+                crtEdition = allEditions.get(lstEdition.getSelectedIndex());
+                cover = crtEdition.getCouverture();
+            } 
+            catch (Exception e) 
+            {
                 e.printStackTrace();
             }
         }
+        
 
         // Utilisation d'un MediaTracker pour contrôler l'avancée du 
         // téléchargement de l'image (et gérer le timeout)
         MediaTracker tracker = new MediaTracker(this);
 
         // Vérification si image en cache
-        File imageCache = new File(Config.COUV_PATH + crtEdition.getCouverture());
+        File imageCache = new File(Config.COUV_PATH + cover);
 
         // Présence de l'image en cache ?
         if (imageCache.exists()) 
         {
             // Oui, on prend cette image
-            System.out.println("Image en cache : " + crtEdition.getCouverture());
-            image = new ImageIcon(Config.COUV_PATH + crtEdition.getCouverture());
+            System.out.println("Image en cache : " + cover);
+            image = new ImageIcon(Config.COUV_PATH + cover);
         }
         else 
         {
             // Non, on la télécharge
-            System.out.println("Pas de cache : " + crtEdition.getCouverture());
-            if (coverURL != null && crtEdition.getCouverture() != null) {
+            System.out.println("Pas de cache : " + Config.COUV_PATH + cover);
+            if (cover != null)
+            {
                 try 
                 {
-                    image = new ImageIcon(new URL(coverURL));
+                    image = new ImageIcon(new URL(Config.IMG_COUV_URL + cover));
                     tracker.addImage(image.getImage(), 0);
                 } 
                 catch (MalformedURLException ex) 
                 {
-                    JOptionPane.showMessageDialog(this, "URL malformé : " + coverURL, "Erreur",
+                    JOptionPane.showMessageDialog(this, "URL malformé : " + cover, "Erreur",
                             JOptionPane.ERROR_MESSAGE);
                     ex.printStackTrace();
                 }
@@ -620,7 +627,8 @@ public class DialogAlbumInfo extends JDialog {
             // Mise en cache
             if (image != null) 
             {
-                saveImage(image, crtEdition.getCouverture());
+                System.out.println("Mise en cache");
+                saveImage(image, cover);
             }
         }
 

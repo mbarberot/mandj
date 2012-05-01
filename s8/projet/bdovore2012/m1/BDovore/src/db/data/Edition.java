@@ -141,7 +141,7 @@ public class Edition {
     }
 
     public String getCouvertureURL() {
-        return Config.IMG_COUV_URL + getCouverture();
+        return getCouverture();
     }
 
     public boolean isEditionOriginale() {

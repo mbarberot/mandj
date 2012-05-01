@@ -38,7 +38,7 @@ public class DialogArtistInfo extends JDialog {
         
         // Récupération des informations sur l'auteur
         try {
-            FrameMain.db.fillAuteur(crtAuteur);
+            FrameMain.db.fillAuteur(crtAuteur,FrameMain.synch);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Impossible de charger les infos de l'auteur",
                     "Erreur", JOptionPane.ERROR_MESSAGE);

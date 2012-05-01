@@ -1,10 +1,20 @@
 package db;
 
 import db.data.*;
+import db.synch.Synch;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
+import main.Config;
 import wsdl.server.DetailsEdition;
 
 /**
@@ -241,7 +251,7 @@ public class DataBase {
     /**
      * Complète les données manquantes d'un album (auteurs, éditions)
      */
-    public synchronized void fillAlbum(Album album) throws SQLException {
+    public synchronized void fillAlbum(Album album, Synch synch) throws SQLException {
 
         Statement st = conn.createStatement();
         ResultSet rs = null;
@@ -294,11 +304,8 @@ public class DataBase {
         // Si c'est pas le cas, on recupere les infos du web service
         if (!(tupleExist > 0)) {
             System.out.println("Pas d'infos dispo pour les auteurs");
-            String reponseWS = "";
             try {
-                /**
-                 * TODO: WebService Récupérer les informations manquantes
-                 */
+                synch.fillAlbum(album.getId());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -345,15 +352,14 @@ public class DataBase {
      * @return La série
      * @throws SQLException
      */
-    public synchronized Serie getSerie(int idSerie) throws SQLException {
+    public synchronized Serie getSerie(int idAlbum) throws SQLException {
 
         Serie result = null;
         Statement st = conn.createStatement();
-        ResultSet rs = st.executeQuery(InfoQuery.getSerie(idSerie));
+        ResultSet rs = st.executeQuery(InfoQuery.getSerie(idAlbum));
 
         if (rs.next()) {
-            result = new Serie(rs.getInt("ID_SERIE"), rs.getString("NOM_SERIE"),
-                    rs.getString("NOM_GENRE"));
+            result = new Serie(rs.getInt("ID_SERIE"), rs.getString("NOM_SERIE"), rs.getString("NOM_GENRE"));
         }
 
         st.close();
@@ -379,7 +385,7 @@ public class DataBase {
      * @param edition L'édition de l'album
      * @throws SQLException
      */
-    public void updateUserData(Edition edition) throws SQLException {
+    public void updateUserData(Edition edition, Synch synch) throws SQLException {
 
         String sql = "";
 
@@ -399,7 +405,7 @@ public class DataBase {
                 this.update(sql);
                 // Télécharge les infos relatives à l'édition et son album parent 
                 // (url image, image elle même et les auteurs associés)
-                downloadDetailsForEdition(edition);
+                downloadDetailsForEdition(edition,synch);
                 break;
 
             case Edition.DELETE:
@@ -504,14 +510,7 @@ public class DataBase {
 
         if (!Tables.ids.containsKey(table)) 
         {
-            if(table.equals("BD_USER"))
-            {
-                sql = "SELECT ID_EDITION AS id FROM BD_USER;";
-            }
-            else
-            {
-                return null;
-            }
+            return null;
         }
         else
         {
@@ -585,7 +584,7 @@ public class DataBase {
     }
     
     public synchronized DetailsEdition getBDUser(int idEdition) throws SQLException {
-        DetailsEdition ed = new DetailsEdition();
+        DetailsEdition ed = new DetailsEdition(idEdition, 0, 0, 0, 0, "0000-00-00", "", "", "0000-00-00", 0, 0);
         
         
         String sql = "SELECT * "
@@ -603,9 +602,12 @@ public class DataBase {
             ed.setFlag_pret((rs.getBoolean("FLG_PRET")?1:0));
             ed.setFlag_dedicace((rs.getBoolean("FLG_DEDICACE")?1:0));
             ed.setFlag_aAcheter((rs.getBoolean("FLG_AACHETER")?1:0));
-            ed.setDate_ajout((rs.getDate("DATE_AJOUT")).toString());
+            ed.setDate_ajout(rs.getDate("DATE_AJOUT").toString());
             ed.setImg_couv(rs.getString("IMG_COUV"));
         }
+        
+        
+       
         
         st.close();
         return ed;
@@ -793,7 +795,7 @@ public class DataBase {
      * @param serial La série à compléter
      * @throws SQLException
      */
-    public void fillSerie(Serie serial) throws SQLException {
+    public void fillSerie(Serie serial, Synch synch) throws SQLException {
 
         String sql = "";
         sql = "SELECT ds.NB_TOMES, ds.FLG_FINI, ds.HISTOIRE\n"
@@ -805,17 +807,18 @@ public class DataBase {
 
         // Si les données sont présentes dans la base, on les récupères
         // Sinon on contatcte le webservice
-        if (rs.next()) {
+        if (rs.next()) 
+        {
             serial.completeSerie(rs.getInt("NB_TOMES"), rs.getInt("FLG_FINI"), rs.getString("HISTOIRE"));
             System.out.println("Série completée par la base de données locale");
-        } else {
+        } 
+        else 
+        {
             System.out.println("Série pas dans la base");
-            //
-            // TODO : Contacter le webservice
-            // Récupérer les informations manquantes sur la série
-            //
-            try {
-                // TODO : Update de la base de données locale
+            
+            try 
+            {
+                synch.fillSerie(serial.getId());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -838,7 +841,7 @@ public class DataBase {
      * @param author L'auteur à compléter
      * @throws SQLException
      */
-    public void fillAuteur(Auteur author) throws SQLException {
+    public void fillAuteur(Auteur author, Synch synch) throws SQLException {
 
         String sql = "";
         sql = "SELECT da.DATE_NAISSANCE , da.DATE_DECES, da.NATIONALITE\n"
@@ -852,16 +855,10 @@ public class DataBase {
         // Sinon on contacte le webservice
         if (rs.next()) {
             author.completeAuteur(rs.getDate("DATE_NAISSANCE"), rs.getDate("DATE_DECES"), rs.getString("NATIONALITE"));
-            System.out.println("Auteur complete par la base de données locale");
         } else {
-            System.out.println("Auteur pas dans la base");
-            //
-            // TODO : Contacter le WebService
-            // Récupérer les informations manquantes sur l'auteur
-            //
-            try {
-                // TODO : Mise à jour de la base de données locale
-                //FrameMain.up.update("DETAILS_AUTEUR", reponseWS);
+            try 
+            {
+                synch.fillAuteur(author.getId());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -881,27 +878,43 @@ public class DataBase {
      * Télécharge les détails d'une édition
      * @param edition L'édition concernée
      */
-    public void downloadDetailsForEdition(Edition edition) {
+    public void downloadDetailsForEdition(Edition edition, Synch synch) throws SQLException {
 
         // Recuperation des infos sur l'album parent
         try {
-            //
-            // TODO : Contacter le WebService
-            // Récupérer les informations sur l'édition
-            //
-            
-            
-            //reponseWS = Updater.wS.getInfosManquantesAuteurTome(FrameMain.currentUser.getUsername(),FrameMain.currentUser.getPassword(),edition.getParentAlbum().getId());
-            //FrameMain.up.update("TJ_TOME_AUTEUR", reponseWS);
-            //reponseWS = Updater.wS.getInfosManquantesEdition(FrameMain.currentUser.getUsername(),FrameMain.currentUser.getPassword(),edition.getId());
-            //FrameMain.up.update("DETAILS_EDITION", reponseWS);
+            synch.updateEdition(edition.getId());
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
+        String sql = "SELECT IMG_COUV \n"
+                + "FROM DETAILS_EDITION \n"
+                + "WHERE ID_EDITION = " + edition.getId() + "\n "
+                + ";";
+        
+        Statement st = conn.createStatement();
+        ResultSet rs = st.executeQuery(sql);
 
-        //
-        // TODO : Récupérer l'image
-        //
+        if(rs.next())
+        {
+            try
+            {
+                String img_couv = rs.getString("IMG_COUV");
+                URL url = new URL(Config.COUV_PATH + img_couv);
+                System.out.println("db.downloadDetailsForEdition -> "+url);
+                BufferedImage couverture = ImageIO.read(url);
+                
+                ImageIO.write(couverture, "jpg", new File(Config.COUV_PATH + img_couv));
+            }
+            catch (MalformedURLException ex)
+            {
+                ex.printStackTrace();
+            } 
+            catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
+        }
     }
 
     /**

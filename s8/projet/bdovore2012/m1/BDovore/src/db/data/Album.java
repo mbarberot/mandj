@@ -35,10 +35,6 @@ public class Album {
         this.idGenre = idGenre;
         this.genre = genre;
 
-        // TODO : Gestion avec flg_type dans la V2 -> Le rajouter?
-        this.integrale = false; /* (integrale.equals("O") || !integrale.equals("N")); */
-        this.coffret = false; /* flg_type == 1; */
-
         this.defaultISBN = "";
         this.defaultEAN = "";
 

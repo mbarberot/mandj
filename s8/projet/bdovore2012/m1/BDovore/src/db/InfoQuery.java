@@ -14,7 +14,7 @@ public class InfoQuery {
             + "ed.NOM_EDITEUR, e.DATE_PARUTION, "
             + "e.ISBN, e.FLG_DEFAULT, de.IMG_COUV";
     private static final String SERIE_FIELDS =
-            "s.ID_SERIE, s.NOM_SERIE";
+            "s.ID_SERIE, s.NOM_SERIE, g.NOM_GENRE";
 
     /**
      * Retourne le code SQL pour une requête qui recherche les auteurs d'un tome
@@ -76,11 +76,14 @@ public class InfoQuery {
      * @param idSerie - ID de la série
      * @return Le code SQL
      */
-    public static String getSerie(int idSerie) {
+    public static String getSerie(int idAlbum) {
 
         String sql = "SELECT " + SERIE_FIELDS + "\n"
-                + "FROM SERIE s \n"
-                + "WHERE s.ID_SERIE = " + idSerie + ";";
+                + "FROM TOME t \n "
+                + "INNER JOIN SERIE s ON s.ID_SERIE = t.ID_SERIE \n "
+                + "INNER JOIN GENRE g ON g.ID_GENRE = t.ID_GENRE \n "
+                + "WHERE t.ID_TOME =" + idAlbum + "\n "
+                + ";";
 
         return sql;
     }

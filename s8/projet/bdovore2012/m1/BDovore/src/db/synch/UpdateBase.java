@@ -46,7 +46,7 @@ public class UpdateBase extends Thread
      * @param db Base de donnée à mettre à jour
      * @param port Objet d'interfaçage du webservice
      */
-    public UpdateBase(Update update, DataBase db, BDovore_PortType port)
+    public UpdateBase(Update update, DataBase db, BDovore_PortType port, UpdateBaseListener listener)
     {
         this.update = update;
         this.db = db;
@@ -61,6 +61,8 @@ public class UpdateBase extends Thread
      * @param db Base de donnée à mettre à jour
      * @param port Objet d'interfaçage du webservice
      * @param listener Observateur du thread
+     * 
+     * @deprecated 
      */
     public UpdateBase(DataBase db, BDovore_PortType port, UpdateBaseListener listener)
     {

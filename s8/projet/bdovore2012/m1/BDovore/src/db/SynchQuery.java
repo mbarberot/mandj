@@ -40,7 +40,7 @@ public class SynchQuery
         return insertValues("DETAILS_EDITION","")
                 + dEdition.getIdEdition() + ","
                 + sql_string(dEdition.getImg_couv())
-                + ";";
+                + ");";
     }
 
     /**
@@ -173,7 +173,10 @@ public class SynchQuery
 
     public static String insertValues(String table, String flag)
     {
-        return "INSERT " + flag + " INTO " + table + " VALUES(";
+        return "INSERT " 
+                + ((flag.length() > 0) ? flag + " " : "")
+                + "INTO " + table 
+                + " VALUES(";
     }
 
     /**
@@ -267,12 +270,17 @@ public class SynchQuery
     public static String setBDUser (DetailsEdition dEdition)
     {
         return "UPDATE BD_USER SET "
-                + "FLG_PRET = " + (dEdition.getFlag_pret() != 0) + ","
-                + "FLG_DEDICACE = " + (dEdition.getFlag_dedicace() != 0) + ","
-                + "FLG_AACHETER = " + (dEdition.getFlag_aAcheter() != 0) + ","
+                + "FLG_PRET = " + (dEdition.getFlag_pret() != 0) + ", "
+                + "FLG_DEDICACE = " + (dEdition.getFlag_dedicace() != 0) + ", "
+                + "FLG_AACHETER = " + (dEdition.getFlag_aAcheter() != 0) + ", "
                 + "DATE_AJOUT = " + sql_date(dEdition.getDate_ajout())
                 + "WHERE ID_EDITION = "+dEdition.getIdEdition()
                 + ";";
         
+    }
+    
+    public static String delTransaction(int idEdition)
+    {
+        return "DELETE FROM TRANSACTION WHERE ID_EDITION ="+idEdition+";";
     }
 }

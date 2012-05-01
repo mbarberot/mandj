@@ -39,10 +39,14 @@ public class Tables{
 		HashMap<String, String> tables = new HashMap<String, String>();
 		tables.put("GENRE", "ID_GENRE");
 		tables.put("SERIE", "ID_SERIE");
+                tables.put("DETAILS_SERIE", "ID_SERIE");
 		tables.put("AUTEUR", "ID_AUTEUR");
+                tables.put("DETAILS_AUTEUR", "ID_AUTEUR");
 		tables.put("EDITEUR", "ID_EDITEUR");
 		tables.put("TOME", "ID_TOME");
 		tables.put("EDITION", "ID_EDITION");
+                tables.put("DETAILS_EDITION", "ID_EDITION");
+                tables.put("BD_USER", "ID_EDITION");
 		
 		return tables;
 	}

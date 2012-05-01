@@ -1,6 +1,7 @@
 package db.synch;
 
 import db.DataBase;
+import db.SynchQuery;
 import db.data.Edition;
 import db.data.User;
 import java.rmi.RemoteException;
@@ -29,36 +30,27 @@ public class UpdateUser extends Thread
     private BDovore_PortType webservice;
     private boolean canceled;
     private ArrayList<UpdateBDUserListener> listeners;
-    private ArrayList<Object[]> conflicts;
-
-    public UpdateUser(DataBase db, User user, BDovore_PortType webservice)
+    
+    /**
+     * Constructeur
+     * 
+     * @param update
+     * @param db
+     * @param user
+     * @param webservice
+     * @param listener 
+     */
+    public UpdateUser(Update update, DataBase db, User user, BDovore_PortType webservice, UpdateBDUserListener listener)
     {
         this.allIdLocal = null;
         this.allIdServer = null;
-
         this.db = db;
         this.user = user;
-        this.update = null;
-        try
-        {
-            this.update = new Update(db, webservice, true);
-        } catch (SQLException ex)
-        {
-            ex.printStackTrace();
-        }
         this.webservice = webservice;
-
+        this.update = update;
         this.canceled = false;
         this.listeners = new ArrayList<UpdateBDUserListener>();
-        this.conflicts = new ArrayList<Object[]>();
-
-    }
-
-    public UpdateUser(DataBase db, User user, BDovore_PortType webservice, UpdateBDUserListener listener)
-    {
-        this(db, user, webservice);
         this.listeners.add(listener);
-
     }
 
     @Override
@@ -220,8 +212,26 @@ public class UpdateUser extends Thread
      * @return Une ligne du tableau de conflits
      * @throws SQLException
      */
-    private Object[] fillRow(int id, boolean inLocal, boolean inServer) throws SQLException
+    private Object[] fillRow(int id, boolean inLocal, boolean inServer) throws SQLException, RemoteException
     {
+        String flags[];
+        DetailsEdition dEdServ, dEdLoc;
+        if(inServer && inLocal)
+        {
+            dEdServ = webservice.getDetailsEditionUser(id, user.getUsername(), user.getPassword());
+            dEdLoc = db.getBDUser(id);
+            flags = process_flags(dEdServ,dEdLoc);
+        }
+        else
+        {
+            flags = new String[]
+            {
+                (inServer ? "Présent" : "Absent"),
+                (inLocal ? "Présent" : "Absent")
+            };
+        }
+        
+        
         // Récupérer le titre, la série et le numéro du tome
         Object[] o = db.getSynchInfo(id);
 
@@ -233,12 +243,53 @@ public class UpdateUser extends Thread
                     new String((String) o[0]),
                     new String((String) o[1]),
                     new String((String) o[2]),
-                    new String(inLocal ? "Présent" : "Absent"),
-                    new String(inServer ? "Présent" : "Absent"),
+                    new String(flags[0]),
+                    new String(flags[1]),
                     new Integer(id),
                     new Boolean(inServer)
 
                 };
+    }
+    
+    private String[] process_flags(DetailsEdition serv, DetailsEdition loc)
+    {
+        String flagServ = "", flagLoc = "";
+        
+        boolean samePret = serv.getFlag_pret() == loc.getFlag_pret();
+        boolean sameDedi = serv.getFlag_dedicace() == loc.getFlag_dedicace();
+        boolean sameToBuy = serv.getFlag_aAcheter() == loc.getFlag_aAcheter();
+        
+        if(!samePret)
+        {
+            flagServ += (serv.getFlag_pret() == 1 ? "Prêté" : "Non prêté");
+            flagLoc += (loc.getFlag_pret() == 1 ? "Prêté" : "Non prêté");
+            
+            if(!sameDedi || !sameToBuy)
+            {
+                flagServ += "\n";
+                flagLoc += "\n";
+            }
+        }
+        
+        if(!sameDedi)
+        {
+            flagServ += (serv.getFlag_dedicace() == 1 ? "Dédicacé" : "Non dédicacé");
+            flagLoc += (loc.getFlag_dedicace() == 1 ? "Dédicacé" : "Non dédicacé");
+            
+            if(!sameToBuy)
+            {
+                flagServ += "\n";
+                flagLoc += "\n";
+            }
+        }
+        
+        if(!sameToBuy)
+        {
+            flagServ += (serv.getFlag_aAcheter() == 1 ? "À acheter" : "Acheté");
+            flagLoc += (loc.getFlag_aAcheter() == 1 ? "À acheter" : "Acheté");
+        }
+        
+        return new String[]{flagServ,flagLoc};
     }
 
     /**
@@ -318,7 +369,6 @@ public class UpdateUser extends Thread
         {
             listener.addRow(row);
         }
-        conflicts.add(row);
     }
 
     /**
@@ -336,10 +386,10 @@ public class UpdateUser extends Thread
         for (Object[] tab : conflicts)
         {
             // Cast des info utiles
-            choixLocal = ((Boolean) tab[0]).booleanValue();
-            choixServeur = ((Boolean) tab[1]).booleanValue();
-            idEdition = ((Integer) tab[9]).intValue();
-            inServer = ((Boolean) tab[10]).booleanValue();
+            choixServeur = ((Boolean) tab[0]).booleanValue();
+            choixLocal = ((Boolean) tab[1]).booleanValue();
+            idEdition = ((Integer) tab[8]).intValue();
+            inServer = ((Boolean) tab[9]).booleanValue();
 
             try
             {
@@ -357,15 +407,13 @@ public class UpdateUser extends Thread
                 
             } catch (RemoteException ex)
             {
-                Logger.getLogger(UpdateUser.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
             } catch (SQLException ex)
             {
-                Logger.getLogger(UpdateUser.class.getName()).log(Level.SEVERE, null, ex);
+                ex.printStackTrace();
             }
 
         }
-
-
     }
 
     /**
@@ -399,6 +447,8 @@ public class UpdateUser extends Thread
                 sql = update.updateBDUser(idEdition, true, user.getUsername(), user.getPassword());
             }
             
+            System.out.println(sql);
+            
             // Requête
             db.update(sql);
             
@@ -410,14 +460,30 @@ public class UpdateUser extends Thread
             // On récupère l'édition de la base locale, la plus à jour
             DetailsEdition dEd = db.getBDUser(idEdition);
             
+            System.out.println(
+                "Pret = " + dEd.getFlag_pret() + " - "
+                + "Dedicace = " + dEd.getFlag_dedicace() + " - "
+                + "Acheter = " +dEd.getFlag_aAcheter());
+            
             if(!inServer)
             {
                 // Si l'edition ne fait pas partie de la bdtheque distante, on l'ajoute
                 webservice.addUserBibliotheque(user.getUsername(), user.getPassword(), idEdition);
+                System.out.println("Ajout de l'édition à la base distante");
             }
             // Puis, quoi qu'il en soit, on met à jour les flags car la fonction d'ajout ci-dessus ne permet pas de les
             // ajouter mais seulement de créer une entrée < idUser , idEdition >
             webservice.setUserBibliotheque(user.getUsername(), user.getPassword(), dEd);
+            System.out.println("Mise à jour des flags de l'édition distante");
         }
+        
+        clearTransaction(idEdition);
+        
+    }
+    
+    
+    private void clearTransaction(int idEdition)
+    {
+        db.update(SynchQuery.delTransaction(idEdition));
     }
 }

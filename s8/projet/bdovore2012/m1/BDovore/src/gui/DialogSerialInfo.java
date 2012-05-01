@@ -35,7 +35,7 @@ public class DialogSerialInfo extends JDialog {
         
         // Récupérations des informations sur la série
         try {
-            FrameMain.db.fillSerie(crtSerie);
+            FrameMain.db.fillSerie(crtSerie,FrameMain.synch);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Impossible de charger la série",
                     "Erreur", JOptionPane.ERROR_MESSAGE);
@@ -55,7 +55,7 @@ public class DialogSerialInfo extends JDialog {
     private void createGUI() {
         
         int right = SwingConstants.RIGHT;
-        labSerial = new JLabel("S�rie:", right);
+        labSerial = new JLabel("Série:", right);
         labGenre = new JLabel("Genre:", right);
         labNbTomes = new JLabel("Nombre de tomes:", right);
         labAlbumsInDB = new JLabel("Albums dans la base:", right);

@@ -1,6 +1,12 @@
 package db.data;
 
+import gui.FrameMain;
 import java.net.Proxy;
+import java.rmi.RemoteException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import wsdl.server.BDovoreLocator;
+import wsdl.server.BDovore_PortType;
 
 /**
  * Informations sur l'utilisateur
@@ -67,47 +73,19 @@ public class User {
      * @param proxy Proxy
      * @return L'id de l'utilisateur ou -1 si l'utilisateur n'existe pas
      */
-    private int getIdFromWebService(Proxy proxy) {
-        /*
-         * 
-         *
-         * TODO : Utiliser le WebService
-         *
-         *
-         *
-         * Ancienne méthode (une sorte d'Ajax) :
-         * ---------------------------------------------------
-         * 
-         * try {
-         *
-         * URL url = new URL(Config.USER_ID_SRC + "?username=" + username +
-         * "&password=" + password); //System.out.println(url);
-         *
-         * // Ouverture d'une connexion HttpURLConnection conn;
-         *
-         * if (proxy == null) { conn = (HttpURLConnection) url.openConnection();
-         * } else { conn = (HttpURLConnection) url.openConnection(proxy); }
-         *
-         * conn.setRequestMethod("GET"); conn.connect(); //
-         * conn.setDoInput(true); // conn.setUseCaches(false);
-         *
-         *
-         * // Récupération dans un Buffer (! Attention au CHARSET !)
-         *
-         * InputStream istream = conn.getInputStream(); Charset cs =
-         * Charset.forName("ISO-8859-1"); InputStreamReader isr = new
-         * InputStreamReader(istream, cs); BufferedReader buffer = new
-         * BufferedReader(isr);
-         *
-         * String entry = buffer.readLine();
-         *
-         * return Integer.parseInt(entry);
-         *
-         * } catch (MalformedURLException e) { e.printStackTrace(); } catch
-         * (IOException e) { e.printStackTrace(); }
-         *
-         *
-         */
-        return 3;
+    private int getIdFromWebService(Proxy proxy)
+    {
+        int id = -1;
+        
+        
+        try
+        {
+            BDovore_PortType webservice =  new BDovoreLocator().getBDovore_Port();
+            id = webservice.getIdUser(this.username, this.password);
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return id;
     }
 }

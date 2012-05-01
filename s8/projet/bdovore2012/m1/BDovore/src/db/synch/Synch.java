@@ -3,6 +3,7 @@ package db.synch;
 import db.DataBase;
 import db.data.User;
 import java.net.Proxy;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import util.UpdateBDUserListener;
 import util.UpdateBaseListener;
@@ -39,6 +40,10 @@ public class Synch
      * Thread d'update des editions de l'utilisateur
      */
     private UpdateUser updateUser;
+    /**
+     * Objet d'update intelligent
+     */
+    private Update update;
     
     //
     // Constructeurs
@@ -63,15 +68,16 @@ public class Synch
     {
         this.db = db;
         this.proxy = proxy;
+        this.update = null;
         try
         {
             this.port = new BDovoreLocator().getBDovore_Port();
+            this.update = new Update(db,port);
             
         } catch (Exception ex)
         {
             ex.printStackTrace();
         }
-
     }
 
     //
@@ -83,10 +89,9 @@ public class Synch
      */
     public void updateGlobal(UpdateBaseListener listener)
     {
-      
-            updateBase = new UpdateBase(db, port, listener);
-            updateBase.start();
-       
+        update.setWithDetails(false);
+        updateBase = new UpdateBase(update, db, port, listener);    
+        updateBase.start();
     }
     
     /**
@@ -102,7 +107,8 @@ public class Synch
      */
     public UpdateUser updateBDtheque(User user, UpdateBDUserListener listener)
     {
-        updateUser = new UpdateUser(db, user, port, listener);
+        update.setWithDetails(true);
+        updateUser = new UpdateUser(update, db, user, port, listener);
         updateUser.start();
         return updateUser;
     }
@@ -115,9 +121,37 @@ public class Synch
         updateUser.cancel();
     }
     
+    /**
+     * Applique les choix de l'utilisateurs aux conflits.
+     * @param conflicts Les conflits
+     */
     public void applyChanges(ArrayList<Object[]> conflicts)
     {
         updateUser.applyChanges(conflicts);
+    }
+    
+    public void fillSerie(int idSerie) throws RemoteException
+    {
+        update.setWithDetails(true);
+        db.update(update.updateSerie(idSerie));
+    }
+    
+    public void fillAlbum(int idAlbum) throws RemoteException
+    {
+        update.setWithDetails(true);
+        db.update(update.updateTome(idAlbum));
+    }
+    
+    public void fillAuteur(int idAuteur) throws RemoteException
+    {
+        update.setWithDetails(true);
+        db.update(update.updateAuteur(idAuteur));
+    }
+    
+    public void updateEdition(int idEdition) throws RemoteException
+    {
+        update.setWithDetails(true);
+        db.update(update.updateEdition(idEdition));
     }
 
     //

@@ -41,9 +41,6 @@ public class ActionSynch extends AbstractAction {
      * @param e Objet contenant les détails de l'evenement
      */
     public void actionPerformed(ActionEvent e) {
-        //TODO: Faire l'appel de la synchronisation
-        //Synchronisation avec le compte BDovore,
-        //et si on détecte des conflits, on affichera le dialog de conflig pour les résoudre manuellement.
         DialogUserSynchronization dialog = new DialogUserSynchronization(Main.appFrame, Dialog.ModalityType.APPLICATION_MODAL, FrameMain.synch);
         dialog.setVisible(true);
     }
