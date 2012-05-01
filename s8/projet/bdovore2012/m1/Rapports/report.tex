@@ -15,8 +15,8 @@
 %\usepackage{eurosym}		% Symbole Euro
 %\usepackage{bookman}
 %\usepackage{charter}
-\usepackage{newcent}
-%\usepackage{lmodern}
+%\usepackage{newcent}
+\usepackage{lmodern}
 %\usepackage{mathpazo}					
 %\usepackage{mathptmx}
 % -------------------- Code et citations --------------------
@@ -103,14 +103,21 @@ As user can suggest albums on the website or change details of the albums on the
 For the time we had to work on this project, our main goal was to finish to put in place the unachieved functionalities. In this purpose, we had to :
 \begin{itemize}
 \item Change the research tool, to make it more efficient and intuitive, so the user could write its requests like any search engine : the user would be able to make a request with several words in any orders and without caring about accents or syntax. He could also use some special characters and keywords to specify its research (like the ''*`` joker or the double quotes).
-\item % da web service
-\item % da synchro
-\item % small mods
+\item Write the webservice's functions. It was a necessary step to do before taking care of the synchronization part. Indeed, the webservice is the key between the both databases and it will permit to get the informations in them, like the comic books that the user owns or the details about a volume.
+\item As we see, a certain reflection was done about the synchronization by the previous students group who worked on this project. Our role in this part was to make the reflection become real and so finishing a big feature of the software. So we had to make the mechanisms which would resolve the eventual conflicts between the online and offline libraries of the user and make them the same.
+\item Finally, all along the time we worked on the software, we have done some minor adjustments (for example for the ergonomics of the Graphic User Interface).
 
 \end{itemize}
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%	CHAPTER 2 - DISCOVERING THE SOFTWARE
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \chapter{Discovering the software}
+Before any modifications on the software, we had to discover how this one was built. It was necessary to see where we will add our functionalities and, eventually, where we will have to make modifications before any additions.
 
 \section{Understanding previous students work}
 %
@@ -138,7 +145,16 @@ For the time we had to work on this project, our main goal was to finish to put 
 % update of the 'search motor'
 %
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%	CHAPTER 3 - WEBSERVICE AND SYNCHRO
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \chapter{Web service and Synchronization}
+
+
 \section{What is a web service?}
 %
 % Schema
