@@ -9,42 +9,32 @@
 #
 
 # Variables :
-# - Chemins utilies
+# - Chemins utiles
 RACINE=../../
-BIN=$(RACINE)bin/
-LIBDIR=$(RACINE)lib/
-INC=$(RACINE)include/
+BINDIR=$(RACINE)bin/
 SRCDIR=./
 
-# - Commandes de compilation
-CC=javac
-CFLAGS=
-CPPFLAGS=
-LDFLAGS=
-EXEC=
+JASPER=/usr/local/sicstus4.2.0/lib/sicstus-4.2.0/bin/jasper.jar
 
-# - Fichiers sources
-SRC= $(wildcard $(SRCDIR)*.java)
+CC=javac
+CP=-cp $(JASPER):$(SRCDIR)
+FILE=$(wildcard $(SRCDIR)*.java)
+OUTDIR=-d $(BINDIR)
+EXE=$(BIN)Run
+
 
 # Règles :
 # - Principale
-all:$(EXEC)
-
-# - Création de l'executable
-$(EXEC): $(OBJ)
-	$(CC) -o $(BIN)$@ $^ $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) 
-
-# - Compilations intermédiaires
-%.o: %.c %.h
-	$(CC) -o $@ -c $< $(CFLAGS) $(CPPFLAGS) $(LDFLAGS)
+compile :
+	$(CC) $(CP) $(FILE) $(OUTDIR)
 
 # - Nettoyage des fichiers temporaires
 clean:
-	rm $(SRCDIR)*.o
+	rm $(SRCDIR)*.class
 
 # - Nettoyage des fichiers executables
 reset:
-	rm $(BIN)$(EXEC) 
+	rm $(BINDIR)$(EXEC) 
 
 # - Nettoyage complet
 veryclean: clean reset

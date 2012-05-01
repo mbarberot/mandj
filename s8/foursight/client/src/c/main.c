@@ -56,11 +56,14 @@ int main (int argc, char **argv)
     // + vérification des erreurs
     err = main_traitementArgs(argc,argv,machine,&port,login);
     if(err > 0) { return err; }
-
+    
+    ia_initJVM();
 
     // Lancement du tournoi et déroulement des parties
     err = main_partie(machine,port,login);
     if(err > 0) { return err; }
+    
+    ia_closeJVM();
 
     return 0;
 }

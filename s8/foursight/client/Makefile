@@ -13,6 +13,11 @@
 SRCDIR=src/
 CDIR=$(SRCDIR)c/
 JAVADIR=$(SRCDIR)java/
+# - Chemin vers l'executable
+BINDIR=bin/
+# - Argument de l'executable
+HOST=localhost
+PORT=5555
 
 # Règles :
 # - Principale
@@ -38,4 +43,8 @@ reset:
 	
 # - Nettoyage complet
 veryclean: clean reset
+
+# - Lancement
+run : all
+	bin/client $(HOST) $(PORT)
 
