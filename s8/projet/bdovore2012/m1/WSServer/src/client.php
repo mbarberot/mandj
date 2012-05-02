@@ -27,8 +27,8 @@ try {
     );
 
     try {
-        $dEd = new Edition(2016,3384,0,0,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
-        $res = $client->setUserBibliotheque("latruffe","bdovore",$dEd);
+        //$dEd = new Edition(2016,3384,0,0,0,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL);
+        $res = $client->setUserBibliotheque("latruffe","bdovore",1302,0,0,0);
         var_dump($res);
     } catch (SoapFault $e) {
         echo $e;

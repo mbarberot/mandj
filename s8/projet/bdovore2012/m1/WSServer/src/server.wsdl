@@ -147,22 +147,15 @@
 	<wsdl:message name="addUserBibliothequeResponse">
 		<wsdl:part name="isAdded" type="xsd:boolean"></wsdl:part>
 	</wsdl:message>
-         <wsdl:message name="setUserBibliothequeRequest">
+        <wsdl:message name="setUserBibliothequeRequest">
 		<wsdl:part name="userName" type="xsd:string"></wsdl:part>
 		<wsdl:part name="userPass" type="xsd:string"></wsdl:part>
-		<wsdl:part name="detailsEdition" type="tns:detailsEdition"></wsdl:part>
-	</wsdl:message>
-        <wsdl:message name="setUserBibliothequeResponse">
-		<wsdl:part name="isAdded" type="xsd:boolean"></wsdl:part>
-	</wsdl:message>
-        <wsdl:message name="setUserBibliotheque2Request">
-		<wsdl:part name="userName" type="xsd:string"></wsdl:part>
-		<wsdl:part name="userPass" type="xsd:string"></wsdl:part>
+                <wsdl:part name="idEdition" type="xsd:int"></wsdl:part>
                 <wsdl:part name="flagPret" type="xsd:int"></wsdl:part>
                 <wsdl:part name="flagDedicace" type="xsd:int"></wsdl:part>
                 <wsdl:part name="flagAacheter" type="xsd:int"></wsdl:part>
 	</wsdl:message>
-	<wsdl:message name="setUserBibliotheque2Response">
+	<wsdl:message name="setUserBibliothequeResponse">
 		<wsdl:part name="isAdded" type="xsd:boolean"></wsdl:part>
 	</wsdl:message>
         <wsdl:message name="delUserBibliothequeRequest">
@@ -258,10 +251,6 @@
                 <wsdl:operation name="setUserBibliotheque">
 			<wsdl:input message="tns:setUserBibliothequeRequest"></wsdl:input>
                         <wsdl:output message="tns:setUserBibliothequeResponse"></wsdl:output>
-		</wsdl:operation>
-                <wsdl:operation name="setUserBibliotheque2">
-			<wsdl:input message="tns:setUserBibliotheque2Request"></wsdl:input>
-                        <wsdl:output message="tns:setUserBibliotheque2Response"></wsdl:output>
 		</wsdl:operation>
                 <wsdl:operation name="delUserBibliotheque">
                         <wsdl:input message="tns:delUserBibliothequeRequest"></wsdl:input>
@@ -404,16 +393,6 @@
 		</wsdl:operation>
                 
                 <wsdl:operation name='setUserBibliotheque'>
-			<soap:operation soapAction='setUserBibliotheque' />
-			<wsdl:input>
-				<soap:body use='literal' namespace='namespace_adress' />
-			</wsdl:input>
-			<wsdl:output>
-				<soap:body use='literal' namespace='namespace_adress' />
-			</wsdl:output>
-		</wsdl:operation>
-                
-                <wsdl:operation name='setUserBibliotheque2'>
 			<soap:operation soapAction='setUserBibliotheque' />
 			<wsdl:input>
 				<soap:body use='literal' namespace='namespace_adress' />

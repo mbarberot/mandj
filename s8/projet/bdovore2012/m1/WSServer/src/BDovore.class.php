@@ -340,52 +340,6 @@ class BDovore {
             throw new SoapFault("ERREUR_REQUETE : insert_into", $errors["ERREUR_REQUETE"]);
         }
     }
-
-    /**
-     * Ajoute une édition à la collection d'un utilisateur.
-     * @param String $userName
-     * @param String $userPass
-     * @param int $idEdition
-     */
-    public function setUserBibliotheque($userName, $userPass, $detailsEdition) {
-        
-        return ($detailsEdition instanceof Edition);
-        
-        // On récupère l'identifiant de l'utilisateur
-        $sqlGetUser = "SELECT ID_USER FROM user WHERE USERNAME = '{$userName}' AND PASSWORD =  '{$userPass}'";
-        $reqGetUser = mysql_query($sqlGetUser);
-
-        // On vérifie que la requete est bien effectu�e
-        if (!$reqGetUser) {
-            throw new SoapFault("ERREUR_REQUETE : id_user", $errors["ERREUR_REQUETE"]);
-        }
-
-        // On vérifie l'identification et renvoie une erreur si elle est mauvaise
-        if (mysql_num_rows($reqGetUser) != 1) {
-            throw new SoapFault("IDENTIFICATION_KO", $errors["IDENTIFICATION_KO"]);
-        }
-
-        // On récupère l'identifiant
-        $dataUser = mysql_fetch_assoc($reqGetUser);
-        $idUser = $dataUser['ID_USER'];
-
-        // Préparation de la requête SQL
-        $sqlSetEd = "UPDATE us_edition SET " 
-                    ."FLG_PRET = {$detailsEdition->getFlag_pret()}, " 
-                    ."FLG_DEDICACE = {$detailsEdition->getFlag_dedicace()}, " 
-                    ."FLG_ACHAT = {$detailsEdition->getFlag_aAcheter()}, "
-                    ."DATE_AJOUT = DATE '{$detailsEdition->getDate_ajout()}' "
-                    ."WHERE ID_USER = {$idUser} "
-                    ."AND ID_EDITION = {$detailsEdition->getIdEdition()};";
-
-        $reqSetEd = mysql_query($sqlSetEd);
-
-        if (!$reqSetEd) {
-            throw new SoapFault("ERREUR_REQUETE : update", $errors["ERREUR_REQUETE"]);
-        }
-        
-        return true;
-    }
     
     /**
      * Ajoute une édition à la collection d'un utilisateur.
@@ -393,7 +347,7 @@ class BDovore {
      * @param String $userPass
      * @param int $idEdition
      */
-    public function setUserBibliotheque2($userName, $userPass, $flag_pret, $flag_dedicace, $flag_aAcheter) {
+    public function setUserBibliotheque($userName, $userPass, $idEdition, $flagPret, $flagDedicace, $flagAacheter) {
         
         // On récupère l'identifiant de l'utilisateur
         $sqlGetUser = "SELECT ID_USER FROM user WHERE USERNAME = '{$userName}' AND PASSWORD =  '{$userPass}'";
@@ -415,11 +369,11 @@ class BDovore {
 
         // Préparation de la requête SQL
         $sqlSetEd = "UPDATE us_edition SET " 
-                    ."FLG_PRET = {$flag_pret}, " 
-                    ."FLG_DEDICACE = {$flag_dedicace}, " 
-                    ."FLG_ACHAT = {$flag_aAcheter} "
+                    ."FLG_PRET = {$flagPret}, " 
+                    ."FLG_DEDICACE = {$flagDedicace}, " 
+                    ."FLG_ACHAT = {$flagAacheter} "
                     ."WHERE ID_USER = {$idUser} "
-                    ."AND ID_EDITION = {$detailsEdition->getIdEdition()};";
+                    ."AND ID_EDITION = {$idEdition};";
 
         $reqSetEd = mysql_query($sqlSetEd);
 

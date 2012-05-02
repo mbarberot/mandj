@@ -116,10 +116,10 @@ public class UpdateUser extends Thread
 
         } catch (SQLException ex)
         {
-            Logger.getLogger(UpdateUser.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         } catch (RemoteException ex)
         {
-            Logger.getLogger(UpdateUser.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
     }
 
@@ -459,22 +459,31 @@ public class UpdateUser extends Thread
             
             // On récupère l'édition de la base locale, la plus à jour
             DetailsEdition dEd = db.getBDUser(idEdition);
+            boolean added ;
             
             System.out.println(
-                "Pret = " + dEd.getFlag_pret() + " - "
-                + "Dedicace = " + dEd.getFlag_dedicace() + " - "
-                + "Acheter = " +dEd.getFlag_aAcheter());
+                dEd.getIdEdition() + " - "    
+                + dEd.getFlag_pret() + " - "
+                + dEd.getFlag_dedicace() + " - "
+                + dEd.getFlag_aAcheter()
+                    );
             
             if(!inServer)
             {
                 // Si l'edition ne fait pas partie de la bdtheque distante, on l'ajoute
-                webservice.addUserBibliotheque(user.getUsername(), user.getPassword(), idEdition);
-                System.out.println("Ajout de l'édition à la base distante");
+                added = webservice.addUserBibliotheque(user.getUsername(), user.getPassword(), idEdition);
+                System.out.println("Ajout de l'édition à la base distante -> "+added);
             }
             // Puis, quoi qu'il en soit, on met à jour les flags car la fonction d'ajout ci-dessus ne permet pas de les
             // ajouter mais seulement de créer une entrée < idUser , idEdition >
-            webservice.setUserBibliotheque(user.getUsername(), user.getPassword(), dEd);
-            System.out.println("Mise à jour des flags de l'édition distante");
+            added = webservice.setUserBibliotheque(
+                    user.getUsername(), user.getPassword(), 
+                    dEd.getIdEdition(), 
+                    dEd.getFlag_pret(),
+                    dEd.getFlag_dedicace(),
+                    dEd.getFlag_aAcheter()
+                    );
+            System.out.println("Mise à jour des flags de l'édition distante ->"+added);
         }
         
         clearTransaction(idEdition);
