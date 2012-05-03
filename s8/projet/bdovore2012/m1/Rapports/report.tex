@@ -61,7 +61,10 @@
 \newpage
 
 \section*{Abstract}
-BDovore is a website focused on comic books that allows collectors to manage their library. For several years, students in computer science have been developing a software in cooperation with that web site.  
+BDovore is a website focused on comic books that allows collectors to manage their library. For several years, students in computer science have been developing a software in cooperation with that web site. The principal purpose of this software is to give the same features that the website, but without the obligation of being connected to the Internet. By this fact, the user will be able to handle his library both with the website and the program.
+\newline This report is about the work done by students on this software, in 2012.
+After a review of the state of the software before their contributions, the present report will focus on these one : first, the reinforcing of some functionalities of the program and then, the synchronization feature (aka the mechanisms to unified the library of the user on the website and in the software).
+
 \newpage
 
 \section*{Thanks}
@@ -71,11 +74,13 @@ For their help, their advises and for having provided this subject, we would lik
 \tableofcontents
 \newpage
 
-\chapter*{Introduction}
+\chapter{Introduction}
 Managing a library can be hard, especially for collectors who could possess hundreds of books. That is why websites like BDovore\footnote{www.bdovore.com} have been created. BDovore is specialized in comic books and allows its users to manage their library online. But because we are not always connected to the Internet, UFR ST and BDovore started a project : create a Java software you could use offline on your computer that would provide the same functionalities as the website.
 
+In this report, we will talk about our contributions in this project. In a first part, we will explore the software with the user's point of view and see what are the actual implemented features. Then, we will present our work on these features, to reinforce them or to make them better. Finally, we will see the totally new features that we have added, before concluding.
 
 \chapter{The Software}
+In this chapter, we will present the software with the user's point of view. We will, in one part, list the achieved functionalities which are yet implemented. Next, we will talk about the unachieved one and so what will be our future contributions.
 
 \section{The features}
 \subsection{Searching an album}
@@ -90,7 +95,7 @@ Once the window has appear after a double click, some checkboxes are displayed. 
 Once the user library is filled up, he can see some statistics on that library. There is two different statistics : the first, on the top, is displaying amounts of album of each type (albums in the library, owned and to buy). The second shows percentages of genres, editors, scriptwriters or cartoonists.
 
 \subsection{Configure the software}
-Finally, a configuration tool is provided for setting a proxy server or to connect the user on its website's account (to synchronizing its library with the online one).
+Finally, a configuration tool is provided for setting a proxy server or to connect the user on its website's account (to synchronizing his library with the online one).
 
 \section{Unachieved functionalities}
 \subsection{Update the research base}
@@ -100,7 +105,7 @@ The research feature is working with a database of all the albums which are list
 As user can suggest albums on the website or change details of the albums on the software, the synchronizing feature had to get the two libraries, search the differences and update them. For ambiguous cases, a window show the differences and asks user to decide whether the online one or the offline one is the more up to date. All the reflections on the feature were done but were not integrated in the software.
 
 \section{Our contribution}
-For the time we had to work on this project, our main goal was to finish to put in place the unachieved functionalities. In this purpose, we had to :
+For the time we had to work on this project, our main goal was to finish to put in place some unachieved functionalities. In this purpose, we had to :
 \begin{itemize}
 \item Change the research tool, to make it more efficient and intuitive, so the user could write its requests like any search engine : the user would be able to make a request with several words in any orders and without caring about accents or syntax. He could also use some special characters and keywords to specify its research (like the ''*`` joker or the double quotes).
 \item Write the webservice's functions. It was a necessary step to do before taking care of the synchronization part. Indeed, the webservice is the key between the both databases and it will permit to get the informations in them, like the comic books that the user owns or the details about a volume.
@@ -112,39 +117,45 @@ For the time we had to work on this project, our main goal was to finish to put 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%	CHAPTER 2 - DISCOVERING THE SOFTWARE
+%	CHAPTER 2 - REINFORCING THE SOFTWARE
 % 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\chapter{Discovering the software}
+\chapter{Reinforcing the software}
 Before any modifications on the software, we had to discover how this one was built. It was necessary to see where we will add our functionalities and, eventually, where we will have to make modifications before any additions.
 
 \section{Understanding previous students work}
-%
-% Understanding how the previous students made the software
-% Testing
-% Finish the synchronization
-%
-%
-\section{Laying the foundation}
-%
-% Last year, two groups of student worked on that software
-% => 2 different software
-% => All in one !
-%
-%
-%
-\section{Test and updates}
-%
-% Tests : 
-% search is crappy
-% synch does not worked
-% wsdl not or badly used
-%
-% update of the database
-% update of the 'search motor'
-%
+Working on a software with a substantial base coded by other people is a pretty difficult exercise. That's why before any reflections, we had to appropriate the architecture and the code. Even if it could take a lot of time, this one is not a waste : it's important to see where exactly we will add our modifications and if theses modifications will be immediately possible. \newline
+This preliminary step was particularly difficult on this project. Indeed, two groups of students worked on it at the same time the last year, so we had to discover the work of both. Furthermore, it was the first time for us that we had to work on a software with such an architecture : embedded database, webservice (coded with the web-oriented language PHP) and distant database (the one of the website).\newline
+After watching the source code of the two actual programs and read the documentations left by the students, we quickly understand that :
 
+\begin{itemize}
+\item One of the group had totally remake the organisation of the local database (cf annexes for schemas of the previous and the actual databases).
+\item The other group work especially on the synchronization part. They reflected on the conflicts that the user could have if certain informations are different between the website and the software (example : a volume is in the user's library on the website, but not in the program).
+\item They thought of the function that the webservice must have ... but don't write them !
+\end{itemize}
+
+That's why we see that a complete review of the software will be necessary before anything else.
+
+\section{Laying the foundation}
+First of all, we decided to unify the two different projects in an only one. To work on this project, we had to install our work environment :
+
+\begin{itemize}
+\item A collaboration system (Subversion). Not necessary, but very useful. It permits to store the projects online (and work on them with any computer) and handle the different versions of the project (if the last version didn't work -for example - we still could come back to a previous one).
+\item A web server on the local computer, to ``simulate'' the server of the website. We stored on it a copy of the database of BDOvore in order to test our future web service.
+\item The embedded database that we could generate with some commands.
+\end{itemize}
+
+So we could finally work on the project. To unify the two versions, the main work was to adapt the functions which use the embedded base (with the SQL language) to the new model of this database and check every of them, so the software could simply ... work ! To be sure of our work, we tested all the new requests to the database out of the software, directly on it (to be sure, in case of an error, that the mistake is really in the request and not in another place of the program).
+
+The software with the contributions of the two previous groups was finally unified. We could now testing the actual features and their efficiency.
+
+\section{Test and updates}
+Our first observation was that the search engine (the tool who allows to find a specific volume in the user's library or in the volumes referenced in the website) was functional but very limited. In fact, the research gave you results  which fit perfectly with the syntax of what you search. As we saw in the introduction, typing a research with the keyword ''asterix`` won't give you any results with the word ''Astérix'' because of the capital letter and the accent that the search engine didn't know how to ignore. 
+\newline To fix this problem, we decided to update the search engine (Lucene, an external search engine that you can use with many programming language) to its new version. This one was improved and allows many new possibilities, like the use of a joker character (''*``) or the use of some keywords like AND, OR or NOT to precise our research. It allows too to fix the problems of accents or capital letters.
+\newline Furthermore, we noticed some things we always knew : the synchronization tool doesn't work, so the base of referenced books was nearly empty (except for some entries that was inserted manually to test the search engine) as the library of the user.
+\newline Finally, while we was at it, we updated the database engine (''H2`` the one which is used to the embedded base) in the purpose to increase the performance and the rapidity of the recovery of the data. Additionally, we brought some minors modifications on the GUI (Graphic User Interface, what the user use to communicate with the program, like the buttons or the text fields) and in the code.
+\newline As we see, we did an important work to improve the functionalities which was still implemented in the program, in the purpose to make it more user-friendly, efficient and stable.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -153,7 +164,7 @@ Before any modifications on the software, we had to discover how this one was bu
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Web service and Synchronization}
-
+In this part, we will focus on our biggest addition on the software : the mechanisms for the synchronization of the library of the user, both in the software and on the website, and, for that, focus on the creation of the webservice (and, before, what exactly a webservice is), then, on the synchronization of the local database.
 
 \section{What is a web service?}
 %
@@ -173,7 +184,7 @@ Before any modifications on the software, we had to discover how this one was bu
 % with user's account
 % 
 
-\chapter*{Conclusion}
+\chapter{Conclusion}
 % New functionalities :
 % - synch for research base and user account
 %
