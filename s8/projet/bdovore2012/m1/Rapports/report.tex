@@ -59,18 +59,6 @@
 \begin{document}
 \include{cover_first}
 \newpage
-
-\section*{Abstract}
-BDovore is a website focused on comic books that allows collectors to manage their library. For several years, students in computer science have been developing a software in cooperation with that web site. The principal purpose of this software is to give the same features that the website, but without the obligation of being connected to the Internet. By this fact, the user will be able to handle his library both with the website and the program.
-\newline This report is about the work done by students on this software, in 2012.
-After a review of the state of the software before their contributions, the present report will focus on these one : first, the reinforcing of some functionalities of the program and then, the synchronization feature (aka the mechanisms to unified the library of the user on the website and in the software).
-
-\newpage
-
-\section*{Thanks}
-For their help, their advises and for having provided this subject, we would like to thank our tutors : Mr BOUQUET et Mr COQBLIN.
-\newpage
-
 \tableofcontents
 \newpage
 
@@ -104,11 +92,11 @@ The research feature is working with a database of all the albums which are list
 \subsection{Synchronizing user account}
 As user can suggest albums on the website or change details of the albums on the software, the synchronizing feature had to get the two libraries, search the differences and update them. For ambiguous cases, a window show the differences and asks user to decide whether the online one or the offline one is the more up to date. All the reflections on the feature were done but were not integrated in the software.
 
-\section{Our contribution}
+\section{Our contributions}
 For the time we had to work on this project, our main goal was to finish to put in place some unachieved functionalities. In this purpose, we had to :
 \begin{itemize}
 \item Change the research tool, to make it more efficient and intuitive, so the user could write its requests like any search engine : the user would be able to make a request with several words in any orders and without caring about accents or syntax. He could also use some special characters and keywords to specify its research (like the ''*`` joker or the double quotes).
-\item Write the webservice's functions. It was a necessary step to do before taking care of the synchronization part. Indeed, the webservice is the key between the both databases and it will permit to get the informations in them, like the comic books that the user owns or the details about a volume.
+\item Write the web service's functions. It was a necessary step to do before taking care of the synchronization part. Indeed, the web service is the key between the both databases and it will permit to get the informations in them, like the comic books that the user owns or the details about a volume.
 \item As we see, a certain reflection was done about the synchronization by the previous students group who worked on this project. Our role in this part was to make the reflection become real and so finishing a big feature of the software. So we had to make the mechanisms which would resolve the eventual conflicts between the online and offline libraries of the user and make them the same.
 \item Finally, all along the time we worked on the software, we have done some minor adjustments (for example for the ergonomics of the Graphic User Interface).
 
@@ -126,13 +114,13 @@ Before any modifications on the software, we had to discover how this one was bu
 
 \section{Understanding previous students work}
 Working on a software with a substantial base coded by other people is a pretty difficult exercise. That's why before any reflections, we had to appropriate the architecture and the code. Even if it could take a lot of time, this one is not a waste : it's important to see where exactly we will add our modifications and if theses modifications will be immediately possible. \newline
-This preliminary step was particularly difficult on this project. Indeed, two groups of students worked on it at the same time the last year, so we had to discover the work of both. Furthermore, it was the first time for us that we had to work on a software with such an architecture : embedded database, webservice (coded with the web-oriented language PHP) and distant database (the one of the website).\newline
+This preliminary step was particularly difficult on this project. Indeed, two groups of students worked on it at the same time the last year, so we had to discover the work of both. Furthermore, it was the first time for us that we had to work on a software with such an architecture : embedded database, web service (coded with the web-oriented language PHP) and distant database (the one of the website).\newline
 After watching the source code of the two actual programs and read the documentations left by the students, we quickly understand that :
 
 \begin{itemize}
 \item One of the group had totally remake the organisation of the local database (cf annexes for schemas of the previous and the actual databases).
 \item The other group work especially on the synchronization part. They reflected on the conflicts that the user could have if certain informations are different between the website and the software (example : a volume is in the user's library on the website, but not in the program).
-\item They thought of the function that the webservice must have ... but don't write them !
+\item They thought of the function that the web service must have ... but don't write them !
 \end{itemize}
 
 That's why we see that a complete review of the software will be necessary before anything else.
@@ -164,44 +152,59 @@ Our first observation was that the search engine (the tool who allows to find a 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Web service and Synchronization}
-In this part, we will focus on our biggest addition on the software : the mechanisms for the synchronization of the library of the user, both in the software and on the website, and, for that, focus on the creation of the webservice (and, before, what exactly a webservice is), then, on the synchronization of the local database.
+In this part, we will focus on our biggest addition on the software : the mechanisms for the synchronization of the library of the user, both in the software and on the website, and, for that, focus on the creation of the web service (and, before, what exactly a web service is), then, on the synchronization of the local database.
 
 \section{What is a web service?}
+
+The first question we had to give an answer was : what exactly a web service is ? In fact, we had never approach such a concept before this project.
+After researches, we learned that a web service is an application, running on a server, which allows communication between other programs, without caring about the languages or the technology they are made with. It makes public a list of functions that these programs can use : it's a kind of abstract layer between the client (the application which will use the web service) and the server.
+\newline (For example, Google provides a web service that anybody can call in its own application. With it, you can for example incorporate the search engine or use its speller).
+
 %
 % Schema
-% A list of functionalities
-% Make a layer between the server and the client
 %
+\begin{figure}[!ht]
+\begin{center}
+\includegraphics[height=7cm]{\imgpath{WebserviceSchema.png}}
+\caption{How a webservice work - very simplify !}
+\end{center}
+\end{figure}
+
+
 \section{Why do we need it?}
 %
 % Simplify the development
 % Without it, if the server change, the software has to be updated.
 % With it, if the server change, the web service implementation will change in the server and the software will not need an update.
 %
+In our case, we had to write a web service to enable interactions between the website and the software. Theses interactions consist of getting data on BDOvore : the list of the referenced albums on the website, their details (authors, genres, ...) or the current user's library with all its informations (if some albums are lent or dedicated, ...). The web service had to be able to do modifications on the web service (for example, if the user add an album in the software, it must be reported on his online account).
+\newline A list of functions was still written in the WSDL file (a file who listed all the functions of the web service that the clients can use) by the previous groups, but wasn't particularly useful in our point of view.
+\newline Our work was finally to completely rewrite the functions of the web service. We wrote it in the PHP language, because of its facility to work with a database and because it's compatible with the most of web servers.
+\newline For such a small development, we could think that a web service is not necessary. In fact, it was ''just`` advisable for some reasons :
+
+\begin{itemize}
+\item Simplifying the development, with the PHP language 
+\item With it, if the server change (for example, modifications in the structure of the web site's database), we won't have to modify the client (the software), but just the code of the web service. It's more handy for the future users (who won't have to update their software) and the developers. 
+\end{itemize}
+
+With finishing the web service, we were now able to get all the data we need from the website to use them in the software, via the synchronization tool.
+
 \section{The synchronization}
-%
-% with the research base
-% with user's account
-% 
+As we told before, the synchronization is the mechanism which will certify the consistency of the data in the software and in the website. It is divided in two parts : the synchronization of the whole list of albums referenced and the one of the user library.
+\newline For the first one, the problem was to avoid to download at every start of the program the more than 120.000 volumes (and their informations) that the website counts, because of the time it takes to do it. We solved this problem by only downloading the new volumes that was added on the website since the last time we launched the program (thanks to a comparison between the identifiers - a number which guarantee the uniqueness of a volume in a base - in the two bases).
+\newline(For example : if the biggest identifier for a volume in the embedded database is ''120``, we will download every volumes in the website's database with an identifier superior to 120).
+\newline The second one was harder to handle, but one of the previous groups greatly simplified the task. The problem was to know what to do if there are differences between the libraries of the user in the program and in the website. These students prepared a table with every cases which could arrive and we used it to write the functions for the synchronization. We just added some cases they didn't think about (for the table, cf annexes).
+\newline After that work, it's now possible :
+\begin{itemize}
+\item Downloading the list of the new volumes available on the website and visualizing the progression of the update.
+\item Showing the conflicts existing in the two libraries and asking to the user to solve them : he can now decide which informations he want to keep.
+\end{itemize}
+
 
 \chapter{Conclusion}
-% New functionalities :
-% - synch for research base and user account
-%
-% Abandoned functionalities :
-% - nothing
-%
-% What we have done :
-% - a unique software (!= two old software)
-% - set up a web service
-% - implement it in the software
-%
-% What we haven't finished
-% - tests
-%
-% New functionalities to developp :
-% - manually add a comic strip
-
+As we see, working on a project which was begin and continue by a lot of students is not a simple thing. That fact justified the time we spent to analyse and understand the architecture and programming of this software. Thanks to this analysis, we have been able to improved some features (the search engine,...) and added new one (communication with the website). 
+\newline Unfortunately, we hadn't got enough time to put finishing touches on our work. For example, we wanted to make more tests on our new features, in order to optimize them or to make them more stable.
+\newline Furthermore, we can see that some features are still not implemented : for example the user can't manually add a comic book which is not referenced in the website and the graphic interface could be more user-friendly.
 
 \include{cover_fourth}
 
