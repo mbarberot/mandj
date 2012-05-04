@@ -1,3 +1,7 @@
+% Outils de liste %
+:-set_prolog_flag(toplevel_print_options, [max_depth(0)]).
+:-use_module(library(lists)).
+
 %
 % Plateau
 %	Liste des cases occupÃ©es du jeu.
@@ -11,7 +15,7 @@
 %	[Pion, PosX, PosY]
 %
 % Coup
-%	Une lise des 2 Ã©lÃ©ments suivants
+%	Une liste des 2 Ã©lÃ©ments suivants
 %	- type du coup
 %	- la case du coup
 %	[Type,Case]
@@ -50,6 +54,114 @@
 %	- le coup jouÃ©
 %
 
-calculCoup(Plateau,Coup) :-
+%
+% Indique si les coord. sont valides
+%
+caseValide(X,Y):-
+	X >= 0,
+	X < 4,
+	Y >= 0,
+	Y < 4.
+
+%
+% Predicats permettant de calculer le nb de cases alignees
+%
+
+% A droite de la case %
+nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, d):-
+	NX is PosX + 1,
+	member([Couleur, NX, PosY], ListeCase),
+	NbAlign is NbAlign + 1,
+	nbCasesAlignees([Couleur, NX, PosY], ListeCase, NbAlign, d).
+
+% A gauche de la case %
+nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, g):-
+	NX is PosX - 1,
+	member([Couleur, NX, PosY], ListeCase),
+	NbAlign is NbAlign + 1,
+	nbCasesAlignees([Couleur, NX, PosY], ListeCase, NbAlign, g).
+
+% En haut de la case %
+nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, h):-
+	NY is PosY + 1,
+	member([Couleur, PosX, NY], ListeCase),
+	NbAlign is NbAlign + 1,
+	nbCasesAlignees([Couleur, PosX, NY], ListeCase, NbAlign, h).
+
+% En bas de la case %
+nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, b):-
+	NY is PosY - 1,
+	member([Couleur, PosX, NY], ListeCase),
+	NbAlign is NbAlign + 1,
+	nbCasesAlignees([Couleur, PosX, NY], ListeCase, NbAlign, b).
+
+% Diagonale haut-gauche %
+nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, hg):-
+	NX is PosX - 1,
+	NY is PosY + 1,
+	member([Couleur, NX, NY], ListeCase),
+	NbAlign is NbAlign + 1,
+	nbCasesAlignees([Couleur, NX, NY], ListeCase, NbAlign, hg).
+
+% Diagonale bas - gauche %
+nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, bg):-
+	NX is PosX - 1,
+	NY is PosY - 1,
+	member([Couleur, NX, NY], ListeCase),
+	NbAlign is NbAlign + 1,
+	nbCasesAlignees([Couleur, NX, NY], ListeCase, NbAlign, bg).
+
+% Diagonale haut - droite %
+nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, hd):-
+	NX is PosX + 1,
+	NY is PosY + 1,
+	member([Couleur, NX, NY], ListeCase),
+	NbAlign is NbAlign + 1,
+	nbCasesAlignees([Couleur, NX, NY], ListeCase, NbAlign, hd).
+
+% Diagonale bas - droite  %
+nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, bd):-
+	NX is PosX + 1,
+	NY is PosY - 1,
+	member([Couleur, NX, NY], ListeCase),
+	NbAlign is NbAlign + 1,
+	nbCasesAlignees([Couleur, NX, NY], ListeCase, NbAlign, bd).
+%
+% Pour une case donnée, calcule le nombre d'alignements dont elle fait partie, selon
+% les directions passées en paramètres
+%
+
+alignementTroisPions(_Case, _ListeCase, 1, []).
+
+alignementTroisPions(Case, ListeCase, NbAlign, [DC|Dirs]):-
+	nbCasesAlignees(Case, ListeCase, NbCases, DC),
+	NbCases = 3,
+	NbAlign is NbAlign + 1,
+	alignementTroisPions(Case, ListeCase, NbAlign, Dirs).
+
+alignementTroisPions(Case, ListeCase, NbAlign, [DC|Dirs]):-
+	alignementTroisPions(Case, ListeCase, NbAlign, Dirs).
+
+%
+% Prédicat permettant de calculer le nombre d'alignements de 3 pions pour une couleur
+%
+nbAlignementsTroisPions(_Couleur, [], _NbAlign).
+
+nbAlignementsTroisPions(Couleur, [Current|LC], NbAlign):-
+	Dir = [d, g, h, b, hg, bg, hd, bd],
+	alignementTroisPions(Current, LC, AlignCurrent, Dir),
+	NbAlign is NbAlign + AlignCurrent ,
+	nbAligementsTroisPions(Couleur, LC, NbAlign).
+
+%
+% Predicat principal
+% @param Plateau : l'état actuel du plateau :  [[Pion, PosX, PosY], [...]]
+% @param ReserveIA : l'état de la reserve de l'IA : [Couleur, NbPionsB, NbPionsR, NbPionsJ] 
+% @param ReserveAlgo : l'état de la reserve de l'adversaire [Couleur, NbPionsB, NbPionsR, NbPionsJ] 
+% @param Coup : le resultat (Type de coup / Case ) [Type, [Pion, PosX, PosY]]
+%
+
+
+calculCoup(Plateau,ReserveIA, ReserveAdv, Coup) :-
     Coup = [0,[1,0,0]].
     
