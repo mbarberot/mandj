@@ -4,24 +4,24 @@
 
 %
 % Plateau
-%	Liste des cases occupées du jeu.
+%	Liste des cases occupÃ©es du jeu.
 %	[Case, Case, ...]
 %
 % Case 
-%	Une liste des 3 éléments suivants :
-%	- type du pion sur la case (un considère un pion vide)
-%	- coordonnée en x
-%	- coordonnée en y
+%	Une liste des 3 elements suivants :
+%	- type du pion sur la case (un considere un pion vide)
+%	- coordonnee en x
+%	- coordonnee en y
 %	[Pion, PosX, PosY]
 %
 % Coup
-%	Une liste des 2 éléments suivants
+%	Une liste des 2 elements suivants
 %	- type du coup
 %	- la case du coup
 %	[Type,Case]
 %
 % Type
-%	Valeur entière telle que :
+%	Valeur entiere telle que :
 %	0 = COUP
 %	1 = GAGNE
 %	2 = PERD
@@ -29,7 +29,7 @@
 %	4 = PASSE
 %
 % Pion
-%	Valeur entière telle que : 
+%	Valeur entiere telle que : 
 %	0 = Blanc
 %	1 = Rouge
 %	2 = Jaune
@@ -40,18 +40,18 @@
 %	[Joueur, Joueur]
 %
 % Joueur
-%	Liste de quatres éléments :
-%	- le numéro du joueur : 0 = l'IA, 1 = l'adversaire
+%	Liste de quatres elements :
+%	- le numero du joueur : 0 = l'IA, 1 = l'adversaire
 %	- le nombre de pions blancs
 %	- le nombre de pions rouges
 %	- le nombre de pions jaunes
 %	[NJoueur,NbBlanc,NbRouge,NbJaune]
 %
 % Heuristique
-%	Une liste de deux éléments :
-%	- une valeur heuritstique
+%	Une liste de deux elements :
+%	- une valeur heuristique
 %	- un plateau de jeu
-%	- le coup joué
+%	- le coup joue
 %
 
 %
@@ -127,8 +127,8 @@ nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, bd):-
 	NbAlign is NbAlign + 1,
 	nbCasesAlignees([Couleur, NX, NY], ListeCase, NbAlign, bd).
 %
-% Pour une case donn�e, calcule le nombre d'alignements dont elle fait partie, selon
-% les directions pass�es en param�tres
+% Pour une case donnee, calcule le nombre d'alignements dont elle fait partie, selon
+% les directions passées en parametres
 %
 
 alignementTroisPions(_Case, _ListeCase, 1, []).
@@ -143,7 +143,7 @@ alignementTroisPions(Case, ListeCase, NbAlign, [DC|Dirs]):-
 	alignementTroisPions(Case, ListeCase, NbAlign, Dirs).
 
 %
-% Pr�dicat permettant de calculer le nombre d'alignements de 3 pions pour une couleur
+% Prédicat permettant de calculer le nombre d'alignements de 3 pions pour une couleur
 %
 nbAlignementsTroisPions(_Couleur, [], _NbAlign).
 
@@ -155,9 +155,9 @@ nbAlignementsTroisPions(Couleur, [Current|LC], NbAlign):-
 
 %
 % Predicat principal
-% @param Plateau : l'�tat actuel du plateau :  [[Pion, PosX, PosY], [...]]
-% @param ReserveIA : l'�tat de la reserve de l'IA : [Couleur, NbPionsB, NbPionsR, NbPionsJ] 
-% @param ReserveAlgo : l'�tat de la reserve de l'adversaire [Couleur, NbPionsB, NbPionsR, NbPionsJ] 
+% @param Plateau : l'état actuel du plateau :  [[Pion, PosX, PosY], [...]]
+% @param ReserveIA : l'état de la reserve de l'IA : [Couleur, NbPionsB, NbPionsR, NbPionsJ] 
+% @param ReserveAlgo : l'état de la reserve de l'adversaire [Couleur, NbPionsB, NbPionsR, NbPionsJ] 
 % @param Coup : le resultat (Type de coup / Case ) [Type, [Pion, PosX, PosY]]
 %
 
@@ -165,3 +165,59 @@ nbAlignementsTroisPions(Couleur, [Current|LC], NbAlign):-
 calculCoup(Plateau,ReserveIA, ReserveAdv, Coup) :-
     Coup = [0,[1,0,0]].
     
+    
+    
+    
+    
+minimax(Plateau,Joueurs,MeilleurCoup):-
+    genererJ1([[-1,[],Plateau]],Joueurs,[],LLH),
+    evaluer().
+    min(),
+    max().
+    
+    
+genererJ1(_,_,R,R).
+genererJ1([H|LH],[J1,J2],Acc,R):-
+    genererCoup(H,J1,NH),
+    genererJ2([NH,H|LH],J2,[],NLH),
+    genererJ1([H|LH],[J1,J2],[NLH|Acc],R).
+    
+genererJ2(_,_,R,R).
+genererJ2([H|LH],J2,Acc,R):-
+    genererCoup(H,J2,NH),
+    genererJ2([H|LH],J2,[[NH,H|LH]|Acc],R).
+
+
+genererCoup([_,_,Plateau],Joueur,[-1,[Type,Case],NP]) :-
+    trouverCase(Case,Joueur),
+    trouverType(Type),
+    typeValide(),
+    nouveauPlateau(Plateau,Type,Case,NP).
+
+trouverCase([Pion,Ligne,Colonne]) :-
+    trouverLigne(Ligne),
+    trouverColonne(Colonne),
+    trouverPion(Pion)
+    caseValide([Pion,Ligne,Colonne]).
+    
+trouverLigne(0).
+trouverLigne(1).
+trouverLigne(2).
+trouverLigne(3).
+trouverColonne(0).
+trouverColonne(1).
+trouverColonne(2).
+trouverColonne(3).
+trouverPion(0).
+trouverPion(1).
+trouverPion(2).
+
+caseValide().
+trouverType().
+typeValide().
+nouveauPlateau().
+
+evaluer().
+min().
+max().
+
