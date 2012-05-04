@@ -20,6 +20,10 @@
 //  -> pour les structures et énumérations
 #include "protocole.h"
 
+#define NB_ROW 4
+#define NB_COL 4
+#define SIZE_PLATEAU NB_ROW * NB_COL
+
 
 typedef enum {
     JEU_ERR,
@@ -54,7 +58,7 @@ typedef struct {
  * Utiliser getCase(col,lig) pour atteindre les cases plus simplement
  *
  */
-TypPiece plateau[16];
+TypPiece plateau[SIZE_PLATEAU];
 
 
 Joueur *joueur;

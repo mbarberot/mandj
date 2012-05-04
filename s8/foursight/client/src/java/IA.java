@@ -1,4 +1,7 @@
+import java.io.*;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import se.sics.jasper.*;
 
 
@@ -9,7 +12,7 @@ import se.sics.jasper.*;
 public class IA extends Thread
 {
     public static String PATH_TO_SICSTUS = "/usr/local/sicstus4.2.0/"; 
-    public static String PATH_TO_FILE = "src/prolog/ia.prolog";
+    public static String PATH_TO_FILE = "bin/ia.sav";
     
     /**
      * Plateau de jeu
@@ -19,7 +22,12 @@ public class IA extends Thread
     /** 
      * Objet SICStus pour l'execution du programme Prolog 
      */ 
-    private SICStus sp;
+    private SICStus sicstus;
+    
+    /**
+     * Interface prolog
+     */
+    private Prolog sp;
     
     /**
      * Requête à effectuer avec le programme Prolog
@@ -34,7 +42,7 @@ public class IA extends Thread
     /**
      * Un coup : 
      */
-    private String coup;
+    private int coup;
 
  
     /**
@@ -42,26 +50,39 @@ public class IA extends Thread
      */
     public IA()
     {
-        sp = null;
         plateau = new int[16];
         running = false;
-        
-        try 
+   
+        try
         {
-            sp = new SICStus(PATH_TO_SICSTUS);
-            sp.load(PATH_TO_FILE);
-        }
-        catch (SPException ex)
+            sp = Jasper.newProlog(null,PATH_TO_SICSTUS,PATH_TO_FILE);
+            
+            
+        } catch (InterruptedException ex)
         {
-            System.err.println("Exception SICStus Prolog : " + ex);
             ex.printStackTrace();
-            System.exit(-2);
         }
         
         for(int i = 0; i < plateau.length; i++)
         {
             plateau[i] = 0;
+        }	    
+    }
+    
+    public void debug(String methode)
+    {
+        String res = "[DEBUG] (IA."+methode+")";
+        
+        for(int i = 0; i < plateau.length; i++)
+        {
+            res += (i%4 == 0 ? "\n| " : "| ") 
+            + plateau[i]
+            + ((i+1) % 4 == 0 ? " | " : " ")
+            ;
         }
+        
+        System.out.println(res);
+     
     }
     
     /**
@@ -77,30 +98,28 @@ public class IA extends Thread
         HashMap resultats = new HashMap();
        
         running = true;
-	
 	try 
         {
-	    query = sp.openQuery(requete,resultats);
-	    query.nextSolution();
-	    
-	    if(!resultats.isEmpty())
-	    {
-                SPTerm res = (SPTerm)resultats.get("Sol");  
-                
+            query = sp.openPrologQuery(requete, resultats);
+            query.nextSolution();
+
+            if (!resultats.isEmpty())
+            {
+                Term res = (Term) resultats.get("Sol");
+
                 coup = traitement(res.toString());
-	    }
-	    
-	    query.close();
-	}
-	catch( SPException ex )
-	{
-	    System.err.println("Exception Prolog : " + ex);
+                
+            }
+
+            query.close();
+        } catch (SPException ex)
+        {
+            ex.printStackTrace();
 	}
 	catch( Exception ex )
 	{
-	    System.err.println("Autre exception : "+ ex);
+	    ex.printStackTrace();
 	}
-	
         running = false;	
     }
 
@@ -110,16 +129,22 @@ public class IA extends Thread
      * @param str La chaîne brute
      * @return La chaine transformée
      */
-    private String traitement(String str)
+    private int traitement(String str)
     {
-        String res = "";
+        int res = 0;
+        int pow = 1000;
         char c;
+        
         for(int i = 0; i < str.length(); i++)
         {
             c = str.charAt(i);
-            if(c >= '0' && c <= '9') { res += c + "-"; }
+            if(c >= '0' && c <= '9') 
+            { 
+                res += Character.getNumericValue(c) * pow;
+                pow /= 10;
+            }
         }
-        return res.substring(0, res.length()-1);
+        return res;
     }
     
     /**
@@ -148,8 +173,8 @@ public class IA extends Thread
 	{
 	    str += "["
 		+ tab[i] + ","
-		+ i % 4 + ","
-		+ i / 4 + "]"
+		+ i / 4 + ","
+		+ i % 4 + "]"
 		+ (i != tab.length-1 ? "," : ""); 
 	}
 	str += "]";
@@ -202,18 +227,26 @@ public class IA extends Thread
      */
     public void setPlateau(int[] plateau)
     {
-        System.arraycopy(plateau, 0, this.plateau, 0, this.plateau.length);
+        this.plateau = plateau;
+	debug("setPlateau");
     }
     
     /**
      * Retourne le coup trouvé
      * @return 
      */
-    public String getCoup()
+    public int getCoup()
     {
         return this.coup;
     }
     
-    
+    /**
+     * Arrete l'IA
+     */
+    public void end()
+    {
+        cancel();
+        sicstus.stopServer();
+    }
     
 }

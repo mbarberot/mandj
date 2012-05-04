@@ -49,6 +49,8 @@ int main (int argc, char **argv)
 
     char machine[TAIL_CHAIN],
 	 login[TAIL_CHAIN];
+	 
+    ia_err iaErr;
 
     srand(time(NULL));
 
@@ -57,13 +59,19 @@ int main (int argc, char **argv)
     err = main_traitementArgs(argc,argv,machine,&port,login);
     if(err > 0) { return err; }
     
-    ia_initJVM();
+    iaErr = ia_initJVM();
+    if(iaErr == IA_ERR) 
+    {
+	return -1 ; 
+    }
 
     // Lancement du tournoi et déroulement des parties
     err = main_partie(machine,port,login);
     if(err > 0) { return err; }
+
     
-    ia_closeJVM();
+    iaErr = ia_closeJVM();
+    if(iaErr == IA_ERR) { return -1; }
 
     return 0;
 }
@@ -134,7 +142,7 @@ int main_partie(char *machine, int port, char login[])
 	printf("--------------------------------------------------\n");
 	return 1;
     }
-
+/*
     // Connexion à l'arbitre 
     // + contrôle des erreurs
     clientErr = client_connexion(machine,port,&sockArbitre);
@@ -172,7 +180,7 @@ int main_partie(char *machine, int port, char login[])
 
 	    // Boucle d'une partie
 	    while(finPartie == FAUX)
-	    {		
+	    {		*/
 		// Initialisation d'un coup
 		data->coup = (TypCoupReq*) malloc(sizeof(TypCoupReq));
 		if(data->coup == NULL)
@@ -180,9 +188,9 @@ int main_partie(char *machine, int port, char login[])
 		    printf("[DEBUG] - main_partie() \n");
 		    printf("[DEBUG] - Impossible d'allouer la mémoire\n");
 		    printf("-----------------------------------------\n");	    
-		    break;
+		    //break;
 		}
-
+/*
 
 		// A qui le tour ?
 		if(!premier)
@@ -205,16 +213,7 @@ int main_partie(char *machine, int port, char login[])
 		    // Peuplement de la structure de coup
 		    data->coup->idRequest = COUP;
 		    data->coup->numeroDuCoup = nbCoup;
-
-		    /*/ TODO Remove this
-		    // <<<<<<<<<< tmp
-		    data->coup->propCoup = POSE ;
-		    data->coup->typePiece = BLANC ;
-		    data->coup->caseArrivee.ligne = LI_ZERO ;
-		    data->coup->caseArrivee.colonne = CO_ZERO ;
-		    // <<<<<<<<<< tmp
-*/
-		    
+*/		    
 		    // Lancement du thread de calcul du coup
 		    thread_init(data);
 
@@ -223,14 +222,18 @@ int main_partie(char *machine, int port, char login[])
 			if(DEBUG) { perror("[DEBUG] - pthread_create ( thread_ia ) :"); }
 			return EXIT_FAILURE;
 		    }
+/*
+		    void* status;
+		    pthread_join(thread_ia,&status);
 		    
+/*
 		    // Lancement du thread d'attente d'un éventuel timeout
 		    if(pthread_create(&thread_client,NULL,client_attendTimeout,(void*)data))
 		    {
 			if(DEBUG) { perror("[DEBUG] - pthread_create ( thread_client ) : "); }
 			return EXIT_FAILURE;
 		    }
-
+*/
 		    int finThread = 0;
 		    int finIA = 0;
 
@@ -245,7 +248,7 @@ int main_partie(char *machine, int port, char login[])
 
 			pthread_mutex_unlock(&data->mutex);
 		    }
-
+/*
 		    if(finIA)
 		    {
 			// Le thread de calcul du coup de l'IA à terminé en premier.
@@ -316,7 +319,7 @@ int main_partie(char *machine, int port, char login[])
 	    jeuErr = jeu_fin();
 	}
     } while(!finTournoi);
-
+*/
     if(pthread_mutex_destroy(&data->mutex) == 0 && DEBUG)
     {
 	printf("[DEBUG] - main_partie() \n");

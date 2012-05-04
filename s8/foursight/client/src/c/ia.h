@@ -35,19 +35,11 @@
 // Enumération des retours de fonctions
 typedef enum { IA_OK, IA_ERR } ia_err ;
 
-typedef struct ia_jvm
-{
-    JavaVM *jvm;
-    JNIEnv *env;
-    jobject foursightIA;
-    
-} ia_jvm;
-
 //
 // Globales
 //
-ia_jvm foursightJVM ;
-
+JavaVM* jvm;
+jobject foursightIA;
 
 //
 // Fonctions :

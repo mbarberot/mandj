@@ -15,4 +15,29 @@ export JDK_HOME
 export JDK_JVM
 export LD_LIBRARY_PATH
 
-make $1
+
+# - Argument de l'executable
+HOST=localhost
+PORT=5555
+
+case "$1" in
+    compile)
+    make
+    ;;
+    j1)
+    ./bin/client $HOST $PORT
+    ;;
+    j2)
+    cp bin/* j2/bin -R ;
+    ./j2/run.sh j2
+    ;;
+    novalid)
+    ../arbitre/arbitre_sans_valide $PORT
+    ;;
+    notimeout)
+    ../arbitre/arbitre_sans_timeout $PORT
+    ;;
+    arbitre)
+    ../arbitre/arbitre $PORT
+    ;;
+esac

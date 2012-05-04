@@ -16,9 +16,7 @@ JAVADIR=$(SRCDIR)java/
 PROLOGDIR=$(SRCDIR)prolog/
 # - Chemin vers l'executable
 BINDIR=bin/
-# - Argument de l'executable
-HOST=localhost
-PORT=5555
+
 
 # Règles :
 # - Principale
@@ -49,7 +47,4 @@ reset:
 # - Nettoyage complet
 veryclean: clean reset
 
-# - Lancement
-run : all
-	bin/client $(HOST) $(PORT)
 

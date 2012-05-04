@@ -1,7 +1,7 @@
 RACINE=../../
 BIN=$(RACINE)bin
 
-SRC=$(wildcard *.prolog)
+SRC=$(wildcard *.sav)
 
 all :
 	cp $(SRC) $(BIN)
