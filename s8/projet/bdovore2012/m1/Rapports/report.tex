@@ -2,7 +2,7 @@
 % -------------------- Langue --------------------
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[english]{babel}
+\usepackage[frenchb,english]{babel}
 % -------------------- Marges, interlignes--------------------
 \usepackage[a4paper]{geometry}	% 
 %\usepackage{setspace}
@@ -36,6 +36,8 @@
 % -------------------- Images --------------------
 \usepackage{graphicx}		% Insertion d'images ou de pdf -> option : [pdftex]
 %\usepackage{wrapfig}		% Insérer des images dans un paragraphe
+% -------------------- Tableau --------------------
+\usepackage{multirow}		% Fusion de cellules sur plusieurs lignes -> multirow{nblign}{size}{texte}
 % -------------------- Autres --------------------
 %\usepackage{makeidx}		% Création d'index
 %\usepackage{fancyhdr}		% Personnalisation des entetes
@@ -130,7 +132,7 @@ First of all, we decided to unify the two different projects in an only one. To 
 
 \begin{itemize}
 \item A collaboration system (Subversion). Not necessary, but very useful. It permits to store the projects online (and work on them with any computer) and handle the different versions of the project (if the last version didn't work -for example - we still could come back to a previous one).
-\item A web server on the local computer, to ``simulate'' the server of the website. We stored on it a copy of the database of BDOvore in order to test our future web service.
+\item A web server on the local computer, to ''simulate`` the server of the website. We stored on it a copy of the database of BDOvore in order to test our future web service.
 \item The embedded database that we could generate with some commands.
 \end{itemize}
 
@@ -139,7 +141,7 @@ So we could finally work on the project. To unify the two versions, the main wor
 The software with the contributions of the two previous groups was finally unified. We could now testing the actual features and their efficiency.
 
 \section{Test and updates}
-Our first observation was that the search engine (the tool who allows to find a specific volume in the user's library or in the volumes referenced in the website) was functional but very limited. In fact, the research gave you results which fit perfectly with the syntax of what you search. As we saw in the introduction, typing a research with the keyword ''asterix`` won't give you any results with the word ''Astérix'' because of the capital letter and the accent that the search engine didn't know how to ignore. 
+Our first observation was that the search engine (the tool who allows to find a specific volume in the user's library or in the volumes referenced in the website) was functional but very limited. In fact, the research gave you results which fit perfectly with the syntax of what you search. As we saw in the introduction, typing a research with the keyword ''asterix`` won't give you any results with the word ''Astérix`` because of the capital letter and the accent that the search engine didn't know how to ignore. 
 \newline To fix this problem, we decided to update the search engine (Lucene, an external search engine that you can use with many programming language) to its new version. This one was improved and allows many new possibilities, like the use of a joker character (''*``) or the use of some keywords like AND, OR or NOT to precise our research. It allows too to fix the problems of accents or capital letters.
 \newline Furthermore, we noticed some things we already knew : the synchronization tool doesn't work, so the base of referenced books was nearly empty (except for some entries that was inserted manually to test the search engine) as the library of the user.
 \newline Finally, while we was at it, we updated the database engine (''H2`` the one which is used to the embedded base) in the purpose to increase the performance and the rapidity of the recovery of the data. Additionally, we brought some minors modifications on the GUI (Graphic User Interface, what the user use to communicate with the program, like the buttons or the text fields) and in the code.
@@ -198,10 +200,17 @@ As we told before, the synchronization is the mechanism which will certify the c
 
 
 \chapter{Conclusion}
-As we see, working on a project which was began and continue by a lot of students is not a simple thing. That fact justified the time we spent to analyse and understand the architecture and programming of this software. Thanks to this analysis, we have been able to improved some features (like the search engine) and added new one (communication with the website). 
+As we see, working on a project which was began and continued by a lot of students is not a simple thing. That fact justified the time we spent to analyse and understand the architecture and programming of this software. Thanks to this analysis, we have been able to improved some features (like the search engine) and added new one (communication with the website). 
 \newline Unfortunately, we hadn't got enough time to put finishing touches on our work. For example, we wanted to make more tests on our new features, in order to optimize them or to make them more stable.
 \newline Furthermore, we can see that some features are still not implemented : for example the user can't manually add a comic book which is not referenced in the website and the graphic interface could be more user-friendly.
 
+
+\selectlanguage{frenchb}
+\appendix
+\include{rapport}
+
+
+\selectlanguage{english}
 \include{cover_fourth}
 
 

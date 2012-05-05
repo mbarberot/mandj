@@ -1,71 +1,31 @@
 
-\documentclass[11pt]{report} % { book | article | report }
-% -------------------- Langue --------------------
-\usepackage[latin1]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage[francais]{babel}
-% -------------------- Marges, interlignes--------------------
-\usepackage[a4paper]{geometry}	% 
-%\usepackage{setspace}
-%\usepackage{layout}		% Layout
-%\usepackage{lscape}		% Orientation de la page
-% -------------------- Soulignement --------------------
-%\usepackage{soul}
-%\usepackage{ulem}
-% -------------------- Fontes --------------------
-%\usepackage{eurosym}		% Symbole Euro
-%\usepackage{bookman}
-%\usepackage{charter}
-%\usepackage{newcent}
-%\usepackage{lmodern}
-%\usepackage{mathpazo}					
-%\usepackage{mathptmx}
-% -------------------- Code et citations --------------------
-%\usepackage{verbatim}		% Code
-%\usepackage{listings}		% Code avec coloration syntaxique
-%\usepackage{url}		% Urls
-%\usepackage{moreverb}
-% -------------------- Couleur --------------------
-%\usepackage{color}		% les couleurs
-%\usepackage{colortbl}		% les couleurs dans un tableau
-%\usepackage[svgnames]{xcolor}	% le package color, en mieux !
-% -------------------- Maths --------------------
-%\usepackage{amsmath}
-%\usepackage{amssymb}
-%\usepackage{mathrsfs}
-%\usepackage{asmthm}
-% -------------------- Images --------------------
-%\usepackage{graphicx}		% Insertion d'images ou de pdf -> option : [pdftex]
-%\usepackage{wrapfig}		% Insérer des images dans un paragraphe
-% -------------------- Autres --------------------
-%\usepackage{makeidx}		% Création d'index
-%\usepackage{fancyhdr}		% Personnalisation des entetes
-%\usepackage{sfheaders}		% Mise sans-serif des titres
-%\usepackage{enumitem}		% Personnalisation des environnement enumerate	
-%\usepackage{pdfpages}
-%\usepackage[nottoc, notlof, notlot]{tocbibind}
-%\usepackage{tocvsec2}		% Donne le choix du départ de la numérotation
 
+\chapter{Synchronisation}
+\sffamily
+\begin{center}
+\begin{tabular}{|c|c|c|c|l|}
+\hline
+Base Locale & Base Distante 	& Flags 	& Table transaction 	& D\'ecision 		\\\hline
+\multirow{12}*{Pr\'esent}	& \multirow{8}*{Pr\'esent} 	& \multirow{4}*{Identiques} 	& Ajout 	& \multirow{3}*{Ne rien faire} 			\\\cline{4-4}
+				& 				&				& Ajout 	& 						\\\cline{4-4}
+				  &				& 				& Modification	& 						\\\cline{4-5}
+				&				&				& Suppression	& Cas impossible 				\\\cline{3-5}		
+				&				&\multirow{4}*{Diff\'erents}	& Rien		& \multirow{3}*{Demander \`a l'utilisateur} 	\\\cline{4-4}
+				& 				& 				& Ajout 	& 						\\\cline{4-4}
+				&				& 				& Modification	& 						\\\cline{4-5}
+				&				&				& Suppression	& Cas impossible 				\\\cline{2-5}
+				&\multirow{4}*{Absent}		&\multirow{4}*{X} 		& Rien		& Supprimer local				\\\cline{4-5}
+				&				& 				& Ajout		& Ajouter site					\\\cline{4-5}
+				&				&				& Modification	& Demander \`a l'utilisateur			\\\cline{4-5}
+				&				&				& Suppression	& Cas impossible				\\\hline	      
+\multirow{8}*{Absent} 		& \multirow{4}*{Pr\'esent} 	&\multirow{4}*{X}		& Rien		& Ajouter local					\\\cline{4-5}
+				&			 	&				& Ajout		& \multirow{2}*{Cas impossible}			\\\cline{4-4}
+				&				&				& Modification	& 						\\\cline{4-5}
+				&				&				& Suppression	& Supprimer site				\\\cline{2-5}		
+				&\multirow{4}*{Absent}		&\multirow{4}*{X}		& Rien		& Rien \`a faire				\\\cline{4-5}
+				&				&				& Ajout		& \multirow{2}*{Cas impossible}			\\\cline{4-4}
+				& 				&				& Modification	& 						\\\cline{4-5}
+				& 				&				& Suppression	& Rien \`a faire				\\\hline
 
-% -- Avec le package listings
-% \lstset{language=java}
-% -- Avec le package tocvsec2 (dans le document)
-% \maxsecnumdepth{chapter}
-
-\include{utils}
- 
-\newcommand{\imgpath}[1]{images/#1}
-
-
-\title{Client Java pour la bande dessinée}
-\author{Barberot Mathieu \& Racenet Joan}
-\date{1/01/1970}
-
-\begin{document}
-\maketitle
-\tableofcontents
-
-\chapter{Work in progress}
- \noindent\begin{center}\fboxln{\center Nothing here for the moment.\\See you soon !}\end{center}
-\end{document}
-
+\end{tabular}
+\end{center}
