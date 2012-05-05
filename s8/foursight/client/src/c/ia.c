@@ -15,12 +15,12 @@
 #include "ia.h"
 
 
-ia_err ia_initJVM()
+ia_err ia_initJVM(JNIEnv* env)
 {   
     jvm = NULL;
     foursightIA = NULL;
     
-    JNIEnv* env;
+    //JNIEnv* env;
     jint res;
     jclass cls;
     jmethodID mid;
@@ -72,7 +72,7 @@ ia_err ia_initJVM()
     //
     // Recherche de la classe IA
     //
-    cls = (*env)->FindClass(env, "IA");
+    cls = (*env)->FindClass(env, "Run");
     if (cls == NULL) 
     {
 	if(DEBUG) { printf("[DEBUG] (ia_initJVM) Impossible de trouver la classe IA\n"); }
@@ -98,7 +98,8 @@ ia_err ia_initJVM()
 	if(DEBUG) { printf("[DEBUG] (ia_initJVM) Création de l'objet IA impossible\n"); }
 	goto destroy;
     }	    
-	    
+    
+  
     return IA_OK;
 	    
 //
@@ -282,36 +283,44 @@ void* ia_calculeCoup(void *arg)
     //
     // Traitement du résultat
     //
-    int typeCoup, typePion, typeLigne, typeCol;
     
-    typeCoup = res / 1000 ;
-    res %= 1000;
-    typePion = res / 100 ;
-    res %= 100;
-    typeLigne = res / 10 ;
-    res %= 10;
-    typeCol = res;
+    if(res != 0)
+    {
+	int typeCoup, typePion, typeLigne, typeCol;
+	
+	typeCoup = res / 1000 ;
+	res %= 1000;
+	typePion = res / 100 ;
+	res %= 100;
+	typeLigne = res / 10 ;
+	res %= 10;
+	typeCol = res;
     
     
 
-    //
-    // Mise à jour des données partagées
-    //
-    // Utilisation d'un mutex pour ne pas faire d'écritures simultanées
-    //    
-    pthread_mutex_lock(&data->mutex);
-    
-    data->fini++;
-    data->ia_first++;
-    
-    data->coup->propCoup = typeCoup ;
-    data->coup->typePiece = typePion ;
-    data->coup->caseArrivee.ligne = typeLigne ;
-    data->coup->caseArrivee.colonne = typeCol ;
-    
-    if(DEBUG) { printf("[DEBUG] (ia_calculeCoup) TypeCoup : %d - TypePiece : %d - Ligne : %d - Colonne : %d \n", typeCoup, typePion, typeLigne, typeCol); }
-    
-    pthread_mutex_unlock(&data->mutex);    
+	//
+	// Mise à jour des données partagées
+	//
+	// Utilisation d'un mutex pour ne pas faire d'écritures simultanées
+	//    
+	pthread_mutex_lock(&data->mutex);
+	
+	data->fini++;
+	data->ia_first++;
+	
+	data->coup->propCoup = typeCoup ;
+	data->coup->typePiece = typePion ;
+	data->coup->caseArrivee.ligne = typeLigne ;
+	data->coup->caseArrivee.colonne = typeCol ;
+	
+	if(DEBUG) { printf("[DEBUG] (ia_calculeCoup) TypeCoup : %d - TypePiece : %d - Ligne : %d - Colonne : %d \n", typeCoup, typePion, typeLigne,typeCol); }
+	
+	pthread_mutex_unlock(&data->mutex);    
+    }
+    else 
+    {
+	system("sleep 5");
+    }
     
     //
     // Affichage de fin de fonction
@@ -361,8 +370,18 @@ destroy:
 
 
 
+
+
+
+
+
+
+
+
+
 ia_err ia_closeJVM()
 {
+   
     // Arrêt de la JVM
     (*jvm)->DestroyJavaVM(jvm);
     if(DEBUG) { printf("[DEBUG] (ia_closeJVM) JVM detruite\n"); }

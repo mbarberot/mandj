@@ -58,7 +58,13 @@ void* ia_calculeCoup(void *arg);
 /**
  * Initialise la JVM pour les calculs de l'IA
  */
-ia_err ia_initJVM();
+ia_err ia_initJVM(JNIEnv *env);
+
+/**
+ * Stoppe le calcul d'un coup
+ * @param env Environnement JNI
+ */
+ia_err ia_cancel(JNIEnv *env);
 
 /**
  * Arret de la JVM

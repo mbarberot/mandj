@@ -52,6 +52,7 @@ public class IA extends Thread
     {
         plateau = new int[16];
         running = false;
+        coup = 0;
    
         try
         {
@@ -120,6 +121,7 @@ public class IA extends Thread
 	{
 	    ex.printStackTrace();
 	}
+        sicstus.stopServer();
         running = false;	
     }
 

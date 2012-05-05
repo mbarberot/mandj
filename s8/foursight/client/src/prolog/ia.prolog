@@ -4,7 +4,7 @@
 
 %
 % Plateau
-%	Liste des cases occupÃ©es du jeu.
+%	Liste des cases occupées du jeu.
 %	[Case, Case, ...]
 %
 % Case 
@@ -170,36 +170,66 @@ calculCoup(Plateau,ReserveIA, ReserveAdv, Coup) :-
     
     
 minimax(Plateau,Joueurs,MeilleurCoup):-
-    genererJ1([[-1,[],Plateau]],Joueurs,[],LLH),
-    evaluer().
-    min(),
-    max().
+    genererJ1([[-1,[],Plateau]],Joueurs,[],LLH). %,
+%    evaluer,
+%    min,
+%    max.
     
     
-genererJ1(_,_,R,R).
-genererJ1([H|LH],[J1,J2],Acc,R):-
+genererMax(_,_,R,R).
+genererMax([H|LH],[J1,J2],Acc,R):-
     genererCoup(H,J1,NH),
-    genererJ2([NH,H|LH],J2,[],NLH),
-    genererJ1([H|LH],[J1,J2],[NLH|Acc],R).
+    genererMin([NH,H|LH],J2,[],NLH),
+    genererMax([H|LH],[J1,J2],[NLH|Acc],R).
     
-genererJ2(_,_,R,R).
-genererJ2([H|LH],J2,Acc,R):-
+genererMin(_,_,R,R).
+genererMin([H|LH],J2,Acc,R):-
     genererCoup(H,J2,NH),
-    genererJ2([H|LH],J2,[[NH,H|LH]|Acc],R).
+    genererMin([H|LH],J2,[[NH,H|LH]|Acc],R).
 
 
 genererCoup([_,_,Plateau],Joueur,[-1,[Type,Case],NP]) :-
-    trouverCase(Case,Joueur),
+    trouverCase(Plateau,Joueur,Case),
     trouverType(Type),
-    typeValide(),
+    typeValide,
     nouveauPlateau(Plateau,Type,Case,NP).
+    
 
+%
+%
+%
+%
+genererCase(Plateau, Joueur, Case) :-
+    choixCase(Plateau,Case),
+    choixPion(Joueur,Case).
+    
+    
+%
+% Une case est valide si :
+%	- elle est dans le tableau => vrai par construction
+%	- elle n'est pas dans la liste des cases occupées => 'plateau'
+%	- c'est une case avec un pion blanc et que l'on veut y placer un pion jaune ou rouge.
+%
+caseValide([[0,L,C]|LC],[0,L,C]) :- fail.
+
+
+%
+% Un pion est valide si l'utilisateur en a encore
+%
+pionValide([_,Bl,_,_],[0,_,_]) :- Bl > 0.
+pionValide([_,_,Ro,_],[1,_,_]) :- Ro > 0.
+pionValide([_,_,_,Ja],[2,_,_]) :- Ja > 0.
+
+
+%
+% Trouve une case dans un damier de 4 x 4 et un pion
+% parmis les 3 types de pions possibles
+%
 trouverCase([Pion,Ligne,Colonne]) :-
     trouverLigne(Ligne),
     trouverColonne(Colonne),
-    trouverPion(Pion)
-    caseValide([Pion,Ligne,Colonne]).
-    
+    trouverPion(Pion).    
+
 trouverLigne(0).
 trouverLigne(1).
 trouverLigne(2).
@@ -212,12 +242,98 @@ trouverPion(0).
 trouverPion(1).
 trouverPion(2).
 
-caseValide().
-trouverType().
-typeValide().
-nouveauPlateau().
 
-evaluer().
-min().
-max().
+trouverType.
+typeValide.
+nouveauPlateau.
+
+evaluer.
+min.
+max.
+    
+ 
+ 
+%
+% TODO
+% 
+% Ajouter une case à un plateau EN RESPECTANT L'ORDRE
+% 
+% Evaluer un plateau
+%
+
+% consult('ia.prolog').
+ 
+ 
+%
+% Génération de tous les coups jouables depuis un plateau
+% Façon Backtrack
+%
+% Exemple d'un plateau
+%
+%	|    | 0 | 1 | 2 | 3 |
+%	|    |   |   |   |   |
+%	| 0  | x | x | 0 | x | 
+%	| 1  | 2 | x | x | x |
+%	| 2  | x | 1 | x | x |
+%	| 3  | 2 | x | x | 1 |
+%
+% plateau = [ [0,0,2] , [2,1,0], [1,2,1], [2,3,0], [1,3,3] ]
+%
+%
+
+construireListe(-1,_,Acc,Acc).
+construireListe(L,C,Acc,R) :-
+    construireLigne(L,C,[],R1),
+    append(R1,Acc,Acc1),
+    L >= 0,
+    L1 is L - 1,
+    construireListe(L1,C,Acc1,R).
+    
+construireLigne(L, 0, Acc, [[-1,L,0]|Acc]).
+construireLigne(L, C, Acc, R) :-
+    C > 0,
+    C1 is C - 1,
+    construireLigne(L, C1, [[-1,L,C]|Acc], R).
+
+
+corrigeListe([],_,_,Acc,Acc).
+corrigeListe(_,[],_,Acc,Acc).
+
+
+% Même case -> pion blanc présent -> poser un pion coloré
+corrigeListe([[0,L,C] | Plateau], [[_,L,C] | Liste], Joueur, Acc, R) :-
+    choixPionColore(Joueur,Pion),
+    corrigeListe(Plateau,Liste,Joueur,[[Pion,L,C] | Acc], R).
+    
+% Même case -> Autres cas (pion coloré présent / pas de pion coloré en réserve)
+corrigeListe([[_,L,C] | Plateau], [[_,L,C] | Liste], Joueur, Acc, R) :-
+    corrigeListe(Plateau,Liste,Joueur,Acc,R).
+    
+% Autre cas -> poser un pion blanc
+corrigeListe(Plateau, [[_,L2,C2] | Liste], Joueur, Acc, R) :-   
+    choixPionBlanc(Joueur,Pion),
+    corrigeListe(Plateau, Liste, Joueur, [[Pion,L2,C2] | Acc], R).
+
+% Autre cas -> autres cas (pas de pion blanc en réserve)
+corrigeListe(Plateau, [_ | Liste], Joueur, Acc, R) :-
+    corrigeListe(Plateau, Liste, Joueur, Acc, R).
+    
+
+test(N,R) :-
+    construireListe(N,N,[],Liste),
+    Plateau = [ [0,0,2] , [2,1,0], [1,2,1], [2,3,0], [1,3,3] ],
+    Joueur = [0,8,4,4],
+    corrigeListe(Plateau,Liste,Joueur,[],R1),
+    reverse(R1,R).
+
+
+%
+% Choix d'un pion selon les reserves du joueur
+%
+choixPionBlanc([_,Bl,_,_],0) :- Bl > 0.
+choixPionColore([_,_,Ro,_],1) :- Ro > 0.
+choixPionColore([_,_,_,Ja],2) :- Ja > 0.
+
+
+
 
