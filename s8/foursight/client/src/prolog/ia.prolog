@@ -67,91 +67,138 @@ caseValide(X,Y):-
 % Predicats permettant de calculer le nb de cases alignees
 %
 
+nbCasesAlignees(_,[],0,_).
+
 % A droite de la case %
 nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, d):-
 	NX is PosX + 1,
-	member([Couleur, NX, PosY], ListeCase),
-	NbAlign is NbAlign + 1,
-	nbCasesAlignees([Couleur, NX, PosY], ListeCase, NbAlign, d).
+	member([Couleur, NX, PosY], ListeCase),	
+	nbCasesAlignees([Couleur, NX, PosY], ListeCase, NnbAlign, d),
+	NbAlign is NnbAlign + 1.
+
+nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, d):-
+	NX is PosX + 1,
+	\+ member([Couleur, NX, PosY], ListeCase),
+	NbAlign is 1.
 
 % A gauche de la case %
 nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, g):-
 	NX is PosX - 1,
-	member([Couleur, NX, PosY], ListeCase),
-	NbAlign is NbAlign + 1,
-	nbCasesAlignees([Couleur, NX, PosY], ListeCase, NbAlign, g).
+	member([Couleur, NX, PosY], ListeCase),	
+	nbCasesAlignees([Couleur, NX, PosY], ListeCase, NnbAlign, g),
+	NbAlign is NnbAlign + 1.
+
+nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, g):-
+	NX is PosX - 1,
+	\+ member([Couleur, NX, PosY], ListeCase),
+	NbAlign is 1.
 
 % En haut de la case %
 nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, h):-
 	NY is PosY + 1,
 	member([Couleur, PosX, NY], ListeCase),
-	NbAlign is NbAlign + 1,
-	nbCasesAlignees([Couleur, PosX, NY], ListeCase, NbAlign, h).
+	nbCasesAlignees([Couleur, PosX, NY], ListeCase, NnbAlign, h),
+	NbAlign is NnbAlign + 1.
+
+nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, h):-
+	NY is PosY + 1,
+	\+ member([Couleur, PosX, NY], ListeCase),
+	NbAlign is 1.
+	
 
 % En bas de la case %
 nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, b):-
 	NY is PosY - 1,
 	member([Couleur, PosX, NY], ListeCase),
-	NbAlign is NbAlign + 1,
-	nbCasesAlignees([Couleur, PosX, NY], ListeCase, NbAlign, b).
+	nbCasesAlignees([Couleur, PosX, NY], ListeCase, NnbAlign, b),
+	NbAlign is NnbAlign + 1.
+
+nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, b):-
+	NY is PosY - 1,
+	\+ member([Couleur, PosX, NY], ListeCase),
+	NbAlign is 1.
 
 % Diagonale haut-gauche %
 nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, hg):-
 	NX is PosX - 1,
 	NY is PosY + 1,
 	member([Couleur, NX, NY], ListeCase),
-	NbAlign is NbAlign + 1,
-	nbCasesAlignees([Couleur, NX, NY], ListeCase, NbAlign, hg).
+	nbCasesAlignees([Couleur, NX, NY], ListeCase, NnbAlign, hg),
+	NbAlign is NnbAlign + 1.
+	
+nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, hg):-
+	NX is PosX - 1,
+	NY is PosY + 1,
+	\+ member([Couleur, PosX, NY], ListeCase),
+	NbAlign is 1.
 
 % Diagonale bas - gauche %
 nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, bg):-
 	NX is PosX - 1,
 	NY is PosY - 1,
 	member([Couleur, NX, NY], ListeCase),
-	NbAlign is NbAlign + 1,
-	nbCasesAlignees([Couleur, NX, NY], ListeCase, NbAlign, bg).
+	nbCasesAlignees([Couleur, NX, NY], ListeCase, NnbAlign, bg),
+	NbAlign is NnbAlign + 1.
+
+nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, bg):-
+	NX is PosX - 1,
+	NY is PosY - 1,
+	\+ member([Couleur, PosX, NY], ListeCase),
+	NbAlign is 1.
 
 % Diagonale haut - droite %
 nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, hd):-
 	NX is PosX + 1,
 	NY is PosY + 1,
 	member([Couleur, NX, NY], ListeCase),
-	NbAlign is NbAlign + 1,
-	nbCasesAlignees([Couleur, NX, NY], ListeCase, NbAlign, hd).
+	nbCasesAlignees([Couleur, NX, NY], ListeCase, NnbAlign, hd),
+	NbAlign is NnbAlign + 1.
+
+nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, hd):-
+	NX is PosX + 1,
+	NY is PosY + 1,
+	\+ member([Couleur, PosX, NY], ListeCase),
+	NbAlign is 1.
 
 % Diagonale bas - droite  %
 nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, bd):-
 	NX is PosX + 1,
 	NY is PosY - 1,
 	member([Couleur, NX, NY], ListeCase),
-	NbAlign is NbAlign + 1,
-	nbCasesAlignees([Couleur, NX, NY], ListeCase, NbAlign, bd).
+	nbCasesAlignees([Couleur, NX, NY], ListeCase, NnbAlign, bd),	
+	NbAlign is NnbAlign + 1.
+
+nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, bd):-
+	NX is PosX + 1,
+	NY is PosY - 1,
+	\+ member([Couleur, PosX, NY], ListeCase),
+	NbAlign is 1.
+	
 %
-% Pour une case donnee, calcule le nombre d'alignements dont elle fait partie, selon
+% Pour une case donnee, calcule le nombre d'alignements de N pions dont elle fait partie, selon
 % les directions passées en parametres
 %
 
-alignementTroisPions(_Case, _ListeCase, 1, []).
+alignementNPions(_Case, _ListeCase, 0, [], N).
 
-alignementTroisPions(Case, ListeCase, NbAlign, [DC|Dirs]):-
+alignementNPions(Case, ListeCase, NbAlign, [DC|Dirs], N):-
 	nbCasesAlignees(Case, ListeCase, NbCases, DC),
-	NbCases = 3,
-	NbAlign is NbAlign + 1,
-	alignementTroisPions(Case, ListeCase, NbAlign, Dirs).
+	NbCases = N,	
+	alignementNPions(Case, ListeCase, NnbAlign, Dirs, N),
+	NbAlign is NnbAlign + 1.
 
-alignementTroisPions(Case, ListeCase, NbAlign, [DC|Dirs]):-
-	alignementTroisPions(Case, ListeCase, NbAlign, Dirs).
+alignementNPions(Case, ListeCase, NbAlign, [_DC|Dirs], N):-
+	alignementNPions(Case, ListeCase, NbAlign, Dirs, N).
 
 %
-% Prédicat permettant de calculer le nombre d'alignements de 3 pions pour une couleur
+% Pr�dicat permettant de calculer le nombre d'alignements de N pions pour une couleur
 %
-nbAlignementsTroisPions(_Couleur, [], _NbAlign).
+nbAlignementsNPions(_, [], 0, _).
 
-nbAlignementsTroisPions(Couleur, [Current|LC], NbAlign):-
-	Dir = [d, g, h, b, hg, bg, hd, bd],
-	alignementTroisPions(Current, LC, AlignCurrent, Dir),
-	NbAlign is NbAlign + AlignCurrent ,
-	nbAligementsTroisPions(Couleur, LC, NbAlign).
+nbAlignementsNPions(Couleur, [Case | LC], Aligns, N):-
+	alignementNPions(Case, LC, NbCasesAlign, [d,g,b,h,bg,bd,hg,hd], N),
+	nbAlignementsNPions(Couleur, LC, NextAlign, N),
+	Aligns is NbCasesAlign + NextAlign.
 
 %
 % Predicat principal
