@@ -81,8 +81,6 @@ caseValide(X,Y):-
 % Predicats permettant de calculer le nb de cases alignees
 %
 
-nbCasesAlignees(_,[],0,_).
-
 % A droite de la case %
 nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, d):-
 	NX is PosX + 1,
@@ -94,31 +92,6 @@ nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, d):-
 	NX is PosX + 1,
 	\+ member([Couleur, NX, PosY], ListeCase),
 	NbAlign is 1.
-
-% A gauche de la case %
-nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, g):-
-	NX is PosX - 1,
-	member([Couleur, NX, PosY], ListeCase),	
-	nbCasesAlignees([Couleur, NX, PosY], ListeCase, NnbAlign, g),
-	NbAlign is NnbAlign + 1.
-
-nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, g):-
-	NX is PosX - 1,
-	\+ member([Couleur, NX, PosY], ListeCase),
-	NbAlign is 1.
-
-% En haut de la case %
-nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, h):-
-	NY is PosY + 1,
-	member([Couleur, PosX, NY], ListeCase),
-	nbCasesAlignees([Couleur, PosX, NY], ListeCase, NnbAlign, h),
-	NbAlign is NnbAlign + 1.
-
-nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, h):-
-	NY is PosY + 1,
-	\+ member([Couleur, PosX, NY], ListeCase),
-	NbAlign is 1.
-	
 
 % En bas de la case %
 nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, b):-
@@ -132,19 +105,6 @@ nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, b):-
 	\+ member([Couleur, PosX, NY], ListeCase),
 	NbAlign is 1.
 
-% Diagonale haut-gauche %
-nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, hg):-
-	NX is PosX - 1,
-	NY is PosY + 1,
-	member([Couleur, NX, NY], ListeCase),
-	nbCasesAlignees([Couleur, NX, NY], ListeCase, NnbAlign, hg),
-	NbAlign is NnbAlign + 1.
-	
-nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, hg):-
-	NX is PosX - 1,
-	NY is PosY + 1,
-	\+ member([Couleur, PosX, NY], ListeCase),
-	NbAlign is 1.
 
 % Diagonale bas - gauche %
 nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, bg):-
@@ -157,22 +117,9 @@ nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, bg):-
 nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, bg):-
 	NX is PosX - 1,
 	NY is PosY - 1,
-	\+ member([Couleur, PosX, NY], ListeCase),
+	\+ member([Couleur, NX, NY], ListeCase),
 	NbAlign is 1.
 
-% Diagonale haut - droite %
-nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, hd):-
-	NX is PosX + 1,
-	NY is PosY + 1,
-	member([Couleur, NX, NY], ListeCase),
-	nbCasesAlignees([Couleur, NX, NY], ListeCase, NnbAlign, hd),
-	NbAlign is NnbAlign + 1.
-
-nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, hd):-
-	NX is PosX + 1,
-	NY is PosY + 1,
-	\+ member([Couleur, PosX, NY], ListeCase),
-	NbAlign is 1.
 
 % Diagonale bas - droite  %
 nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, bd):-
@@ -185,21 +132,23 @@ nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, bd):-
 nbCasesAlignees([Couleur, PosX, PosY], ListeCase, NbAlign, bd):-
 	NX is PosX + 1,
 	NY is PosY - 1,
-	\+ member([Couleur, PosX, NY], ListeCase),
+	\+ member([Couleur, NX, NY], ListeCase),
 	NbAlign is 1.
-	
+
+
 %
 % Pour une case donnee, calcule le nombre d'alignements de N pions dont elle fait partie, selon
 % les directions passÃ©es en parametres
 %
 
-alignementNPions(_Case, _ListeCase, 0, [], N).
+alignementNPions(_, _, 0, [], _).
 
 alignementNPions(Case, ListeCase, NbAlign, [DC|Dirs], N):-
 	nbCasesAlignees(Case, ListeCase, NbCases, DC),
-	NbCases = N,	
+	NbCases = N, 
 	alignementNPions(Case, ListeCase, NnbAlign, Dirs, N),
-	NbAlign is NnbAlign + 1.
+	NbAlign is NnbAlign + 1,
+	!.
 
 alignementNPions(Case, ListeCase, NbAlign, [_DC|Dirs], N):-
 	alignementNPions(Case, ListeCase, NbAlign, Dirs, N).
@@ -209,10 +158,14 @@ alignementNPions(Case, ListeCase, NbAlign, [_DC|Dirs], N):-
 %
 nbAlignementsNPions(_, [], 0, _).
 
-nbAlignementsNPions(Couleur, [Case | LC], Aligns, N):-
-	alignementNPions(Case, LC, NbCasesAlign, [d,g,b,h,bg,bd,hg,hd], N),
+nbAlignementsNPions(Couleur, [[Couleur,X,Y] | LC], Aligns, N):-
+	alignementNPions([Couleur,X,Y], LC, NbCasesAlign, [d,b,bg,bd], N),
 	nbAlignementsNPions(Couleur, LC, NextAlign, N),
-	Aligns is NbCasesAlign + NextAlign.
+	Aligns is NbCasesAlign + NextAlign,
+	!.
+
+nbAlignementsNPions(Couleur, [Case | LC], Aligns, N):-
+	nbAlignementsNPions(Couleur, LC, Aligns, N).
 
 %
 % Predicat principal
@@ -564,6 +517,53 @@ creeListePlateau(
     creeListePlateau(LC,[[HVal,Plateau,Joueur,Coup]|LH],LP).
 
 
+%
+% Fonction d'évaluation du plateau
+% @param Plateau : l'état du plateau de jeu
+% @param Joueur : le joueur de reference pour lequel on calcule l'heuristique
+% @param Adv : le joueur adverse
+% @result H : l'heuristique calculee
+
+%
+% Cas de fin de partie avec alignement de 4
+%
+eval(Plateau, Joueur, Adv, H):-
+	nbAlignementsNPions(Joueur, Plateau, AlignJ, 4),
+	AlignJ =\= 0,
+	H is 1000,
+	!.
+
+% Cas de fin de partie sans alignements de 4 (les joueurs ne peuvent plus jouer)
+% => On calcule le nombre d'alignements de 3 pions des deux joueurs et on retourne :
+%  * H = 1000 si Joueur gagnant
+%  * H = -1000 si Joueur perdant
+%  * H = 0 si match nul
+eval(Plateau, Joueur, Adv,  H):-
+	isPartieFinie(Plateau),
+	nbAlignementsNPions(Joueur, Plateau, AlignJ, 3),
+	nbAlignementsNPions(Adv, Plateau, AlignAdv, 3),
+	((AlignJ > AlignAdv, H is 1000);
+	(AlignJ < AlignAdv, H is -1000);
+	(AlignJ = AlignAdv, H is 0)),
+	!.
+
+% Cas en cours de partie 
+% => Pour chaque alignement de 2 pions de la meme couleur : on ajoute (joueur de ref) / supprime (adversaire) 5
+% => Pour chaque alignement de 3 pions de la meme couleur : on ajoute / supprime 10
+% => Pour chaque pion blanc aligné à un pion d'un joueur : on ajoute / supprime 3
+eval(Plateau, Joueur, Adv, H):-
+	nbAlignementsNPions(Joueur, Plateau, AlignJD, 2),
+	nbAlignementsNPions(Adv, Plateau, AlignAdvD, 2),
+	nbAlignementsNPions(Joueur, Plateau, AlignJT, 3),
+	nbAlignementsNPions(Adv, Plateau, AlignAdvT, 3),
+	H is (AlignJD * 5 - AlignAdvD * 5) + (AlignJT * 10 - AlignAdvT * 10).
 
 
-
+%
+% Predicat permettant de vérifier si la partie est finie
+% => Les 16 cases sont occupees par des pions non blancs
+%
+isPartieFinie(Plateau):-
+	length(Plateau, Length),
+	Length = 16,
+	\+ member([0, _, _], Plateau).
