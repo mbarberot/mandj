@@ -1,6 +1,6 @@
-
-
 \chapter{Synchronisation}
+
+Le tableau ci-dessous indique les opérations à faire lors de conflits entre la base de données locales (celle du logiciel) et la base de données distantes (celle du site)
 \sffamily
 \begin{center}
 \begin{tabular}{|c|c|c|c|l|}
@@ -29,3 +29,29 @@ Base Locale & Base Distante 	& Flags 	& Table transaction 	& D\'ecision 		\\\hli
 
 \end{tabular}
 \end{center}
+
+\chapter{Base de données}
+Un script SQL permettant de générer la base de données et ses indexes pour les recherches via Lucene est disponible dans le répertoire db/scripts. Lancer le h2.jar en tant qu'exécutable permet d'exécuter ce script et de créer une base exploitable par le programme.
+
+Schéma relationnel de la base de données embarquée :
+
+\begin{center}
+\includegraphics[height=12.2cm]{\imgpath{bdd.png}}
+\end{center}
+
+
+\chapter{Le service web}
+Le service web est le programme permettant de récupérer les données de la base de données du site grâce aux fonctions décrites dans son fichier server.wsdl.
+\\Les fonctions sont implémentées et commentées dans le fichier BDOvore.class.php. Le dossier ``Data'' contient les classes PHP correspondant aux types complexes définis dans le WSDL. L'ensemble des fichiers du webservice doit être placé dans un dossier du serveur web contenant la base de données du site (l'adresse actuellement définie pour le fichier server.php est la suivante : http://localhost/bdovore/webservice/server.php).
+\\Au niveau du client, les classes pour se connecter et utiliser le webservice se trouvent dans le package wsdl.server. En cas de mise à jour du wsdl, il est possible de regénérer ces classes automatiquement (la version J2EE d'Eclipse contient de base toutes les fonctionnalités pour le faire).
+
+\chapter{Environnement de travail}
+Afin de faciliter la mise en place d'un environnement de travail pour les futurs développeurs, voici un petit récapitulatif des différents composants à installer :
+:
+
+\begin{itemize}
+\item Un serveur web Apache supportant le PHP et une base de données MySQL (en d'autres termes : WAMP/LAMPP/MAMP). Au niveau de la configuration, ne pas oublier d'ajouter l'extension PHP ``soap'' (SOAP étant le protocole utilisé par le webservice pour effectuer ses requêtes).
+\item Effectuer un dump de la copie de la base de données du site. Effectuer les éventuels changements des paramètres de connexion à la base dans le webservice (server.php -> fonction getMySQLConnection()).
+\item Copier les fichiers du webservice sur le serveur local (à l'adresse vue plus haut). En cas de changement d'adresse, modifier le fichier WSDL (au niveau de la balise <soap:address>) et regénérer les classes Java permettant la communication avec le webservice.
+\item Générer la base de données embarquée avec H2 (cf Annexe B).
+\end{itemize}
