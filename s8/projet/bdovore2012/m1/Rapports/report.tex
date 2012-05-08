@@ -80,9 +80,7 @@ As the user will need to find the albums he owns in the software, a research fun
 The results are displayed in a list with the title, the tome number, the series, the genre and the ISBN (a unique numeric book identifier). A double click shows a window with details about the album.\\
 If your research has a lot of result, four buttons are available in the bottom of the list to go to the first, previous, next or last page.
 
-%
-%	CAPTURE D'ECRAN ICI
-%
+
 
 \subsection{Add or remove an album oh the user library}
 Once the window has appear after a double click, some check-boxes are displayed. To add an album, the user has to check the box named ''Owned``. Then three check-boxes become available for details, which enable the user to notice if the album is dedicated, lent or if he predicts to buy it later.
@@ -92,6 +90,15 @@ Once the user library is filled up, he can see some statistics on that library. 
 
 \subsection{Configure the software}
 Finally, a configuration tool is provided for setting a proxy server or to connect the user on its website's account (which allow him to synchronize his library with the online one).
+
+% Capture d'écran
+\begin{figure}[!ht]
+\begin{center}
+\includegraphics[height=9cm]{\imgpath{screenshot.png}}
+\caption{A screenshot of the software. You can get details of a volume by double clicking on it}
+\end{center}
+\end{figure}
+%
 
 \section{Unachieved functionalities}
 \subsection{Update the research base}
@@ -148,9 +155,9 @@ The software with the contributions of the two previous groups was finally unifi
 
 \section{Test and updates}
 Our first observation was that the search engine (the tool who allows to find a specific volume in the user's library or in the volumes referenced in the website) was functional but very limited. In fact, the research gave you results which fit perfectly with the syntax of what you search. As we saw in the introduction, typing a research with the keyword ''asterix`` won't give you any results with the word ''Astérix`` because of the capital letter and the accent that the search engine didn't know how to ignore. 
-\newline To fix this problem, we decided to update the search engine (Lucene, an external search engine that you can use with many programming language) to its new version. This one was improved and allows many new possibilities, like the use of a joker character (''*``) or the use of some keywords like AND, OR or NOT to precise our research. It allows too to fix the problems of accents or capital letters.
-\newline Furthermore, we noticed some things we already knew : the synchronization tool doesn't work, so the base of referenced books was nearly empty (except for some entries that was inserted manually to test the search engine) as the library of the user.
-\newline Finally, while we was at it, we updated the database engine (''H2`` the one which is used to the embedded base) in the purpose to increase the performance and the rapidity of the recovery of the data. Additionally, we brought some minors modifications on the GUI (Graphic User Interface, what the user use to communicate with the program, like the buttons or the text fields) and in the code.
+\newline\newline To fix this problem, we decided to update the search engine (Lucene, an external search engine that you can use with many programming language) to its new version. This one was improved and allows many new possibilities, like the use of a joker character (''*``) or the use of some keywords like AND, OR or NOT to precise our research. It allows too to fix the problems of accents or capital letters.
+\newline\newline Furthermore, we noticed some things we already knew : the synchronization tool doesn't work, so the base of referenced books was nearly empty (except for some entries that was inserted manually to test the search engine) as the library of the user.
+\newline\newline Finally, while we was at it, we updated the database engine (''H2`` the one which is used to the embedded base) in the purpose to increase the performance and the rapidity of the recovery of the data. Additionally, we brought some minors modifications on the GUI (Graphic User Interface, what the user use to communicate with the program, like the buttons or the text fields) and in the code.
 \newline As we see, we did an important work to improve the functionalities which was still implemented in the program, in the purpose to make it more user-friendly, efficient and stable.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
