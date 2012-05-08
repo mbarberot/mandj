@@ -80,6 +80,10 @@ As the user will need to find the albums he owns in the software, a research fun
 The results are displayed in a list with the title, the tome number, the series, the genre and the ISBN (a unique numeric book identifier). A double click shows a window with details about the album.\\
 If your research has a lot of result, four buttons are available in the bottom of the list to go to the first, previous, next or last page.
 
+%
+%	CAPTURE D'ECRAN ICI
+%
+
 \subsection{Add or remove an album oh the user library}
 Once the window has appear after a double click, some check-boxes are displayed. To add an album, the user has to check the box named ''Owned``. Then three check-boxes become available for details, which enable the user to notice if the album is dedicated, lent or if he predicts to buy it later.
 
@@ -203,8 +207,14 @@ As we told before, the synchronization is the mechanism which will certify the c
 \setsecnumdepth{part}
 \chapter{Conclusion}
 As we see, working on a project which was began and continued by a lot of students is not a simple thing. That fact justified the time we spent to analyse and to understand the architecture and programming of this software. Thanks to this analysis, we have been able to improved some features (like the search engine) and added new one (communication with the website). 
-\newline Unfortunately, we hadn't got enough time to put final touches on our work. For example, we wanted to make more tests on our new features, in order to optimize them or to make them more stable.
-\newline Furthermore, we can see that some features are still not implemented : for example the user can't manually add a comic book which is not referenced in the website and the graphic interface could be more user-friendly.
+\newline At this point, the software is pretty functional : the user can search books, get details about them, get his library from the website, manage it from the program and keep the modifications of the both supports.
+\newline Unfortunately, we hadn't got enough time to put final touches on our work. We wanted to make unit tests (testing every possibilities for our functions) on our new features, in order to make them more stable. We wanted too do some tests on the synchronization (the part where the software get the informations for the search engine) to make it faster, because at the first launch, it takes a lot of time.
+\newline Furthermore, we can imagine features which could be implemented:
+\begin{itemize}
+\item If we have a book which is not referenced, it would be nice to have the possibility to add manually one in the software and finally integrate it in the website (this feature still exists on the website).
+\item There's a lot of possibility to improve the ergonomics of the graphic interface and make the software more user friendly : add a book in our library with one click, add several books at once, scan the bar code of the comic ...
+\item We could also add a system which could to inform you of a freshly release of a book and propose to you to purchase it.
+\end{itemize}
 
 
 \selectlanguage{frenchb}
