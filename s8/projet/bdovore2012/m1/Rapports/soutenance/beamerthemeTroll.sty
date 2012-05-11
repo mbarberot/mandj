@@ -1,0 +1,32 @@
+% Custom Theme by Mathieu Barberot
+% version 0b
+% 2011/11/17
+
+\mode<presentation>
+
+\useinnertheme[shadow]{rounded}
+\useinnertheme{circles}
+\useoutertheme{troll}
+\usecolortheme{troll}
+
+\setbeamerfont{block title}{size={}}
+
+\mode
+<all>
+
+
+\pgfdeclareimage[height=0.75cm]{logo}{logo-ufc.png}
+
+\setlength{\TPHorizModule}{1mm}
+\setlength{\TPVertModule}{1mm}
+\newcommand{\MyLogo}{%
+\begin{textblock}{27}(108,2)
+  \pgfuseimage{logo}
+\end{textblock}
+}
+\newcommand*\oldmacro{}%
+\let\oldmacro\insertshorttitle%
+\renewcommand*\insertshorttitle{%
+  \MyLogo
+  \oldmacro\hfill%
+}

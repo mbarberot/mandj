@@ -8,7 +8,7 @@ Le tableau ci-dessous indique les opérations à faire lors de conflits entre la
 Base Locale & Base Distante 	& Flags 	& Table transaction 	& D\'ecision 		\\\hline
 \multirow{12}*{Pr\'esent}	& \multirow{8}*{Pr\'esent} 	& \multirow{4}*{Identiques} 	& Ajout 	& \multirow{3}*{Ne rien faire} 			\\\cline{4-4}
 				& 				&				& Ajout 	& 						\\\cline{4-4}
-				  &				& 				& Modification	& 						\\\cline{4-5}
+				&				& 				& Modification	& 						\\\cline{4-5}
 				&				&				& Suppression	& Cas impossible 				\\\cline{3-5}		
 				&				&\multirow{4}*{Diff\'erents}	& Rien		& \multirow{3}*{Demander \`a l'utilisateur} 	\\\cline{4-4}
 				& 				& 				& Ajout 	& 						\\\cline{4-4}
@@ -29,6 +29,7 @@ Base Locale & Base Distante 	& Flags 	& Table transaction 	& D\'ecision 		\\\hli
 
 \end{tabular}
 \end{center}
+\rmfamily
 
 \chapter{Base de données}
 Un script SQL permettant de générer la base de données et ses indexes pour les recherches via Lucene est disponible dans le répertoire db/scripts. Lancer le h2.jar en tant qu'exécutable permet d'exécuter ce script et de créer une base exploitable par le programme.

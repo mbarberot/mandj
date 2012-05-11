@@ -1,0 +1,153 @@
+\documentclass{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{bookman}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage[absolute,overlay]{textpos}
+
+\usetheme{Troll}	
+\mode<presentation>
+
+\title{Java Client for Comic Books}
+\author{BARBEROT Mathieu \& RACENET Joan}
+\date{May 14, 2012}
+\institute{UFR ST}
+\titlegraphic{\includegraphics[scale=0.10]{\imgpath{spip.jpg}}}
+
+\newcommand{\guil}[1]{\og #1 \fg}
+\newcommand{\imgpath}[1]{../images/#1}
+
+\begin{document}
+\begin{frame}
+  \maketitle
+\end{frame}
+
+\begin{frame} 
+  Tutors:\\
+  BOUQUET Fabrice\\
+  COQBLIN Mathias
+\end{frame}
+
+\begin{frame}{Context}
+\begin{itemize}
+ \item Multi-platform
+ \item In relation with the website BDovore
+ \item Managing comics collection
+ \item Doing it offline
+\end{itemize}
+\begin{center}    
+  \includegraphics[scale=0.3]{\imgpath{bdovore.png}}
+\end{center}
+\end{frame}
+
+\part*{}
+
+\begin{frame}{Table of contents}
+  \tableofcontents
+\end{frame}
+
+
+\section{The Software}
+\subsection{Managing albums}
+\begin{frame}{Managing albums}
+\begin{itemize}
+ \item Search for an album
+ \item Consult album's details
+ \item Add or remove an album of the collection
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Managing albums}
+\begin{center}    
+  \includegraphics[scale=0.34]{\imgpath{screenshot.png}}
+\end{center}
+\end{frame}
+
+\subsection{Statistics and Configuration}
+\begin{frame}{Statistics and Configuration}
+\begin{itemize}
+ \item Statistics about the user's collection
+ \item Proxy configuration and user's login and password
+\end{itemize}
+\begin{center}
+ \includegraphics[scale=0.3]{\imgpath{spip.jpg}}
+\end{center}
+\end{frame}
+
+\subsection{Unachieved features}
+\begin{frame}{Unachieved features}
+\begin{itemize}
+ \item The search engine
+ \item The web service
+ \item The synchronization
+\end{itemize}
+\end{frame}
+
+
+\section{Reinforcing the software}
+\begin{frame}{Reinforcing the software}
+\begin{itemize}
+ \item Working with an other student's software
+ \item Understanding what they have done
+ \item Theirs architecture \& code
+\end{itemize}
+\end{frame}
+
+
+\subsection{Laying the foundation}
+\begin{frame}{Laying the foundation}
+\begin{itemize}
+ \item Merge the two softwares in an only one
+ \item Set the new database
+ \item Check and update queries
+ \item New tools : Lucene and H2
+\end{itemize}
+\end{frame}
+
+\section{Web Service and Synchronization}
+\begin{frame}{Web Service and Synchronization}
+\begin{itemize}
+ \item Connecting to the website
+ \item Synchronizing the libraries
+ \item Prepared by previous students
+ \item But not implemented
+\end{itemize}
+\end{frame}
+
+\subsection{Web Service}
+\begin{frame}{Web Service}
+\begin{itemize}
+ \item Provide a list of functionnalities
+ \item Layer between the server and the client
+\end{itemize}
+\begin{center}
+ \includegraphics[scale=0.4]{\imgpath{WebserviceSchema.png}}
+\end{center}
+\end{frame}
+
+\subsection{Synchronization}
+\begin{frame}{Synchronization}
+\begin{itemize}
+ \item Keeping both library up to date
+ \item Automatically resolve differences
+ \item Report unsolvable conflicts
+\end{itemize}
+\begin{center}
+ \includegraphics[scale=0.4]{\imgpath{architecture.png}}
+\end{center}
+\end{frame}
+
+\section{To be continued\dots}
+\begin{frame}{To be continued\dots}
+\begin{itemize}
+ \item Web service and synchronization finished
+ \item But the project is not
+ \item Submit an album
+ \item A more user friendly interface
+\end{itemize}
+\end{frame}
+
+\end{document}
