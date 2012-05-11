@@ -394,6 +394,9 @@ void goCycleChinois(int idGraphe, int idHeuristique, char* res_path)
     
     /* Ecriture du resultat */
     ecrireFichierRes(parc,idGraphe, idHeuristique);
+    printf("Resultat : \n");
+    afficheVoisins(&parc);
+    
     printf("Heuristique %d traitee \n", idHeuristique);
     
     /* Libération mémoire de la liste resultat */
@@ -513,9 +516,8 @@ void doCouplageSommetsRandom(int idGraphe)
     /* Lister les sommets impairs */
     TypVoisins *s_impairs = NULL;
     sommetsImpairs(idGraphe, &s_impairs);
-
-    afficheVoisins(&s_impairs);
    
+    /* Itérateur */
     TypVoisins *tmp = s_impairs;
     
     /* Initialisation de la graine pour le tirage aléatoire */
@@ -554,7 +556,7 @@ void doCouplageSommetsRandom(int idGraphe)
 	// on trace le chemin
 	TypVoisins *path = NULL;
 	trouveCheminGourmand(idGraphe, som1, som2, &path);
-	
+
 	// on le duplique
 	TypVoisins *arr = path;
 	
@@ -935,7 +937,7 @@ void ecrireFichierRes(TypVoisins* res, int idGraphe, int idHeuristique)
      */
     char *aretes = NULL; 
     aretes = aretesToString(res, idGraphe);
-    char *res_str = malloc((strlen(aretes) + 25) * sizeof(char)); 
+    char *res_str = malloc((strlen(aretes) + 30) * sizeof(char)); 
     
     /*
      * Calcul de la longueur du chemin
@@ -976,24 +978,25 @@ char* aretesToString(TypVoisins* aretes, int idGraphe)
 {
     int nb_elts = tailleListe(&aretes);
     int size_res = 25 * nb_elts;
-    char *res = malloc(size_res * sizeof(*res));
-    char *buffer;
+    char *res = malloc(size_res * sizeof(char));
+    sprintf(res, "%s", "\0");
     
     TypGraphe *g = graphes[idGraphe - 1];
     TypVoisins *tmp = aretes;
     
     while(tmp != NULL)
     {
+	char *buffer;
 	
 	if(tmp -> voisinSuivant != NULL)
 	{
 	    TypVoisins *current = rechercheVoisin(&g -> aretes[tmp -> voisin - 1], tmp -> voisinSuivant -> voisin);
-	    buffer = malloc(18 * sizeof(char));
-	    sprintf(buffer, "%d --(%d)--> ", tmp -> voisin, current -> poidsVoisin);
+	    buffer = malloc(25 * sizeof(char));
+	    sprintf(buffer, "%d --(%d)-->", tmp -> voisin, current -> poidsVoisin);
 	}
 	else
 	{
-	    buffer = malloc(5 * sizeof(char));
+	    buffer = malloc(10 * sizeof(char));
 	    sprintf(buffer, "%d\n", tmp -> voisin);
 	}
 	
@@ -1002,7 +1005,6 @@ char* aretesToString(TypVoisins* aretes, int idGraphe)
 	
 	tmp = tmp -> voisinSuivant;
     }
-    
     return res;
     
 }
