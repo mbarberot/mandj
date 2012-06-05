@@ -138,6 +138,7 @@ public class DialogGlobalUpdate extends JDialog implements UpdateBaseListener
         {
             JOptionPane.showMessageDialog(null, "Mise à jour terminée avec succès", "Félicitation", JOptionPane.INFORMATION_MESSAGE);
             dispose();
+            started = false;
         }
     }
 

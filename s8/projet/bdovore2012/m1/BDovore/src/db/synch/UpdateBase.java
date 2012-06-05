@@ -52,6 +52,7 @@ public class UpdateBase extends Thread
         this.db = db;
         this.port = port;
         this.listener = new ArrayList<UpdateBaseListener>();
+        this.listener.add(listener);
     }
 
     /**
