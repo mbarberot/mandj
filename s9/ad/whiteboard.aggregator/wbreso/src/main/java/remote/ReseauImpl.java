@@ -36,6 +36,8 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau
     public int register(IProcessus proc)
     {
         listProc.add(proc);
+        // TODO : println
+        System.out.println("register -> ID = "+listProc.indexOf(proc));
         return listProc.indexOf(proc);
     }
     
@@ -45,6 +47,8 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau
     */
     public void quit(int idProc)
     {
+        // TODO : println
+        System.out.println("quit(id) -> ID = "+idProc);
         listProc.remove(idProc);
     }
 
@@ -54,6 +58,8 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau
      */
     public void quit(IProcessus proc)
     {
+        // TODO : println
+        System.out.println("quit(proc) -> Proc = N°"+listProc.indexOf(proc));
         listProc.remove(proc);
     }
 
