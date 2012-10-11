@@ -29,6 +29,7 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau
     public int register(IProcessus proc)
     {
         listProc.add(proc);
+        return 0;
     }
 
     public boolean quit()
@@ -46,5 +47,11 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+
+	public int register() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
     
 }
