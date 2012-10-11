@@ -63,14 +63,5 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public void sendAll(int idForm, int msg, Object data)
-    {
-        // TODO
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    
-
-    
     
 }
