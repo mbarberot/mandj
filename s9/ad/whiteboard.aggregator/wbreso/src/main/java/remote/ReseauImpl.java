@@ -12,7 +12,11 @@ import java.util.ArrayList;
  */
 public class ReseauImpl extends UnicastRemoteObject implements IReseau
 {   
+    /**
+     * Liste des processus du réseau
+     */
     private ArrayList<IProcessus> listProc ;
+    
     
     /**
      * Constructeur simple
@@ -21,37 +25,52 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau
     public ReseauImpl () throws RemoteException
     {
         super();
-        
         listProc = new ArrayList<IProcessus>();
     }
 
-    
+    /**
+     * Enregistre un processus sur le réseau
+     * @param proc - Le processus
+     * @return l'ID du processus
+     */
     public int register(IProcessus proc)
     {
         listProc.add(proc);
-        return 0;
+        return listProc.indexOf(proc);
+    }
+    
+    /**
+     * Départ d'un processus
+     * @param idProc - ID du processus
+    */
+    public void quit(int idProc)
+    {
+        listProc.remove(idProc);
     }
 
-    public boolean quit()
+    /**
+     * Départ d'un processus
+     * @param proc - Processus
+     */
+    public void quit(IProcessus proc)
     {
+        listProc.remove(proc);
+    }
+
+    public void sendTo(int idFrom, int idTo, int msg, Object data)
+    {
+        // TODO
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void sendAll(int idForm, int msg, Object data)
+    {
+        // TODO
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     
-    public void sendTo(int idProc, int msg)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 
-    public void sendAll(int msg)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-
-	public int register() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+    
     
 }
