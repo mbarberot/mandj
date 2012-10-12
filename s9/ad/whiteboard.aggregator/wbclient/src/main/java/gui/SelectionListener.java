@@ -1,5 +1,6 @@
 package gui;
 
+import forme.Forme;
 import java.util.EventListener;
 
 /**

@@ -1,5 +1,6 @@
 package gui;
 
+import forme.Forme;
 import java.awt.Color;
 import java.awt.Graphics2D;
 

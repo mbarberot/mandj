@@ -1,6 +1,6 @@
 package remote;
 
-import gui.Forme;
+import forme.Forme;
 
 import java.util.ArrayList;
 import java.util.concurrent.Semaphore;

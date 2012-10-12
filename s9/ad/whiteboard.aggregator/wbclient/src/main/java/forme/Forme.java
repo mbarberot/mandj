@@ -1,4 +1,4 @@
-package gui;
+package forme;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
