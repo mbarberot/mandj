@@ -1,5 +1,7 @@
 package main;
 
+import controleur.Controleur;
+import modele.Modele;
 import vue.Vue;
 
 /**
@@ -11,7 +13,14 @@ public class Client
 {
     public static void main (String[] args)
     {
-        Vue v = new Vue();
+        //
+        // Mise en place du pattern MVC
+        //
+        Modele m = new Modele();
+        Controleur c = new Controleur(m);
+        Vue v = new Vue(c);
+        m.addListener(v);
+                
     }
     
 }
