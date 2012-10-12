@@ -1,8 +1,10 @@
 package remote;
 
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
+import java.util.HashMap;
+import main.Reso;
 
 /**
  * Serveur Réseau
@@ -11,11 +13,16 @@ import java.util.ArrayList;
  * @author Mathieu Barberot et Joan Racenet
  */
 public class ReseauImpl extends UnicastRemoteObject implements IReseau
-{   
+{  
+    /**
+     * Compteur des processus du réseau pour l'affectation de leur ID 
+     */
+    private int idProc;
+    
     /**
      * Liste des processus du réseau
      */
-    private ArrayList<IProcessus> listProc ;
+    private HashMap<Integer,IProcessus> listeProc ;
     
     
     /**
@@ -25,20 +32,43 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau
     public ReseauImpl () throws RemoteException
     {
         super();
-        listProc = new ArrayList<IProcessus>();
+        this.listeProc = new HashMap<Integer,IProcessus>();
+        this.idProc = 0;
     }
 
     /**
      * Enregistre un processus sur le réseau
-     * @param proc - Le processus
      * @return l'ID du processus
      */
-    public int register(IProcessus proc)
+    public int register()
     {
-        listProc.add(proc);
+        int id = this.idProc;
+        this.idProc++;
+        
         // TODO : println
-        System.out.println("register -> ID = "+listProc.indexOf(proc));
-        return listProc.indexOf(proc);
+        System.out.println("register -> ID = "+id);
+        
+        return id;
+    }
+    
+    /**
+     * Lookup sur le nom du client pour l'ajouter aux processus du réseau
+     * 
+     * @param idProc - ID du processus
+     * @throws RemoteException 
+     */
+    public void naming(int idProc) throws RemoteException
+    {
+        try
+        {
+            IProcessus proc = (IProcessus)Naming.lookup(Reso.CLIENT_NAME+idProc);
+            listeProc.put(idProc, proc);
+        } 
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        
     }
     
     /**
@@ -49,25 +79,19 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau
     {
         // TODO : println
         System.out.println("quit(id) -> ID = "+idProc);
-        listProc.remove(idProc);
+        listeProc.remove(idProc);
     }
 
-    /**
-     * Départ d'un processus
-     * @param proc - Processus
-     */
-    public void quit(IProcessus proc)
-    {
-        // TODO : println
-        System.out.println("quit(proc) -> Proc = N°"+listProc.indexOf(proc));
-        listProc.remove(proc);
-    }
 
     public void sendTo(int idFrom, int idTo, int msg, Object data)
     {
         // TODO
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+   
+
+    
 
     
 }

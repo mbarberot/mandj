@@ -12,7 +12,8 @@ import remote.ReseauImpl;
  */
 public class Reso
 {
-    public static final String NAME = "Reso" ;
+    public static final String SERVER_NAME = "Reso" ;
+    public static final String CLIENT_NAME = "Client" ;
     
     public static void main(String[] args)
     {
@@ -20,9 +21,10 @@ public class Reso
         {
             ReseauImpl reso = new ReseauImpl();
             Remote stub = UnicastRemoteObject.toStub(reso);
-            Naming.rebind(NAME,stub);
+            Naming.rebind(SERVER_NAME,stub);
+            
             //Remote stub = UnicastRemoteObject.exportObject(reso, 0);
-            //Naming.rebind(NAME, stub);
+            //Naming.rebind(SERVER_NAME, stub);
             
             // TODO : println
             System.out.println("Serveur prêt");
