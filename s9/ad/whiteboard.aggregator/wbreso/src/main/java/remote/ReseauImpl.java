@@ -2,6 +2,8 @@ package remote;
 
 import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import main.Reso;
@@ -57,11 +59,16 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau
      * @param idProc - ID du processus
      * @throws RemoteException 
      */
-    public void naming(int idProc) throws RemoteException
+    public void naming(int idProc, String host) throws RemoteException
     {
         try
         {
-            IProcessus proc = (IProcessus)Naming.lookup(Reso.CLIENT_NAME+idProc);
+        	Registry reg = LocateRegistry.getRegistry(1099); // A modifier pour contact à distance
+        	
+        	for(String bounded : reg.list())
+        		System.out.println(bounded);
+        	
+            IProcessus proc = (IProcessus)reg.lookup(host + "/" + Reso.CLIENT_NAME + idProc);
             listeProc.put(idProc, proc);
         } 
         catch (Exception ex)
@@ -85,8 +92,16 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau
 
     public void sendTo(int idFrom, int idTo, int msg, Object data)
     {
-        // TODO
-        throw new UnsupportedOperationException("Not supported yet.");
+        switch(msg)
+        {
+        	case TypeMessage.ENVOI_NOUVELLE_FORME:
+        		System.out.println("Forme recue");
+        		break;
+        		
+        	default:
+        		throw new UnsupportedOperationException("Not supported yet.");
+        }
+        
     }
 
    

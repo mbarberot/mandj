@@ -3,6 +3,7 @@ package forme;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.io.Serializable;
 
 /**
  * Classe pour le dessin d'un pixel

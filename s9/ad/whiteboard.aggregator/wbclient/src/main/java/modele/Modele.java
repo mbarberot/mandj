@@ -1,7 +1,11 @@
 package modele;
 
-import forme.Forme;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+
+import remote.Processus;
+import forme.Forme;
 
 /**
  * Classe modele dans le patron de conception MVC
@@ -19,6 +23,11 @@ public class Modele
      * Liste des formes dessinées
      */
     private ArrayList<Forme> formes;
+    
+    /**
+     * On conserve le processus pour pouvoir notifier l'ajout de formes
+     */
+    private Processus proc;
 
     /**
      * Constructeur
@@ -27,6 +36,15 @@ public class Modele
     {
         this.listeners = new ArrayList<ModeleListener>();
         this.formes = new ArrayList<Forme>();
+        
+        // Création du processus
+        try {
+			String host = "rmi://" + InetAddress.getLocalHost().getHostAddress();
+			this.proc = new Processus(host, this);
+			proc.connexionReso();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		}
     }
 
     /**
@@ -72,5 +90,8 @@ public class Modele
     {
         this.formes.add(f);
         majVues();
+        // Signaler au serveur l'ajout de forme
+        if(this.proc != null)
+        	this.proc.envoiNouveauDessin(f);
     }
 }

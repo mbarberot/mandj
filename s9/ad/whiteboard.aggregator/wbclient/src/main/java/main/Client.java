@@ -1,5 +1,9 @@
 package main;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
+import remote.Processus;
 import controleur.Controleur;
 import modele.Modele;
 import vue.Vue;
@@ -20,6 +24,8 @@ public class Client
         Controleur c = new Controleur(m);
         Vue v = new Vue(c);
         m.addListener(v);
+       
+       
                 
     }
     
