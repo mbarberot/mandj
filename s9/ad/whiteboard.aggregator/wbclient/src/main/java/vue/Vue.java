@@ -31,10 +31,10 @@ public class Vue extends JFrame implements ModeleListener
     //
     // Elements d'interfaces
     //  > Formes
-    private JButton pix;
-    private JButton drt;
-    private JButton rec;
-    private JButton ell;
+    private JToggleButton pix;
+    private JToggleButton drt;
+    private JToggleButton rec;
+    private JToggleButton ell;
     //  > Couleurs
     private JButton bg;
     private JButton fg;
@@ -71,6 +71,13 @@ public class Vue extends JFrame implements ModeleListener
         makeElements();
 
         JPanel formesPanel = new JPanel(new GridLayout(4, 1));
+        
+        ButtonGroup group = new ButtonGroup();
+        group.add(pix);
+        group.add(drt);
+        group.add(rec);
+        group.add(ell);
+        
         formesPanel.add(pix);
         formesPanel.add(drt);
         formesPanel.add(rec);
@@ -108,10 +115,10 @@ public class Vue extends JFrame implements ModeleListener
         //
         // Les boutons des formes
         //
-        this.pix = new JButton("Pixel");
-        this.drt = new JButton("Droite");
-        this.rec = new JButton("Rectangle");
-        this.ell = new JButton("Ellipse");
+        this.pix = new JToggleButton("Pixel");
+        this.drt = new JToggleButton("Droite");
+        this.rec = new JToggleButton("Rectangle");
+        this.ell = new JToggleButton("Ellipse");
 
         pix.addActionListener(new ActionForme(ctrl, Controleur.PIX));
         drt.addActionListener(new ActionForme(ctrl, Controleur.DRT));
