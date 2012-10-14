@@ -69,28 +69,58 @@ public class Processus {
 		}
 	}
 	
+	public void recupereVoisins()
+	{
+		try {
+			this.voisins = this.reso.getVoisins();
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+		//TODO println
+		System.out.println("Voisins connus ");
+		for(int v : voisins)
+		{
+			System.out.println(v);
+		}
+	}
 	
 	public void envoiNouveauDessin(Forme nF)
 	{		
 		
-		// Hail to the test !
+
+		/* Hail to the test !
 		try {
 			reso.sendTo(myRemote.getId(), -1, TypeMessage.ENVOI_NOUVELLE_FORME, nF.toByteArray());
 		} catch (RemoteException e) {
 			e.printStackTrace();
-		}
+		}*/
 		
-		/*
 		for(int idTo : voisins)
 		{
-			try {
-				reso.sendTo(myRemote.getId(), idTo, TypeMessage.ENVOI_NOUVELLE_FORME, nF);
-			} catch (RemoteException e) {
-				e.printStackTrace();
+			if(idTo != myRemote.getId())
+			{
+				try {
+					reso.sendTo(myRemote.getId(), idTo, TypeMessage.ENVOI_NOUVELLE_FORME, nF.toByteArray());
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
 			}
-		}*/
+		}
+	}
+	
+	public void recoitDessin(byte[] forme)
+	{
+		wb.recoitDessin(Forme.getFromByteArray(forme));
 	}
 
 	
+	public void deconnexion()
+	{
+		try {
+			reso.quit(myRemote.getId());
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+	}
 
 }

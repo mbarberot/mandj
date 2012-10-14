@@ -94,4 +94,20 @@ public class Modele
         if(this.proc != null)
         	this.proc.envoiNouveauDessin(f);
     }
+    
+    /**
+     * Ajout d'un dessin envoyé par le serveur à la liste.
+     * La fonction est appelée par le processus réseau lié
+     * @param f
+     */
+    public void recoitDessin(Forme f)
+    {
+    	this.formes.add(f);
+        majVues();
+    }
+    
+    public void quitterServeur()
+    {
+    	proc.deconnexion();
+    }
 }

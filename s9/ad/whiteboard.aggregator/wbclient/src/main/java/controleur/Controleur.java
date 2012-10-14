@@ -195,4 +195,13 @@ public class Controleur
         }
         modele.ajouterDessin(f);
     }
+    
+    /**
+     * Indiquer au modèle la fermeture de la fenêtre
+     * @throws Exception
+     */
+    public void quitterWB()
+    {
+    	modele.quitterServeur();
+    }
 }

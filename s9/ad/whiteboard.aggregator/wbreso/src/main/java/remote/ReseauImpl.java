@@ -5,7 +5,10 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+
 import main.Reso;
 
 /**
@@ -65,11 +68,15 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau
         {
         	Registry reg = LocateRegistry.getRegistry(1099); // A modifier pour contact à distance
         	
-        	for(String bounded : reg.list())
-        		System.out.println(bounded);
+        	/*for(String bounded : reg.list())
+        		System.out.println(bounded);*/
         	
             IProcessus proc = (IProcessus)reg.lookup(host + "/" + Reso.CLIENT_NAME + idProc);
             listeProc.put(idProc, proc);
+            
+            // Signaler aux participants l'arrivée du nouveau processus
+            broadcast(TypeMessage.CONNEXION_NOUVEAU_PROC, idProc, null);
+           
         } 
         catch (Exception ex)
         {
@@ -87,16 +94,25 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau
         // TODO : println
         System.out.println("quit(id) -> ID = "+idProc);
         listeProc.remove(idProc);
+        
+        // Notifier aux processus restants qu'un processus vient de quitter
+        broadcast(TypeMessage.DECONNEXION_PROC, idProc, null);
     }
-
-
+    
     public void sendTo(int idFrom, int idTo, int msg, Object data)
     {
         switch(msg)
         {
         	case TypeMessage.ENVOI_NOUVELLE_FORME:
-        		System.out.println("Forme recue");
-        		break;
+        		IProcessus ipro = listeProc.get(new Integer(idTo));		
+				System.out.println("Envoi de la forme de " + idFrom + " à " + idTo);
+			
+			try {
+				ipro.recv(msg, idFrom, data);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+        	break;
         		
         	default:
         		throw new UnsupportedOperationException("Not supported yet.");
@@ -104,8 +120,42 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau
         
     }
 
-   
+    /**
+     * Retourne la liste des numéros de processus sous la forme d'arraylist
+     * 
+     */
+	public ArrayList<Integer> getVoisins() throws RemoteException {
+		ArrayList<Integer> numVoisins = new ArrayList<Integer>();
+		
+		Iterator<Integer> iter = this.listeProc.keySet().iterator();
+		
+		while(iter.hasNext())
+		{
+			numVoisins.add(iter.next());
+		}
+		
+		return numVoisins;
+	}
 
+	/**
+	 * Envoi un message à tous les processus participants
+	 * @param msg
+	 * @param data
+	 */
+   
+	public void broadcast(int msg, int from, Object data)
+	{
+		
+        for(IProcessus iProc : listeProc.values())
+        {
+        	try {
+				iProc.recv(msg, from, data);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+        }
+	}
+	
     
 
     

@@ -4,6 +4,8 @@ import controleur.Controleur;
 import forme.Forme;
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import javax.swing.*;
 import modele.ModeleListener;
@@ -17,7 +19,7 @@ import vue.listeners.TableauBlancListener;
  *
  * @author Mathieu Barberot et Joan Racenet
  */
-public class Vue extends JFrame implements ModeleListener
+public class Vue extends JFrame implements ModeleListener, WindowListener
 {
 
     /**
@@ -99,11 +101,12 @@ public class Vue extends JFrame implements ModeleListener
         vgroup.addGroup(layout.createSequentialGroup().addComponent(formesPanel).addGroup(layout.createSequentialGroup().addComponent(lab_trait).addComponent(trait)).addComponent(colorPanel)).addComponent(canvas);
         layout.setVerticalGroup(vgroup);
 
-
+        addWindowListener(this);
         this.add(mainPanel);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.pack();
         this.setVisible(true);
+        
 
     }
 
@@ -171,4 +174,37 @@ public class Vue extends JFrame implements ModeleListener
         this.listeFormes = f;
         this.canvas.repaint();
     }
+
+	public void windowActivated(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void windowClosed(WindowEvent arg0) {
+		ctrl.quitterWB();	
+	}
+
+	public void windowClosing(WindowEvent arg0) {
+		ctrl.quitterWB();
+	}
+
+	public void windowDeactivated(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void windowDeiconified(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void windowIconified(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void windowOpened(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
 }
