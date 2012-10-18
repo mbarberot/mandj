@@ -45,7 +45,7 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
 			case (TypeMessage.ENVOI_NOUVELLE_FORME):
 				myLocal.recoitDessin((byte[]) data);
 				break;
-			case (TypeMessage.CONNEXION_NOUVEAU_PROC):
+			case (TypeMessage.CONNEXION_NOUVEAU_PROC):				
 			case(TypeMessage.DECONNEXION_PROC):
 				myLocal.recupereVoisins();
 			break;			
@@ -61,5 +61,20 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
 	public String getHost()
 	{
 		return this.host;
+	}
+	
+	public void setMaster(int id)
+	{
+		
+	}
+	public void becomeMaster() throws RemoteException
+	{
+		this.myLocal.setMaster(this.pId);
+		//TODO println
+		System.out.println("Je suis le maitre ! mouahaha");
+	}
+
+	public boolean isMaster() throws RemoteException{
+		return this.pId == this.myLocal.getMaster();
 	}
 }

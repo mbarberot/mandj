@@ -30,7 +30,7 @@ public class Processus {
 	private IReseau reso;
 	
 	/* Mutex pour le whiteboard */
-	private Semaphore semWB;
+	private boolean accesWB;
 	
 	/* Le processus a accès aux données du wb */
 	private Modele wb;
@@ -45,7 +45,8 @@ public class Processus {
 	{
 		this.wb = mod;
 		this.voisins = new ArrayList<Integer>();
-		this.masterId = 0;
+		this.masterId = -1;
+		this.accesWB = false;
 		
 		try {
 			Registry reg = LocateRegistry.getRegistry(1099); // A modifier pour contact à distance
@@ -58,6 +59,23 @@ public class Processus {
 		
 	}
 	
+	/**
+	 * GETTERS & SETTERS
+	 * @return
+	 */
+	public int getMaster()
+	{
+		return this.masterId;
+	}
+	
+	public void setMaster(int idMaster)
+	{
+		this.masterId = idMaster;
+	}
+	
+	/**
+	 * Le processus récupère un id via le serveur et déclare son stub à celui-ci
+	 */
 	public void connexionReso()
 	{
 		try {
@@ -69,32 +87,34 @@ public class Processus {
 		}
 	}
 	
+	/**
+	 * Recupere la liste des voisins connus
+	 * + récupère le processus maitre
+	 */
 	public void recupereVoisins()
 	{
 		try {
 			this.voisins = this.reso.getVoisins();
+			setMaster(this.reso.getMaster());
+			//TODO println
+			System.out.println("Le maître est : " + this.getMaster());
 		} catch (RemoteException e) {
 			e.printStackTrace();
-		}
-		//TODO println
-		System.out.println("Voisins connus ");
-		for(int v : voisins)
-		{
-			System.out.println(v);
 		}
 	}
-	
+
+	/**
+	 * Le client vient de dessiner une forme et veut la diffuser à tous
+	 * @param nF
+	 */
 	public void envoiNouveauDessin(Forme nF)
 	{		
-		
-
-		/* Hail to the test !
-		try {
-			reso.sendTo(myRemote.getId(), -1, TypeMessage.ENVOI_NOUVELLE_FORME, nF.toByteArray());
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		}*/
-		
+			
+		// Demander au maître l'accès au tableau
+		// => sendTo (moi, maitre, ACCES_WB)
+		// => le maître répond :
+		// 			- Si OK => la forme est diffusée à tout le monde
+		//			- Sinon => la demande d'accès au WB est placée en file d'attente
 		for(int idTo : voisins)
 		{
 			if(idTo != myRemote.getId())
@@ -108,12 +128,18 @@ public class Processus {
 		}
 	}
 	
+	/**
+	 * Ajout d'une forme reçue au modèle
+	 * @param forme
+	 */
 	public void recoitDessin(byte[] forme)
 	{
 		wb.recoitDessin(Forme.getFromByteArray(forme));
 	}
 
-	
+	/**
+	 * Deconnexion du client
+	 */
 	public void deconnexion()
 	{
 		try {

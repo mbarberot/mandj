@@ -24,12 +24,16 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau
      */
     private int idProc;
     
+    
     /**
      * Liste des processus du réseau
      */
     private HashMap<Integer,IProcessus> listeProc ;
     
-    
+    /**
+     * File des demandes en attente
+     */
+    private ArrayList<Message> listeMess; 
     /**
      * Constructeur simple
      * @throws RemoteException 
@@ -39,6 +43,7 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau
         super();
         this.listeProc = new HashMap<Integer,IProcessus>();
         this.idProc = 0;
+        this.listeMess = new ArrayList<Message>();
     }
 
     /**
@@ -73,6 +78,10 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau
         	
             IProcessus proc = (IProcessus)reg.lookup(host + "/" + Reso.CLIENT_NAME + idProc);
             listeProc.put(idProc, proc);
+            
+            // Si c'est le premier processus a être connecté : il devient maître
+            if(listeProc.size() == 1)
+            	listeProc.get(idProc).becomeMaster();
             
             // Signaler aux participants l'arrivée du nouveau processus
             broadcast(TypeMessage.CONNEXION_NOUVEAU_PROC, idProc, null);
@@ -137,6 +146,16 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau
 		return numVoisins;
 	}
 
+	/**
+	 * Recherche qui est le maître parmis les processus enregistrés
+	 */
+	public int getMaster() throws RemoteException{
+		for(int idProc : listeProc.keySet())
+		{
+			if(listeProc.get(idProc).isMaster()) return idProc;
+		}
+		return -1;
+	}
 	/**
 	 * Envoi un message à tous les processus participants
 	 * @param msg

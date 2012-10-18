@@ -11,4 +11,6 @@ public interface IReseau extends Remote
 	public void quit(int idProc) throws RemoteException;
 	public void sendTo(int idFrom, int idTo, int msg, Object data) throws RemoteException;
 	public ArrayList<Integer> getVoisins() throws RemoteException; 
+	public int getMaster() throws RemoteException;
+
 }
