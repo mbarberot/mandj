@@ -57,6 +57,18 @@ public class Rectangle extends Forme
         
         g.drawRect(xa, ya, dx, dy);
     }
+
+    @Override
+    public String makeItSendable()
+    {
+        return "REC:"
+                + p1.toString() + ":"
+                + p2.toString() + ":"
+                + bg.toString() + ":"
+                + fg.toString() + ":"
+                + epaisseur
+                ;
+    }
     
     
 }

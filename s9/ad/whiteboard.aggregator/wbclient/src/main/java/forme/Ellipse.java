@@ -57,4 +57,16 @@ public class Ellipse extends Forme
         
         g.drawOval(xa, ya, dx, dy);
     }
+
+    @Override
+    public String makeItSendable()
+    {
+        return "ELL:"
+                + p1.toString() + ":"
+                + p2.toString() + ":"
+                + bg.toString() + ":"
+                + fg.toString() + ":"
+                + epaisseur
+                ;
+    }
 }

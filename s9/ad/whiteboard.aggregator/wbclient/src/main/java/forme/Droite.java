@@ -37,5 +37,17 @@ public class Droite extends Forme
     public void paintForeground(Graphics2D g)
     {
     }
+
+    @Override
+    public String makeItSendable()
+    {
+        return "DRT:"
+                + p1.toString() + ":"
+                + p2.toString() + ":"
+                + bg.toString() + ":"
+                + fg.toString() + ":"
+                + epaisseur
+                ;
+    }
     
 }

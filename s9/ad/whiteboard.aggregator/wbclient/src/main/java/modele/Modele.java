@@ -24,7 +24,6 @@ public class Modele
      * Liste des formes dessinées
      */
     private ArrayList<Forme> formes;
-    
     /**
      * On conserve le processus pour pouvoir notifier l'ajout de formes
      */
@@ -37,15 +36,17 @@ public class Modele
     {
         this.listeners = new ArrayList<ModeleListener>();
         this.formes = new ArrayList<Forme>();
-        
+
         // Création du processus
-        try {
-			String host = "rmi://" + InetAddress.getLocalHost().getHostAddress();
-			this.proc = new Processus(host, this);
-			proc.connexionReso();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
+        try
+        {
+            String host = "rmi://" + InetAddress.getLocalHost().getHostAddress();
+            this.proc = new Processus(host, this);
+            proc.connexionReso();
+        } catch (UnknownHostException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -92,23 +93,26 @@ public class Modele
         this.formes.add(f);
         majVues();
         // Signaler au serveur l'ajout de forme
-        if(this.proc != null)
-        	this.proc.envoiNouveauDessin(f);
+        if (this.proc != null)
+        {
+            this.proc.envoiNouveauDessin(f);
+        }
     }
-    
+
     /**
-     * Ajout d'un dessin envoyé par le serveur à la liste.
-     * La fonction est appelée par le processus réseau lié
+     * Ajout d'un dessin envoyé par le serveur à la liste. La fonction est
+     * appelée par le processus réseau lié
+     *
      * @param f
      */
     public void recoitDessin(Forme f)
     {
-    	this.formes.add(f);
+        this.formes.add(f);
         majVues();
     }
-    
+
     public void quitterServeur()
     {
-    	proc.deconnexion();
+        proc.deconnexion();
     }
 }

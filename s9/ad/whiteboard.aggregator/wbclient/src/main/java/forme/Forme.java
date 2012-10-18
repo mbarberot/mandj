@@ -80,46 +80,13 @@ public abstract class Forme implements Serializable
      * @param g Outil de dessin
      */
     public abstract void paintForeground(Graphics2D g);
-            
-    public byte[] toByteArray()
-    {
-    	ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		ObjectOutputStream oos = null;
-		byte[] serializedForme = null;
-		try {
-			oos = new ObjectOutputStream(bos);
-			oos.writeObject(this);
-			serializedForme = bos.toByteArray();
-			bos.close();
-			oos.close();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		return serializedForme;
-    }
     
     /**
-     * Construction d'une forme à partir d'un flux binaire
-     * @param baF tableau de byte codant une forme
+     * Crée une chaine de caractères contenant les primitives de la forme
+     * @return Les primitives de la forme
      */
-    public static Forme getFromByteArray(byte[] baF)
-    {
-    	ByteArrayInputStream bis = new ByteArrayInputStream(baF);
-    	ObjectInput in = null;
-    	Forme f = null;
-    	try {
-    	  in = new ObjectInputStream(bis);
-    	  f = (Forme)in.readObject(); 
-    	  bis.close();
-    	  in.close();
-    	} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-    	
-    	return f;
-    }
+    public abstract String makeItSendable();
+    
+            
+    
 }

@@ -1,9 +1,5 @@
 package main;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-
-import remote.Processus;
 import controleur.Controleur;
 import modele.Modele;
 import vue.Vue;

@@ -44,7 +44,7 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
 	public void recv(int msg, int idFrom, Object data) throws RemoteException{	
 		switch(msg) {
 			case (TypeMessage.ENVOI_NOUVELLE_FORME):
-				myLocal.recoitDessin((byte[]) data);
+				myLocal.recoitDessin((String) data);
 				break;
 			case (TypeMessage.CONNEXION_NOUVEAU_PROC):				
 			case(TypeMessage.DECONNEXION_PROC):

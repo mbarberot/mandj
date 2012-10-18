@@ -49,6 +49,17 @@ public class Pixel extends Forme
         // Nothing to do
     }
 
+    @Override
+    public String makeItSendable()
+    {
+        return "PIX:"
+                + point.toString() + ":"
+                + bg.toString() + ":"
+                + fg.toString() + ":"
+                + epaisseur
+                ;
+    }
+
     
     
 }
