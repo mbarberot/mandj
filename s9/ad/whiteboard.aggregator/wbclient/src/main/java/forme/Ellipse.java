@@ -62,10 +62,12 @@ public class Ellipse extends Forme
     public String makeItSendable()
     {
         return "ELL:"
-                + p1.toString() + ":"
-                + p2.toString() + ":"
-                + bg.toString() + ":"
-                + fg.toString() + ":"
+                + p1.x + ":"
+                + p1.y + ":"
+                + p2.x + ":"
+                + p2.y + ":"
+                + bg.getRGB() + ":"
+                + fg.getRGB() + ":"
                 + epaisseur
                 ;
     }

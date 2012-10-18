@@ -44,7 +44,7 @@ public class FormeFactory
         Color bg, fg;
 
 
-        i = 0;
+        i = 1;
 
         xa = Integer.parseInt(elt[i]);
         i++;
@@ -74,7 +74,7 @@ public class FormeFactory
         Color bg, fg;
 
 
-        i = 0;
+        i = 1;
 
         xa = Integer.parseInt(elt[i]);
         i++;
@@ -110,7 +110,7 @@ public class FormeFactory
         Color bg, fg;
 
 
-        i = 0;
+        i = 1;
 
         xa = Integer.parseInt(elt[i]);
         i++;
@@ -146,7 +146,7 @@ public class FormeFactory
         Color bg, fg;
 
 
-        i = 0;
+        i = 1;
 
         xa = Integer.parseInt(elt[i]);
         i++;

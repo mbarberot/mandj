@@ -3,7 +3,6 @@ package forme;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
-import java.io.Serializable;
 
 /**
  * Classe pour le dessin d'un pixel
@@ -53,9 +52,10 @@ public class Pixel extends Forme
     public String makeItSendable()
     {
         return "PIX:"
-                + point.toString() + ":"
-                + bg.toString() + ":"
-                + fg.toString() + ":"
+                + point.x + ":"
+                + point.y + ":"
+                + bg.getRGB() + ":"
+                + fg.getRGB() + ":"
                 + epaisseur
                 ;
     }
