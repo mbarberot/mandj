@@ -8,6 +8,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 import main.Reso;
 
@@ -33,7 +34,7 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau
     /**
      * File des demandes en attente
      */
-    private ArrayList<Message> listeMess; 
+    private LinkedList<Message> listeMess; 
     /**
      * Constructeur simple
      * @throws RemoteException 
@@ -43,7 +44,7 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau
         super();
         this.listeProc = new HashMap<Integer,IProcessus>();
         this.idProc = 0;
-        this.listeMess = new ArrayList<Message>();
+        this.listeMess = new LinkedList<Message>();
     }
 
     /**
@@ -73,15 +74,8 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau
         {
         	Registry reg = LocateRegistry.getRegistry(1099); // A modifier pour contact à distance
         	
-        	/*for(String bounded : reg.list())
-        		System.out.println(bounded);*/
-        	
             IProcessus proc = (IProcessus)reg.lookup(host + "/" + Reso.CLIENT_NAME + idProc);
             listeProc.put(idProc, proc);
-            
-            // Si c'est le premier processus a être connecté : il devient maître
-            if(listeProc.size() == 1)
-            	listeProc.get(idProc).becomeMaster();
             
             // Signaler aux participants l'arrivée du nouveau processus
             broadcast(TypeMessage.CONNEXION_NOUVEAU_PROC, idProc, null);
@@ -147,16 +141,6 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau
 	}
 
 	/**
-	 * Recherche qui est le maître parmis les processus enregistrés
-	 */
-	public int getMaster() throws RemoteException{
-		for(int idProc : listeProc.keySet())
-		{
-			if(listeProc.get(idProc).isMaster()) return idProc;
-		}
-		return -1;
-	}
-	/**
 	 * Envoi un message à tous les processus participants
 	 * @param msg
 	 * @param data
@@ -173,6 +157,14 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau
 				e.printStackTrace();
 			}
         }
+	}
+
+	public int whoIsMaster() throws RemoteException {
+		for(int proc : this.listeProc.keySet())
+		{
+			if(this.listeProc.get(proc).isMaster()) return proc;
+		}
+		return -1;
 	}
 	
     

@@ -19,6 +19,7 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
 	/* Adresse de l'hôte local */
 	private String host;
 	
+	
 	/* Constante */
 	public static final String CLIENT_NAME = "Client";
 	
@@ -52,7 +53,14 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
 		}
 	}
 	
+	public boolean isMaster() throws RemoteException {
+		return this.myLocal.getMaster() == this.pId;
+	}
 	
+	/**
+	 * GETTERS & SETTERS
+	 * @return
+	 */
 	public int getId()
 	{
 		return this.pId;
@@ -62,19 +70,8 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
 	{
 		return this.host;
 	}
-	
-	public void setMaster(int id)
-	{
-		
-	}
-	public void becomeMaster() throws RemoteException
-	{
-		this.myLocal.setMaster(this.pId);
-		//TODO println
-		System.out.println("Je suis le maitre ! mouahaha");
-	}
 
-	public boolean isMaster() throws RemoteException{
-		return this.pId == this.myLocal.getMaster();
-	}
+
+
+
 }

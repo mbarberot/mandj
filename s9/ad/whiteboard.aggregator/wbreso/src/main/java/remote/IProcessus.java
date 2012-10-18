@@ -10,6 +10,5 @@ import java.rmi.RemoteException;
 public interface IProcessus extends Remote
 {
     public void recv(int msg, int idFrom, Object data) throws RemoteException ;
-    public void becomeMaster() throws RemoteException;
     public boolean isMaster() throws RemoteException;
 }

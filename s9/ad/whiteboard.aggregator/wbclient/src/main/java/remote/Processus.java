@@ -63,16 +63,16 @@ public class Processus {
 	 * GETTERS & SETTERS
 	 * @return
 	 */
+	
+	public int getSizeVoisins()
+	{
+		return this.voisins.size();
+	}
+	
 	public int getMaster()
 	{
 		return this.masterId;
 	}
-	
-	public void setMaster(int idMaster)
-	{
-		this.masterId = idMaster;
-	}
-	
 	/**
 	 * Le processus récupère un id via le serveur et déclare son stub à celui-ci
 	 */
@@ -95,9 +95,18 @@ public class Processus {
 	{
 		try {
 			this.voisins = this.reso.getVoisins();
-			setMaster(this.reso.getMaster());
-			//TODO println
-			System.out.println("Le maître est : " + this.getMaster());
+			// Si un seul voisin => le processus local devient automatiquement le maitre
+			if(this.voisins.size() == 1)
+			{
+				this.masterId = this.myRemote.getId();
+				System.out.println("Je suis le seul maître à bord");
+			}
+			else
+			{
+				// Demander au serveur qui est le voisin
+				this.masterId = this.reso.whoIsMaster();
+				System.out.println("Le maître est " + this.masterId);
+			}
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
@@ -115,6 +124,16 @@ public class Processus {
 		// => le maître répond :
 		// 			- Si OK => la forme est diffusée à tout le monde
 		//			- Sinon => la demande d'accès au WB est placée en file d'attente
+		
+		
+		// On vérifie d'abord si le maître est encore en ligne. Si ce n'est pas le cas, on déclenche
+		// une élection.
+		if(this.masterId == -1)
+		{
+			declencheBullyElection();
+		}
+		
+		
 		for(int idTo : voisins)
 		{
 			if(idTo != myRemote.getId())
@@ -147,6 +166,11 @@ public class Processus {
 		} catch (RemoteException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void declencheBullyElection()
+	{
+		
 	}
 
 }
