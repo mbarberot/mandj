@@ -7,7 +7,7 @@
   <name>Whiteboard</name>
   <description>DA's project - 2012</description>
   <modules>
-  	<module>wbreso</module>
   	<module>wbclient</module>
+    <module>wbreso</module>
   </modules>
 </project>
