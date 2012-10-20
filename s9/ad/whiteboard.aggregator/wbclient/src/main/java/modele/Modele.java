@@ -89,14 +89,16 @@ public class Modele
      * @param f La forme
      */
     public void ajouterDessin(Forme f)
-    {
-        this.formes.add(f);
-        majVues();
+    {        
         // Signaler au serveur l'ajout de forme
         if (this.proc != null)
         {
             this.proc.envoiNouveauDessin(f);
         }
+        
+        // Ajout de la forme dans le modèle et refresh
+        this.formes.add(f);
+        majVues();
     }
 
     /**

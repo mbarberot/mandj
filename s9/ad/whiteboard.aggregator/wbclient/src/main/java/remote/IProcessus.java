@@ -9,6 +9,11 @@ import java.rmi.RemoteException;
  */
 public interface IProcessus extends Remote
 {
-    public void recv(int msg, int idFrom, Object data) throws RemoteException ;
     public boolean isMaster() throws RemoteException;
+    
+    public void receptionNouvelleForme(String data) throws RemoteException;
+    public void signalUpdateVoisins() throws RemoteException;
+    public void autoriserSectionCritique() throws RemoteException;
+    
+    public void demanderSectionCritique(int idFrom) throws RemoteException;
 }

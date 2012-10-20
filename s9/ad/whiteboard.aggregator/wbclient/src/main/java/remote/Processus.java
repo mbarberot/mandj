@@ -76,10 +76,15 @@ public class Processus
     {
         return this.voisins.size();
     }
-
+    
     public int getMaster()
     {
         return this.masterId;
+    }
+    
+    public IReseau getReso()
+    {
+    	return this.reso;
     }
 
     /**
@@ -110,11 +115,15 @@ public class Processus
             if (this.voisins.size() == 1)
             {
                 this.masterId = this.myRemote.getId();
+                //TODO println
                 System.out.println("Je suis le seul maître à bord");
             } else
             {
-                // Demander au serveur qui est le voisin
+            	//TODO println
+            	System.out.println(this.voisins.size() + "voisins récupérés ");
+                // Demander au serveur qui est le maître
                 this.masterId = this.reso.whoIsMaster();
+            	//TODO println
                 System.out.println("Le maître est " + this.masterId);
             }
         } catch (RemoteException e)
@@ -129,23 +138,38 @@ public class Processus
      * @param nF
      */
     public void envoiNouveauDessin(Forme nF)
-    {
+    {   	
+        // On vérifie d'abord si le maître est encore en ligne. Si ce n'est pas le cas, on déclenche
+        // une élection.
+       /* if (this.masterId == -1)
+        {
+            declencheBullyElection();
+        }*/
 
         // Demander au maître l'accès au tableau
         // => sendTo (moi, maitre, ACCES_WB)
         // => le maître répond :
         // 			- Si OK => la forme est diffusée à tout le monde
         //			- Sinon => la demande d'accès au WB est placée en file d'attente
-
-
-        // On vérifie d'abord si le maître est encore en ligne. Si ce n'est pas le cas, on déclenche
-        // une élection.
-        if (this.masterId == -1)
-        {
-            declencheBullyElection();
-        }
-
-
+    	try {
+			this.reso.sendTo(this.myRemote.getId(), this.masterId, TypeMessage.DEMANDE_SC, null);
+		} catch (RemoteException e1) {
+			e1.printStackTrace();
+		}
+    	
+    	// Attente de l'autorisation
+    	synchronized(this)
+    	{
+    		while(!this.accesWB)
+    		{
+    			try {
+					wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+    		}
+    	}
+    	
         for (int idTo : voisins)
         {
             if (idTo != myRemote.getId())
@@ -161,7 +185,9 @@ public class Processus
         }
     }
     
-    
+    /**
+     * Délenchement de l'élection d'un nouveau maître par l'algo de Bully
+     */
     private void declencheBullyElection()
     {
         throw new UnsupportedOperationException("Not yet implemented");
@@ -199,4 +225,15 @@ public class Processus
         }
     }
 
+    /**
+     * Autoriser l'accès à la SC
+     */
+    public synchronized void recoitAccesSC()
+    {
+    	//TODO println
+    	System.out.println("Accès à la SC autorisé");
+    	this.accesWB = true;
+    	notifyAll();
+    }
+    
 }
