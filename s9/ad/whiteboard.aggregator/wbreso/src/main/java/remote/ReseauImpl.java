@@ -81,7 +81,7 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau {
 			System.out.println("Ajout du proc " + idProc);
 			
 			// Signaler aux participants l'arrivée du nouveau processus
-			broadcast(TypeMessage.CONNEXION_NOUVEAU_PROC, idProc, null);
+			broadcast(Message.CONNEXION_NOUVEAU_PROC, idProc, null);
 
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -101,7 +101,7 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau {
 		listeProc.remove(idProc);
 
 		// Notifier aux processus restants qu'un processus vient de quitter
-		broadcast(TypeMessage.DECONNEXION_PROC, idProc, null);
+		broadcast(Message.DECONNEXION_PROC, idProc, null);
 	}
 
 	/**
@@ -109,30 +109,39 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau {
 	 */
 	public void sendTo(int idFrom, int idTo, int msg, Object data) {
 		IProcessus dest = this.listeProc.get(idTo);
+		
+		// On attend un temps aléatoire de 0.5 à 3 secondes avant de traiter le message
+		int desync_time = (int) (Math.random() * 3000 + 500);
+		try {
+			Thread.sleep(desync_time);
+		} catch (InterruptedException e2) {
+			e2.printStackTrace();
+		}
+		
 		switch (msg) {
-		case TypeMessage.CONNEXION_NOUVEAU_PROC:
-		case TypeMessage.DECONNEXION_PROC:
+		case Message.CONNEXION_NOUVEAU_PROC:
+		case Message.DECONNEXION_PROC:
 			try {
 				dest.signalUpdateVoisins();
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
 			break;
-		case TypeMessage.DEMANDE_SC:			
+		case Message.DEMANDE_SC:			
 			try {
 				dest.demanderSectionCritique(idFrom);
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}			
 			break;
-		case TypeMessage.AUTORISER_ACCES_SC:
+		case Message.AUTORISER_ACCES_SC:
 			try {
 				dest.autoriserSectionCritique();
 			} catch (RemoteException e1) {
 				e1.printStackTrace();
 			}
 			break;
-		case TypeMessage.ENVOI_NOUVELLE_FORME:
+		case Message.ENVOI_NOUVELLE_FORME:
 			try {
 				dest.receptionNouvelleForme((String)data);
 			} catch (RemoteException e) {
@@ -159,6 +168,27 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau {
 		}
 
 		return numVoisins;
+	}
+	
+	/**
+	 * Recupère la liste des voisins la plus à jour auprès des processus participants
+	 */
+	public ArrayList<String> getEtatWB(int idFrom) throws RemoteException {
+		ArrayList<String> res = new ArrayList<String>();
+		ArrayList<String> tmp = null;
+		for(Integer i : this.listeProc.keySet())
+		{
+			if(i != idFrom)
+			{
+				tmp = this.listeProc.get(i).getListeForme();
+				if(tmp.size() > res.size())
+				{
+					res = tmp;
+				}
+			}
+		}
+		
+		return res;
 	}
 
 	/**

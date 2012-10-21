@@ -2,6 +2,7 @@ package remote;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 
 /**
  *
@@ -14,6 +15,7 @@ public interface IProcessus extends Remote
     public void receptionNouvelleForme(String data) throws RemoteException;
     public void signalUpdateVoisins() throws RemoteException;
     public void autoriserSectionCritique() throws RemoteException;
+    public ArrayList<String> getListeForme() throws RemoteException;
     
     public void demanderSectionCritique(int idFrom) throws RemoteException;
 }
