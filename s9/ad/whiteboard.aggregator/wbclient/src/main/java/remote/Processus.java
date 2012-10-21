@@ -114,12 +114,14 @@ public class Processus
         try
         {
             this.voisins = this.reso.getVoisins();
+            //TODO éviter cette partie si déjà maître
             // Si un seul voisin => le processus local devient automatiquement le maitre
             if (this.voisins.size() == 1)
             {
                 this.masterId = this.myRemote.getId();
                 //TODO println
                 System.out.println("Je suis le seul maître à bord");
+                this.myRemote.devientMaster();
             } else
             {
             	//TODO println

@@ -21,8 +21,8 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
 	/* Adresse de l'hôte local */
 	private String host;
 	
-	/* Liste des demandes (ordonnées) d'accès à la SC */
-	private LinkedList<Integer> demandesAccesSC;
+	/* Thread pour le traitement de la liste des demandes d'accès à la SC (si maître) */
+	private ThreadTraitementSC traitementSC;
 	
 	/* Constante */
 	public static final String CLIENT_NAME = "Client";
@@ -31,8 +31,7 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
 		super();
 		this.pId = nId;
 		this.myLocal = myLocal;
-		this.demandesAccesSC = new LinkedList<Integer>();
-		
+		this.traitementSC = null;
 		/* Enregistrement dans le rmiregistry */
 		Registry reg = LocateRegistry.getRegistry();
 		try {
@@ -43,7 +42,6 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
 			e.printStackTrace();
 		}
 
-		
 	}
 
 	/**
@@ -92,35 +90,21 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
 	 * Implémentation des fonctions remote utilisables uniquement en tant que maître
 	 */	
 	
+	public void devientMaster()
+	{
+		this.traitementSC = new ThreadTraitementSC(this.myLocal.getReso(), this.pId);
+		traitementSC.start();
+	}
+	
 	/**
 	 * idFrom demande l'accès à la SC au maître
 	 */
 	public void demanderSectionCritique(int idFrom) throws RemoteException
 	{
-		this.demandesAccesSC.add(idFrom);
-		System.out.println(idFrom + " demande l'accès à la SC");
-		if(this.demandesAccesSC.size() == 1)
-			traiterFileSC();
+		this.traitementSC.ajoutDemande(idFrom);
 	}
 	
-	public void traiterFileSC()
-	{
-		IReseau reso = myLocal.getReso();
-		Integer idP;
-		while((idP = this.demandesAccesSC.pollFirst()) != null)
-		{
-			//TODO println
-			System.out.println("Traitement de la demande de " + idP);
-			try {
-				reso.sendTo(pId, idP, Message.AUTORISER_ACCES_SC, null);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-			
-			//TODO println
-			System.out.println("Traitement de la demande de " + idP + " terminée.");
-		}
-	}
+	
 	/**
 	 * GETTERS & SETTERS
 	 * @return
@@ -134,6 +118,8 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
 	{
 		return this.host;
 	}
+
+
 
 	
 
