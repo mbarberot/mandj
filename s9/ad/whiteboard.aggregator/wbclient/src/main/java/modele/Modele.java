@@ -7,6 +7,7 @@ import java.util.concurrent.Semaphore;
 
 import remote.Processus;
 import forme.Forme;
+import forme.FormeFactory;
 
 /**
  * Classe modele dans le patron de conception MVC
@@ -50,6 +51,17 @@ public class Modele
     }
 
     /**
+     * GETTERS & SETTERS
+     */
+    public ArrayList<Forme> getFormes() {
+  		return formes;
+  	}
+
+  	public void setFormes(ArrayList<Forme> formes) {
+  		this.formes = formes;
+  	}
+    
+    /**
      * Ajoute un listener à la liste
      *
      * @param listener Le nouveau listener
@@ -59,8 +71,9 @@ public class Modele
         this.listeners.add(listener);
         majVues();
     }
+  
 
-    /**
+	/**
      * Supprime un listener de la liste
      *
      * @param listener Le listener à éliminer
@@ -113,6 +126,29 @@ public class Modele
         majVues();
     }
 
+    /**
+     * Réception d'une liste de formes (à la connexion du processus)
+     * @param formes
+     */
+    public void recoitWB(ArrayList<String> formes)
+    {
+    	ArrayList<Forme> toAdd = new ArrayList<Forme>();
+    	for(String f : formes)
+    	{
+    		try {
+				toAdd.add(FormeFactory.createForme(f));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+    	}
+    	
+    	setFormes(toAdd);
+    	majVues();
+    }
+    
+    /**
+     * Fait remonter la déconnexion du client au processus 
+     */
     public void quitterServeur()
     {
         proc.deconnexion();

@@ -6,6 +6,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcessus {
@@ -78,9 +79,22 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
 		this.myLocal.recoitAccesSC();
 	}
 	
+
+	/**
+	 * Renvoie la liste des formes du client local
+	 */
+	public ArrayList<String> getListeForme() throws RemoteException {
+		return this.myLocal.getMyWB();
+	}
+	
+
 	/**
 	 * Implémentation des fonctions remote utilisables uniquement en tant que maître
 	 */	
+	
+	/**
+	 * idFrom demande l'accès à la SC au maître
+	 */
 	public void demanderSectionCritique(int idFrom) throws RemoteException
 	{
 		this.demandesAccesSC.add(idFrom);
@@ -98,7 +112,7 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
 			//TODO println
 			System.out.println("Traitement de la demande de " + idP);
 			try {
-				reso.sendTo(pId, idP, TypeMessage.AUTORISER_ACCES_SC, null);
+				reso.sendTo(pId, idP, Message.AUTORISER_ACCES_SC, null);
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}

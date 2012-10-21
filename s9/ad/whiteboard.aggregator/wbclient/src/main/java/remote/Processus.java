@@ -89,6 +89,7 @@ public class Processus
 
     /**
      * Le processus récupère un id via le serveur et déclare son stub à celui-ci
+     * Il récupère au passage l'état actuel du WB
      */
     public void connexionReso()
     {
@@ -97,6 +98,8 @@ public class Processus
             int pId = reso.register();
             this.myRemote = new ProcessusRemoteImpl(this, pId);
             this.reso.naming(pId, myRemote.getHost());
+            // Récupération du WB actuel
+            recupereWB();
         } catch (RemoteException e)
         {
             e.printStackTrace();
@@ -126,12 +129,44 @@ public class Processus
             	//TODO println
                 System.out.println("Le maître est " + this.masterId);
             }
+           
         } catch (RemoteException e)
         {
             e.printStackTrace();
         }
     }
+    
+    /**
+     * Récupère auprès du serveur l'état actuel du wb
+     */
+    public void recupereWB()
+    {
+    	try {
+    		//TODO println
+    		System.out.println("Récupération d'un WB à jour");
+			this.wb.recoitWB(this.reso.getEtatWB(myRemote.getId()));
+		} catch (RemoteException e) {
+			e.printStackTrace();
+		}
+    }
 
+    /**
+     * Retourner l'état du WB sous forme de liste de String
+     * @return
+     */
+    public ArrayList<String> getMyWB()
+    {
+    	ArrayList<Forme> myWB = this.wb.getFormes();
+    	ArrayList<String> myStringWB = new ArrayList<String>();
+    	
+    	for(Forme f : myWB)
+    	{
+    		myStringWB.add(f.makeItSendable());
+    	}
+    	
+    	return myStringWB; 
+    }
+    
     /**
      * Le client vient de dessiner une forme et veut la diffuser à tous
      *
@@ -152,7 +187,7 @@ public class Processus
         // 			- Si OK => la forme est diffusée à tout le monde
         //			- Sinon => la demande d'accès au WB est placée en file d'attente
     	try {
-			this.reso.sendTo(this.myRemote.getId(), this.masterId, TypeMessage.DEMANDE_SC, null);
+			this.reso.sendTo(this.myRemote.getId(), this.masterId, Message.DEMANDE_SC, null);
 		} catch (RemoteException e1) {
 			e1.printStackTrace();
 		}
@@ -176,7 +211,7 @@ public class Processus
             {
                 try
                 {
-                    reso.sendTo(myRemote.getId(), idTo, TypeMessage.ENVOI_NOUVELLE_FORME, nF.makeItSendable());
+                    reso.sendTo(myRemote.getId(), idTo, Message.ENVOI_NOUVELLE_FORME, nF.makeItSendable());
                 } catch (RemoteException e)
                 {
                     e.printStackTrace();
