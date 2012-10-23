@@ -1,5 +1,6 @@
 package remote;
 
+import java.net.InetAddress;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -69,11 +70,8 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau {
 	 */
 	public void naming(int idProc, String host) throws RemoteException {
 		try {
-			Registry reg = LocateRegistry.getRegistry(1099); // A modifier pour
-																// contact à
-																// distance
 
-			IProcessus proc = (IProcessus) reg.lookup(host + "/"
+			IProcessus proc = (IProcessus) Naming.lookup("rmi://" + InetAddress.getByName(host).getHostAddress() + "/"
 					+ Reso.CLIENT_NAME + idProc);
 			listeProc.put(idProc, proc);
 
