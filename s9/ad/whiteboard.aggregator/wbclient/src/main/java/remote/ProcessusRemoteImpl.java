@@ -1,13 +1,13 @@
 package remote;
 
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.UnknownHostException;
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcessus {
 
@@ -32,13 +32,22 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
 		this.pId = nId;
 		this.myLocal = myLocal;
 		this.traitementSC = null;
+		
 		/* Enregistrement dans le rmiregistry */
-		Registry reg = LocateRegistry.getRegistry();
+		if(LocateRegistry.getRegistry() == null)
+		{
+			LocateRegistry.createRegistry(1099);
+		}
+		
 		try {
-			this.host = "rmi://" + InetAddress.getLocalHost().getHostAddress();
+			
+			this.host = InetAddress.getLocalHost().getHostName();
 			System.out.println("Client enregistre a l'adresse " + host + "/" + CLIENT_NAME + this.pId);
-			reg.rebind(host + "/" + CLIENT_NAME + this.pId, this);
+			String rebindURL = "rmi://" + InetAddress.getByName(host).getHostAddress();
+			Naming.rebind(rebindURL + "/" + CLIENT_NAME + this.pId, this);
 		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
 

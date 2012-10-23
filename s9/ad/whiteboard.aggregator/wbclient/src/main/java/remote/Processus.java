@@ -1,15 +1,14 @@
 package remote;
 
-import forme.Forme;
-import forme.FormeFactory;
+import java.net.MalformedURLException;
+import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import modele.Modele;
+import forme.Forme;
+import forme.FormeFactory;
 
 public class Processus
 {
@@ -55,15 +54,16 @@ public class Processus
 
         try
         {
-            Registry reg = LocateRegistry.getRegistry(1099); // A modifier pour contact à distance
-            reso = (IReseau) reg.lookup(SERVER_NAME);
+            reso = (IReseau) Naming.lookup(host + "/" + SERVER_NAME);
         } catch (RemoteException e)
         {
             e.printStackTrace();
         } catch (NotBoundException e)
         {
             e.printStackTrace();
-        }
+        } catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
 
     }
 

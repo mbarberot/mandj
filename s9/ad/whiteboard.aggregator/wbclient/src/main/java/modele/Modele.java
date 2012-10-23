@@ -41,7 +41,8 @@ public class Modele
         // Création du processus
         try
         {
-            String host = "rmi://" + InetAddress.getLocalHost().getHostAddress();
+        	String MACHINE_DISTANTE = "localhost";
+            String host = "rmi://" + InetAddress.getByName(MACHINE_DISTANTE).getHostAddress();
             this.proc = new Processus(host, this);
             proc.connexionReso();
         } catch (UnknownHostException e)
