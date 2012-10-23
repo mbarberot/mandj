@@ -13,7 +13,7 @@ public interface IProcessus extends Remote
     public boolean isMaster() throws RemoteException;
     
     public void receptionNouvelleForme(String data) throws RemoteException;
-    public void signalUpdateVoisins() throws RemoteException;
+    public void signaleNouveauVoisin(int idNew) throws RemoteException;
     public void autoriserSectionCritique() throws RemoteException;
     public ArrayList<String> getListeForme() throws RemoteException;
     

@@ -7,7 +7,6 @@ import java.util.LinkedList;
 public class ThreadTraitementSC extends Thread {
 
 	/* Liste des demandes (ordonnées) d'accès à la SC */
-	// TODO contiendra des Messages avec estampille
 	private LinkedList<Integer> demandesAccesSC;
 
 	/* Stub du serveur pour les envois de message */
@@ -53,6 +52,9 @@ public class ThreadTraitementSC extends Thread {
 						stub.sendTo(masterId, proc, Message.AUTORISER_ACCES_SC, null);
 					} catch (RemoteException e) {
 						e.printStackTrace();
+					} catch (TimeOutException e) {
+						// TODO Supprimer toutes les éventuelles demandes en SC du processus déconnecté
+						while(demandesAccesSC.remove(proc));
 					}
 				}
 			}

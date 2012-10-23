@@ -74,7 +74,8 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
 	/**
 	 * Signaler au processus que la liste des voisins connectés a été mise à jour
 	 */
-	public void signalUpdateVoisins() throws RemoteException {
+	public void signaleNouveauVoisin(int idNew) throws RemoteException {
+		//TODO à modifier
 		this.myLocal.recupereVoisins();
 	}
 	

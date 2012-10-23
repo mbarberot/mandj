@@ -3,8 +3,12 @@ package remote;
 import java.net.MalformedURLException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
+import java.rmi.RMISecurityManager;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import modele.Modele;
 import forme.Forme;
@@ -139,6 +143,23 @@ public class Processus
     }
     
     /**
+     * Ajout d'un processus dans la liste des voisins
+     */
+    public void ajoutNouveauVoisin(int nId)
+    {
+    	this.voisins.add(nId);
+    }
+    
+    /**
+     * Suppression d'un processus dans la liste des voisins
+     * @param vId
+     */
+    public void suppressionVoisin(int vId)
+    {
+    	this.voisins.remove(new Integer(vId));
+    }
+    
+    /**
      * Récupère auprès du serveur l'état actuel du wb
      */
     public void recupereWB()
@@ -175,14 +196,7 @@ public class Processus
      * @param nF
      */
     public void envoiNouveauDessin(Forme nF)
-    {   	
-        // On vérifie d'abord si le maître est encore en ligne. Si ce n'est pas le cas, on déclenche
-        // une élection.
-       /* if (this.masterId == -1)
-        {
-            declencheBullyElection();
-        }*/
-
+    {   
         // Demander au maître l'accès au tableau
         // => sendTo (moi, maitre, ACCES_WB)
         // => le maître répond :
@@ -192,6 +206,10 @@ public class Processus
 			this.reso.sendTo(this.myRemote.getId(), this.masterId, Message.DEMANDE_SC, null);
 		} catch (RemoteException e1) {
 			e1.printStackTrace();
+		} catch (TimeOutException e) {
+			//e.printStackTrace();
+			suppressionVoisin(masterId);
+			//TODO déclencher élection
 		}
     	
     	// Attente de l'autorisation
@@ -207,8 +225,11 @@ public class Processus
     		}
     	}
     	
-        for (int idTo : voisins)
+    	Iterator iterVoisin = voisins.iterator();
+    	
+    	while(iterVoisin.hasNext())
         {
+    		Integer idTo = (Integer) iterVoisin.next();
             if (idTo != myRemote.getId())
             {
                 try
@@ -217,19 +238,14 @@ public class Processus
                 } catch (RemoteException e)
                 {
                     e.printStackTrace();
-                }
+                } catch (TimeOutException e) {
+					iterVoisin.remove();
+				}
             }
         }
     }
-    
-    /**
-     * Délenchement de l'élection d'un nouveau maître par l'algo de Bully
-     */
-    private void declencheBullyElection()
-    {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
 
+    
     /**
      * Ajout d'une forme reçue au modèle
      *
