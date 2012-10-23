@@ -9,7 +9,7 @@ public interface IReseau extends Remote
 	public int register() throws RemoteException;
     public void naming(int idProc, String host) throws RemoteException;
 	public void quit(int idProc) throws RemoteException;
-	public void sendTo(int idFrom, int idTo, int msg, Object data) throws RemoteException;
+	public void sendTo(int idFrom, int idTo, int msg, Object data) throws RemoteException, TimeOutException;
 	public ArrayList<Integer> getVoisins() throws RemoteException; 
 	public ArrayList<String> getEtatWB(int idFrom) throws RemoteException;
 	public int whoIsMaster() throws RemoteException;

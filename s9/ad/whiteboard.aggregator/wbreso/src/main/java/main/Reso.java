@@ -22,8 +22,7 @@ public class Reso {
 
 	public static void main(String[] args) {
 		try {
-			LocateRegistry.createRegistry(1099);
-
+			LocateRegistry.createRegistry(1099);        	
 			ReseauImpl reso = new ReseauImpl();
 			String url = "rmi://" + InetAddress.getLocalHost().getHostAddress()
 					+ "/" + SERVER_NAME;

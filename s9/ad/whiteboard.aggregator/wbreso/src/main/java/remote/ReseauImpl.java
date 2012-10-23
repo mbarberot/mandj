@@ -92,35 +92,41 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau {
 	 * 
 	 * @param idProc
 	 *            - ID du processus
+	 * @throws TimeOutException 
+	 * @throws RemoteException 
 	 */
-	public void quit(int idProc) {
+	public void quit(int idProc) throws RemoteException {
 		// TODO : println
 		System.out.println("quit(id) -> ID = " + idProc);
 		listeProc.remove(idProc);
-
-		// Notifier aux processus restants qu'un processus vient de quitter
-		broadcast(Message.DECONNEXION_PROC, idProc, null);
 	}
 
 	/**
 	 * Envoi d'un message de idFrom vers idTo
+	 * @throws RemoteException, TimeOutException 
 	 */
-	public void sendTo(int idFrom, int idTo, int msg, Object data) {
+	public void sendTo(int idFrom, int idTo, int msg, Object data) throws RemoteException, TimeOutException {
 		IProcessus dest = this.listeProc.get(idTo);
 		
 		// On attend un temps aléatoire de 0.5 à 3 secondes avant de traiter le message
-		int desync_time = (int) (Math.random() * 3000 + 500);
+		/*int desync_time = (int) (Math.random() * 3000 + 500);
 		try {
 			Thread.sleep(desync_time);
 		} catch (InterruptedException e2) {
 			e2.printStackTrace();
+		}*/
+		
+		// Gestion du timeout
+		if(listeProc.get(new Integer(idTo)) == null)
+		{
+			throw new TimeOutException("Le client " + idTo + " n'est plus connecté");
 		}
 		
 		switch (msg) {
 		case Message.CONNEXION_NOUVEAU_PROC:
-		case Message.DECONNEXION_PROC:
 			try {
-				dest.signalUpdateVoisins();
+				//TODO à modifier
+				dest.signaleNouveauVoisin(idFrom);
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
@@ -194,11 +200,15 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau {
 	 * 
 	 * @param msg
 	 * @param data
+	 * @throws TimeOutException 
+	 * @throws RemoteException 
 	 */
 
-	public void broadcast(int msg, int from, Object data) {
+	public void broadcast(int msg, int from, Object data) throws RemoteException {
 		for (int iProc : listeProc.keySet()) {
-			sendTo(from, iProc, msg, data);
+			try {
+				sendTo(from, iProc, msg, data);
+			} catch (TimeOutException e) {}
 		}
 	}
 
