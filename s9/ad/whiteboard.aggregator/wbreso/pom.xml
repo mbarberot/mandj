@@ -17,13 +17,16 @@
                 <artifactId>maven-antrun-plugin</artifactId>
                 <version>1.3</version>
                 <executions>
-
                     <execution>
                         <phase>install</phase>
                         <configuration>
                             <tasks>
-                                <copy file="src/main/java/remote/IReseau.java"
-                    todir="../wbclient/src/main/java/remote" />
+                                <copy 
+                                    file="src/main/java/remote/IReseau.java"
+                                    todir="../wbclient/src/main/java/remote" />
+                                <copy 
+                                    file="src/main/java/remote/Message.java"
+                                    todir="../wbclient/src/main/java/remote" />
                             </tasks>
                         </configuration>
                         <goals>

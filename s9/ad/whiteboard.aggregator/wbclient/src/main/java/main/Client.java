@@ -13,6 +13,7 @@ public class Client
 {
 
     public static String MACHINE_DISTANTE;
+    public static String ALGO;
 
     /**
      * Main du client
@@ -23,14 +24,17 @@ public class Client
      */
     public static void main(String[] args)
     {
-        if (args.length == 0)
+        if (args.length < 2)
         {
             System.out.println("Usage : client <machine_distante>");
 
         } else
         {
             MACHINE_DISTANTE = args[0];
+            ALGO = args[1];
 
+            
+            
             //
             // Mise en place du pattern MVC
             //

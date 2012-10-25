@@ -4,7 +4,6 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import remote.IReseau;
-import remote.Processus;
 
 /**
  * Implémentation de l'algorithme d'élection de Bully
