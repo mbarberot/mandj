@@ -1,11 +1,19 @@
 package remote;
 
-public class TimeOutException extends Exception {
+/**
+ * Exception levée en cas de non réponse d'un processus
+ * 
+ * @author Mathieu Barberot et Joan Racenet
+ */
+public class TimeOutException extends Exception
+{
 
-	public TimeOutException(){}
-	
-	public TimeOutException(String msg)
-	{
-		super(msg);
-	}
+    public TimeOutException()
+    {
+    }
+
+    public TimeOutException(String msg)
+    {
+        super(msg);
+    }
 }
