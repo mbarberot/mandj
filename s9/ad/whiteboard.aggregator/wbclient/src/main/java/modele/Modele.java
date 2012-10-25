@@ -5,6 +5,7 @@ import forme.FormeFactory;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import main.Client;
 import remote.Processus;
 
 /**
@@ -42,8 +43,7 @@ public class Modele
             //
             // TODO : Passer la machine distante dans les paramètres du main
             //
-            String MACHINE_DISTANTE = "localhost";
-            String host = "rmi://" + InetAddress.getByName(MACHINE_DISTANTE).getHostAddress();
+            String host = "rmi://" + InetAddress.getByName(Client.MACHINE_DISTANTE).getHostAddress();
             this.proc = new Processus(host, this);
             proc.connexionReso();
         }

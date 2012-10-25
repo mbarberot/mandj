@@ -16,12 +16,27 @@ import remote.ReseauImpl;
 public class Reso
 {
     // Nom du serveur sur le registre RMI
-    public static final String SERVER_NAME = "Reso";
+    public static String SERVER_NAME;
     // Nom du client sur le registre RMI
-    public static final String CLIENT_NAME = "Client";
+    public static String CLIENT_NAME;
+    // Type d'algorithme
+    public static String ALGO;
 
     public static void main(String[] args)
     {
+        if(args.length < 3)
+        {
+            System.out.println("Usage : Reso <nom_rmi_reseau> <nom_rmi_client> <algo>");
+            System.out.println("algo = chang_roberts | bully | dolev_klawe_rodeh");
+            System.exit(0);
+        }
+        else
+        {
+            SERVER_NAME = args[0] ;
+            CLIENT_NAME = args[1] ;
+            ALGO = args[2];
+        }
+        
         try
         {
             // Création du registre RMI
