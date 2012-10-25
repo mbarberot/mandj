@@ -7,10 +7,40 @@ package remote;
  */
 public class Message
 {
-    public static final int ENVOI_NOUVELLE_FORME = 0;
-    public static final int CONNEXION_NOUVEAU_PROC = 1;
-    public static final int DECONNEXION_PROC = 2;
-    public static final int DEMANDE_SC = 3;
-    public static final int AUTORISER_ACCES_SC = 4;
-    public static final int DEMANDE_ETAT_WB = 5;
+	
+	
+    
+	private int idFrom;
+	private TypeMessage type;
+	private int idTo;
+	private Object data;
+	
+    public Message(int idFrom, TypeMessage typeMessage, int idTo, Object data)
+    {
+    	this.idFrom = idFrom;
+    	this.type = typeMessage;
+    	this.idTo = idTo;
+    	this.data = data;
+    }
+
+	/**
+	 * Getters
+	 * @return
+	 */
+	public int getIdFrom() {
+		return idFrom;
+	}
+
+	public TypeMessage getType() {
+		return type;
+	}
+
+	public int getIdTo() {
+		return idTo;
+	}
+	
+	public Object getData() {
+		return data;
+	}
+
 }
