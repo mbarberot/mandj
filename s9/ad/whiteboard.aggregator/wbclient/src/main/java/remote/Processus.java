@@ -247,7 +247,7 @@ public class Processus
         //			- Sinon => la demande d'accès au WB est placée en file d'attente
         try
         {
-            this.reso.sendTo(this.myRemote.getId(), this.masterId, Message.DEMANDE_SC, null);
+            this.reso.sendTo(this.myRemote.getId(), this.masterId, TypeMessage.DEMANDE_SC, null);
         }
         catch (RemoteException e1)
         {
@@ -260,6 +260,7 @@ public class Processus
             // TODO déclencher élection
         }
 
+        /* TODO : Thread */
         // Attente de l'autorisation
         synchronized (this)
         {
@@ -285,7 +286,7 @@ public class Processus
             {
                 try
                 {
-                    reso.sendTo(myRemote.getId(), idTo, Message.ENVOI_NOUVELLE_FORME, nF.makeItSendable());
+                    reso.sendTo(myRemote.getId(), idTo, TypeMessage.ENVOI_NOUVELLE_FORME, nF.makeItSendable());
                 }
                 catch (RemoteException e)
                 {

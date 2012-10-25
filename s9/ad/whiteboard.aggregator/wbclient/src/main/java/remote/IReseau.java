@@ -47,7 +47,7 @@ public interface IReseau extends Remote
      * @throws RemoteException
      * @throws TimeOutException 
      */
-    public void sendTo(int idFrom, int idTo, int msg, Object data) throws RemoteException, TimeOutException;
+    public void sendTo(int idFrom, int idTo, TypeMessage msg, Object data) throws RemoteException, TimeOutException;
 
     /**
      * Méthode de récupération des processus voisins 

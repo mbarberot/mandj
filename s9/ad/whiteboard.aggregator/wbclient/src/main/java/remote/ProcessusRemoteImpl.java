@@ -55,6 +55,7 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
         {
 
             this.host = InetAddress.getLocalHost().getHostName();
+            //TODO println
             System.out.println("Client enregistre a l'adresse " + host + "/" + CLIENT_NAME + this.pId);
             String rebindURL = "rmi://" + InetAddress.getByName(host).getHostAddress();
             Naming.rebind(rebindURL + "/" + CLIENT_NAME + this.pId, this);

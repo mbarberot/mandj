@@ -49,9 +49,6 @@ public class ThreadTraitementSC extends Thread
     {
         demandesAccesSC.add(pid);
 
-        // TODO trier la file par estampille
-        Collections.sort(demandesAccesSC);
-
         if (demandesAccesSC.size() == 1)
         {
             notifyAll();
@@ -88,7 +85,7 @@ public class ThreadTraitementSC extends Thread
                 {
                     try
                     {
-                        stub.sendTo(masterId, proc, Message.AUTORISER_ACCES_SC, null);
+                        stub.sendTo(masterId, proc, TypeMessage.AUTORISER_ACCES_SC, null);
                     }
                     catch (RemoteException e)
                     {
@@ -96,7 +93,6 @@ public class ThreadTraitementSC extends Thread
                     }
                     catch (TimeOutException e)
                     {
-                        // TODO Supprimer toutes les éventuelles demandes en SC du processus déconnecté
                         while (demandesAccesSC.remove(proc));
                     }
                 }
