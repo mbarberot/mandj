@@ -115,7 +115,7 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau {
 	 * @throws TimeOutException
 	 */
 	public void sendTo(int idFrom, int idTo, TypeMessage msg, Object data)
-			throws RemoteException, TimeOutException {
+			throws RemoteException {
 		
 		this.messages.ajoutNouveauMessage(new Message(idFrom,msg,idTo,data));
 

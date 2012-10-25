@@ -8,12 +8,19 @@ package remote;
 public class TimeOutException extends Exception
 {
 
-    public TimeOutException()
+	private int idProc;
+    public TimeOutException(int proc)
     {
+    	this.idProc = proc;
     }
 
     public TimeOutException(String msg)
     {
         super(msg);
+    }
+    
+    public int getProc()
+    {
+    	return this.idProc;
     }
 }

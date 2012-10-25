@@ -23,6 +23,7 @@ public class ThreadTraitementMessages extends Thread {
 	 */
 	private int masterId;
 
+	
 	/*
 	 * Initialisation
 	 */
@@ -33,8 +34,10 @@ public class ThreadTraitementMessages extends Thread {
 
 	/* Ajout d'un nouveau message */
 	public synchronized void ajoutNouveauMessage(Message m) {
+
 		listeMessages.add(m);
-		//TODO println
+
+		// TODO println
 		System.out.println(m.toString() + " ajouté dans la file d'attente ");
 		if (listeMessages.size() >= 1)
 			this.notifyAll();
@@ -132,8 +135,27 @@ public class ThreadTraitementMessages extends Thread {
 				try {
 					achemineMessage(m);
 				} catch (TimeOutException e) {
-					// TODO : envoi à from l'indication de timeout du
-					// destinataire
+					Iterator mess = this.listeMessages.iterator();
+					
+					while(mess.hasNext())
+					{
+						Message tmp = (Message) mess.next();
+						// Supprimer les messages destinés au client déconnecté
+						if(tmp.getIdTo() == e.getProc())
+						{
+							// Si des demandes de SC étaient dans la file, refuser la SC
+							if(tmp.getType() == TypeMessage.DEMANDE_SC)
+							{
+								ajoutNouveauMessage(new Message(tmp.getIdTo(), TypeMessage.REFUSER_ACCES_SC, tmp.getIdFrom(),null));
+							}
+							
+							mess.remove();
+						}
+						
+						
+						
+					}
+					
 					e.printStackTrace();
 				}
 			}
@@ -159,10 +181,23 @@ public class ThreadTraitementMessages extends Thread {
 
 		if (m.getType() != TypeMessage.CONNEXION_NOUVEAU_PROC) {
 			dest = this.listeProc.get(m.getIdTo());
+			
 			// Gestion du timeout
-			if (dest == null) {
+			if (dest == null) {	
+				
+				// Appeler méthode remote signalerTimeout
+				try {
+					if(m.getIdFrom() != m.getIdTo())
+					{
+						System.out.println(m.getIdTo() + "signale timeout à " + m.getIdFrom());
+						this.listeProc.get(new Integer(m.getIdFrom())).signalerTimeout(m.getIdTo());
+					}
+				} catch (RemoteException e1) {
+					e1.printStackTrace();
+				}
 				throw new TimeOutException("Le client " + m.getIdTo()
-						+ " n'est plus connecté");
+						+ " n'est plus connecté");				
+				
 			}
 		}
 
@@ -188,7 +223,14 @@ public class ThreadTraitementMessages extends Thread {
 			break;
 		case AUTORISER_ACCES_SC:
 			try {
-				dest.autoriserSectionCritique();
+				dest.autoriserSectionCritique(1);
+			} catch (RemoteException e1) {
+				e1.printStackTrace();
+			}
+			break;
+		case REFUSER_ACCES_SC:
+			try {
+				dest.autoriserSectionCritique(2);
 			} catch (RemoteException e1) {
 				e1.printStackTrace();
 			}
@@ -199,7 +241,8 @@ public class ThreadTraitementMessages extends Thread {
 			} catch (RemoteException e) {
 				e.printStackTrace();
 			}
-			break;
+			break;		
+			
 		default:
 			throw new UnsupportedOperationException("Not supported yet.");
 		}
