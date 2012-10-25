@@ -282,8 +282,7 @@ public class Processus
         while (iterVoisin.hasNext())
         {
             Integer idTo = (Integer) iterVoisin.next();
-            if (idTo != myRemote.getId())
-            {
+        
                 try
                 {
                     reso.sendTo(myRemote.getId(), idTo, TypeMessage.ENVOI_NOUVELLE_FORME, nF.makeItSendable());
@@ -296,7 +295,7 @@ public class Processus
                 {
                     iterVoisin.remove();
                 }
-            }
+            
         }
     }
 

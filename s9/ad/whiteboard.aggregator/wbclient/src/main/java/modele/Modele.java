@@ -122,7 +122,7 @@ public class Modele
         }
 
         // Ajout de la forme dans le modèle et refresh
-        this.formes.add(f);
+        //this.formes.add(f);
         majVues();
     }
 
