@@ -1,13 +1,11 @@
 package modele;
 
+import forme.Forme;
+import forme.FormeFactory;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.concurrent.Semaphore;
-
 import remote.Processus;
-import forme.Forme;
-import forme.FormeFactory;
 
 /**
  * Classe modele dans le patron de conception MVC
@@ -41,27 +39,41 @@ public class Modele
         // Création du processus
         try
         {
-        	String MACHINE_DISTANTE = "localhost";
+            //
+            // TODO : Passer la machine distante dans les paramètres du main
+            //
+            String MACHINE_DISTANTE = "localhost";
             String host = "rmi://" + InetAddress.getByName(MACHINE_DISTANTE).getHostAddress();
             this.proc = new Processus(host, this);
             proc.connexionReso();
-        } catch (UnknownHostException e)
+        }
+        catch (UnknownHostException e)
         {
             e.printStackTrace();
         }
     }
 
-    /**
-     * GETTERS & SETTERS
-     */
-    public ArrayList<Forme> getFormes() {
-  		return formes;
-  	}
-
-  	public void setFormes(ArrayList<Forme> formes) {
-  		this.formes = formes;
-  	}
     
+    /**
+     * Retourne la liste des formes
+     * 
+     * @return Liste des formes
+     */
+    public ArrayList<Forme> getFormes()
+    {
+        return formes;
+    }
+
+    /**
+     * Ecrase la liste des formes
+     * 
+     * @param formes Nouvelle liste des formes
+     */
+    public void setFormes(ArrayList<Forme> formes)
+    {
+        this.formes = formes;
+    }
+
     /**
      * Ajoute un listener à la liste
      *
@@ -72,9 +84,8 @@ public class Modele
         this.listeners.add(listener);
         majVues();
     }
-  
 
-	/**
+    /**
      * Supprime un listener de la liste
      *
      * @param listener Le listener à éliminer
@@ -98,18 +109,18 @@ public class Modele
 
     /**
      * Ajout d'un dessin à la liste. Cette méthode est utilisée par le
-     * contrôleur lorsqu'une forme est achevée sur l'IHM
+     * contrôleur lorsqu'une forme est achevée sur l'IHM.
      *
-     * @param f La forme
+     * @param f La nouvelle forme
      */
     public void ajouterDessin(Forme f)
-    {        
+    {
         // Signaler au serveur l'ajout de forme
         if (this.proc != null)
         {
             this.proc.envoiNouveauDessin(f);
         }
-        
+
         // Ajout de la forme dans le modèle et refresh
         this.formes.add(f);
         majVues();
@@ -129,26 +140,30 @@ public class Modele
 
     /**
      * Réception d'une liste de formes (à la connexion du processus)
+     *
      * @param formes
      */
     public void recoitWB(ArrayList<String> formes)
     {
-    	ArrayList<Forme> toAdd = new ArrayList<Forme>();
-    	for(String f : formes)
-    	{
-    		try {
-				toAdd.add(FormeFactory.createForme(f));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-    	}
-    	
-    	setFormes(toAdd);
-    	majVues();
+        ArrayList<Forme> toAdd = new ArrayList<Forme>();
+        for (String f : formes)
+        {
+            try
+            {
+                toAdd.add(FormeFactory.createForme(f));
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+
+        setFormes(toAdd);
+        majVues();
     }
-    
+
     /**
-     * Fait remonter la déconnexion du client au processus 
+     * Fait remonter la déconnexion du client au processus
      */
     public void quitterServeur()
     {
