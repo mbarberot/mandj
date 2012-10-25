@@ -37,7 +37,7 @@ public class Processus
     /*
      * Mutex pour le whiteboard
      */
-    private boolean accesWB;
+    private int accesWB; // 0 : en attente , 1 : ok, 2 : refus
     /*
      * Le processus a accès aux données du wb
      */
@@ -55,7 +55,7 @@ public class Processus
         this.wb = mod;
         this.voisins = new ArrayList<Integer>();
         this.masterId = -1;
-        this.accesWB = false;
+        this.accesWB = 0;
 
         try
         {
@@ -253,18 +253,12 @@ public class Processus
         {
             e1.printStackTrace();
         }
-        catch (TimeOutException e)
-        {
-            //e.printStackTrace();
-            suppressionVoisin(masterId);
-            // TODO déclencher élection
-        }
 
         /* TODO : Thread */
         // Attente de l'autorisation
         synchronized (this)
         {
-            while (!this.accesWB)
+            while (this.accesWB == 0)
             {
                 try
                 {
@@ -278,25 +272,30 @@ public class Processus
         }
 
         // Broadcast du nouveau dessin
-        Iterator iterVoisin = voisins.iterator();
-        while (iterVoisin.hasNext())
-        {
-            Integer idTo = (Integer) iterVoisin.next();
         
-                try
-                {
-                    reso.sendTo(myRemote.getId(), idTo, TypeMessage.ENVOI_NOUVELLE_FORME, nF.makeItSendable());
-                }
-                catch (RemoteException e)
-                {
-                    e.printStackTrace();
-                }
-                catch (TimeOutException e)
-                {
-                    iterVoisin.remove();
-                }
-            
+        if(this.accesWB == 1)
+        {
+        	synchronized(this.voisins)
+        	{
+		        Iterator iterVoisin = voisins.iterator();
+		        while (iterVoisin.hasNext())
+		        {
+		            Integer idTo = (Integer) iterVoisin.next();
+		            System.out.println("Envoi de la forme à " + idTo);
+		                try
+		                {
+		                    reso.sendTo(myRemote.getId(), idTo, TypeMessage.ENVOI_NOUVELLE_FORME, nF.makeItSendable());
+		                }
+		                catch (RemoteException e)
+		                {
+		                    e.printStackTrace();
+		                }
+		            
+		        }
+        	}
         }
+        
+        this.accesWB = 0;
     }
 
     /**
@@ -332,14 +331,27 @@ public class Processus
     }
 
     /**
+     * Supprime un voisin qui a renvoyé un timeout
+     * @param idFrom
+     */
+    public void recoitTimeOut(int idFrom)
+    {
+    	System.out.println("Timeout : " + idFrom);
+    	synchronized(this.voisins)
+    	{
+    		this.voisins.remove(new Integer(idFrom));
+    	}
+    }
+    
+    /**
      * Autorisation d'accèder à la Section Critique.
      * Débloquage de l'attente.
      */
-    public synchronized void recoitAccesSC()
+    public synchronized void recoitAccesSC(int autorisation)
     {
         //TODO println
         System.out.println("Accès à la SC autorisé");
-        this.accesWB = true;
+        this.accesWB = autorisation;
         notifyAll();
     }
 }

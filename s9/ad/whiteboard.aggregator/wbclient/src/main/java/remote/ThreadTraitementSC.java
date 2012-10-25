@@ -91,10 +91,6 @@ public class ThreadTraitementSC extends Thread
                     {
                         e.printStackTrace();
                     }
-                    catch (TimeOutException e)
-                    {
-                        while (demandesAccesSC.remove(proc));
-                    }
                 }
             }
         }

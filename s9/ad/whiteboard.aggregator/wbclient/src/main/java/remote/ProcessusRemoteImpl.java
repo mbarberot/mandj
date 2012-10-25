@@ -102,16 +102,15 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
      */
     public void signaleNouveauVoisin(int idNew) throws RemoteException
     {
-        //TODO à modifier : pourquoi ?
         this.myLocal.recupereVoisins();
     }
 
     /**
      * Autoriser l'accès à la section critique au processus
      */
-    public void autoriserSectionCritique() throws RemoteException
+    public void autoriserSectionCritique(int autorisation) throws RemoteException
     {
-        this.myLocal.recoitAccesSC();
+        this.myLocal.recoitAccesSC(autorisation);
     }
 
     /**
@@ -169,4 +168,8 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
     {
         return this.host;
     }
+
+	public void signalerTimeout(int idFrom) throws RemoteException {
+		this.myLocal.recoitTimeOut(idFrom);
+	}
 }

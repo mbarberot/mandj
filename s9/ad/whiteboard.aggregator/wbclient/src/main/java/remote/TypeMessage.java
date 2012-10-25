@@ -7,6 +7,6 @@ public enum TypeMessage {
 		DECONNEXION_PROC,
 		DEMANDE_SC,
 		AUTORISER_ACCES_SC,
+		REFUSER_ACCES_SC,
 		DEMANDE_ETAT_WB
-
 }

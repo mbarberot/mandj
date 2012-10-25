@@ -42,7 +42,7 @@ public interface IProcessus extends Remote
      * 
      * @throws RemoteException 
      */
-    public void autoriserSectionCritique() throws RemoteException;
+    public void autoriserSectionCritique(int autorisation) throws RemoteException;
 
     /**
      * Acquisition de la liste des formes du processus
@@ -60,4 +60,9 @@ public interface IProcessus extends Remote
      * @throws RemoteException 
      */
     public void demanderSectionCritique(int idFrom) throws RemoteException;
+    
+    /**
+     * Signaler un timeout au client
+     */
+    public void signalerTimeout(int idFrom) throws RemoteException;
 }
