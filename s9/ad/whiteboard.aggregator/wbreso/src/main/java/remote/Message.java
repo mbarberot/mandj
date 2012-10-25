@@ -6,9 +6,7 @@ package remote;
  * @author Mathieu Barberot et Joan Racenet
  */
 public class Message
-{
-	
-	
+{	
     
 	private int idFrom;
 	private TypeMessage type;
@@ -42,5 +40,10 @@ public class Message
 	public Object getData() {
 		return data;
 	}
+	
+	public String toString()
+	{
+		return "Message FROM : " + idFrom + " TO : " + idTo + " De type " + type;
+ 	}
 
 }
