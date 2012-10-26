@@ -1,5 +1,9 @@
 package remote;
 
+/**
+ * Les différents types de message.
+ * @author Mathieu Barberot et Joan Racenet
+ */
 public enum TypeMessage
 {
     ENVOI_NOUVELLE_FORME,

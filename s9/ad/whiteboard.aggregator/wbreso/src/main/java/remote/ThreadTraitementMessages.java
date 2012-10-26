@@ -232,7 +232,7 @@ public class ThreadTraitementMessages extends Thread
                 {
                     if (m.getIdFrom() != m.getIdTo())
                     {
-                        System.out.println(m.getIdTo() + "signale timeout à " + m.getIdFrom());
+                        System.out.println(m.getIdTo() + " signale timeout à " + m.getIdFrom());
                         this.listeProc.get(new Integer(m.getIdFrom())).signalerTimeout(m.getIdTo());
                     }
                 }
