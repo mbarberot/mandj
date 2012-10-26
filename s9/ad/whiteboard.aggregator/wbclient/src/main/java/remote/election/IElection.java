@@ -1,6 +1,7 @@
 package remote.election;
 
-import remote.Processus;
+import remote.Message;
+import remote.election.message.ElectionMessage;
 
 /**
  * Interface mère des algorithmes d'élection
@@ -12,4 +13,9 @@ public interface IElection
      * Démarre l'algorithme d'éléction
      */
     public void demarrerElection();
+    /**
+     * Accepte le message
+     * @param m Message
+     */
+    public void accepteMessage(ElectionMessage m);
 }

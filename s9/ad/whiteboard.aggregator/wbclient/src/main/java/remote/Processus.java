@@ -8,7 +8,10 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import main.Client;
 import modele.Modele;
+import remote.election.ElectionFactory;
+import remote.election.IElection;
 
 /**
  * Classe permettant l'interfaçage tableau blanc / réseau
@@ -18,37 +21,40 @@ import modele.Modele;
 public class Processus
 {
 
-    /*
+    /**
      * Objet contenant les méthodes appelables par le serveur
      */
     private ProcessusRemoteImpl myRemote;
-    /*
+    /**
      * La liste des autres processus participants
      */
     private ArrayList<Integer> voisins;
-    /*
+    /**
      * Indique le processus maître
      */
     private int masterId;
-    /*
+    /**
      * Stub pour appeler les fcts de réseau
      */
     private IReseau reso;
-    /*
+    /**
+     * Algorithme pour l'élection
+     */
+    private IElection algo;
+    /**
      * Mutex pour le whiteboard
      */
     private int accesWB; // 0 : en attente , 1 : ok, 2 : refus
-    /*
+    /**
      * Le processus a accès aux données du wb
      */
     private Modele wb;
-    /*
-     * Constantes
-     */
-    public static final String SERVER_NAME = "Reso";
-
-    /*
+    
+    /**
      * Constructeur
+     * 
+     * @param host Hote du processus
+     * @param mod Modele du MVC
      */
     public Processus(String host, Modele mod)
     {
@@ -59,7 +65,7 @@ public class Processus
 
         try
         {
-            reso = (IReseau) Naming.lookup(host + "/" + SERVER_NAME);
+            reso = (IReseau) Naming.lookup(host + "/" + Client.SERVER_NAME);
         }
         catch (RemoteException e)
         {
@@ -73,7 +79,7 @@ public class Processus
         {
             e.printStackTrace();
         }
-
+        
     }
 
    /**
@@ -107,6 +113,18 @@ public class Processus
     }
 
     /**
+     * Retourne l'algorithme d'election
+     * 
+     * @return L'interface de l'algorithme d'election
+     */
+    public IElection getAlgo()
+    {
+        return algo;
+    }
+    
+    
+
+    /**
      * Connexion au serveur Reseau.
      * 
      * Le processus récupère un id via le serveur et déclare son stub à celui-ci
@@ -117,7 +135,9 @@ public class Processus
         try
         {
             int pId = reso.register();
-            this.myRemote = new ProcessusRemoteImpl(this, pId);
+            // Création de l'algo
+            this.algo = ElectionFactory.createAlgoElection(Client.ALGO, reso, myRemote, voisins, pId);
+            this.myRemote = new ProcessusRemoteImpl(this, pId, algo);
             this.reso.naming(pId, myRemote.getHost());
             // Récupération du WB actuel
             recupereWB();
@@ -254,7 +274,16 @@ public class Processus
             e1.printStackTrace();
         }
 
-        /* TODO : Thread */
+        /*
+         * TODO : Thread 
+         *
+         * Problème ici.
+         * 
+         * demande de SC au maitre deconnecté
+         * -> fonction recoitTimeout executée pendant le wait() de SC
+         * => illegalMonitorState exception...
+         * 
+         */
         // Attente de l'autorisation
         synchronized (this)
         {
@@ -294,7 +323,7 @@ public class Processus
 		        }
         	}
         }
-        
+       
         this.accesWB = 0;
     }
 
@@ -341,6 +370,11 @@ public class Processus
     	{
     		this.voisins.remove(new Integer(idFrom));
     	}
+        if(idFrom == this.masterId)
+        {
+            System.out.println("Le maître ne répond plus : Démarrage de l'éléction !");
+            this.algo.demarrerElection();
+        }
     }
     
     /**

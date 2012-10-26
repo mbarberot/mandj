@@ -62,7 +62,18 @@ public interface IProcessus extends Remote
     public void demanderSectionCritique(int idFrom) throws RemoteException;
     
     /**
-     * Signaler un timeout au client
+     * Reception d'un message lié aux éléctions
+     * 
+     * @param m Le message d'élection
+     * @throws RemoteException 
+     */
+    public void accepteMessageElection(Message m) throws RemoteException;
+    
+    /**
+     * Réception d'un timeout
+     * 
+     * @param idFrom ID du processus déconnecté
+     * @throws RemoteException 
      */
     public void signalerTimeout(int idFrom) throws RemoteException;
 }

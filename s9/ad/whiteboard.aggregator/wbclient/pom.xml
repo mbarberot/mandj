@@ -29,7 +29,6 @@
                             <goal>run</goal>
                         </goals>
                     </execution>
-
                 </executions>
             </plugin>
             <plugin>

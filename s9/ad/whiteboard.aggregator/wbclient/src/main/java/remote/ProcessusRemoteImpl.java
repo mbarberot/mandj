@@ -8,6 +8,9 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import main.Client;
+import remote.election.IElection;
+import remote.election.message.ElectionMessage;
 
 /**
  * Classe implémentant la couche réseau
@@ -30,17 +33,21 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
      */
     private String host;
     /**
+     * Algorithme d'élection à contacter pour les messages d'élection
+     */
+    private IElection algo;
+    /**
      * Thread pour le traitement de la liste des demandes d'accès à la SC (si
      * maître)
      */
     private ThreadTraitementSC traitementSC;
-    public static final String CLIENT_NAME = "Client";
-
-    protected ProcessusRemoteImpl(Processus myLocal, int nId) throws RemoteException
+    
+    protected ProcessusRemoteImpl(Processus myLocal, int nId, IElection algo) throws RemoteException
     {
         super();
         this.pId = nId;
         this.myLocal = myLocal;
+        this.algo = algo;
         this.traitementSC = null;
 
         /*
@@ -53,12 +60,10 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
 
         try
         {
-
             this.host = InetAddress.getLocalHost().getHostName();
-            //TODO println
-            System.out.println("Client enregistre a l'adresse " + host + "/" + CLIENT_NAME + this.pId);
+            System.out.println("Client enregistre a l'adresse " + host + "/" + Client.CLIENT_NAME + this.pId);
             String rebindURL = "rmi://" + InetAddress.getByName(host).getHostAddress();
-            Naming.rebind(rebindURL + "/" + CLIENT_NAME + this.pId, this);
+            Naming.rebind(rebindURL + "/" + Client.CLIENT_NAME + this.pId, this);
         }
         catch (UnknownHostException e)
         {
@@ -147,6 +152,20 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
             this.traitementSC.ajoutDemande(idFrom);
         }
     }
+    
+    /**
+     * Dérive la réception des messages liés aux elections sur l'objet dédié
+     * 
+     * @param m Le message
+     * @throws RemoteException 
+     */
+    public void accepteMessageElection(Message m) throws RemoteException
+    {
+        if(m instanceof ElectionMessage)
+        {
+            this.algo.accepteMessage((ElectionMessage)m);
+        }
+    }
 
     
     /**
@@ -169,7 +188,14 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
         return this.host;
     }
 
-	public void signalerTimeout(int idFrom) throws RemoteException {
-		this.myLocal.recoitTimeOut(idFrom);
-	}
+    /**
+     * Reception d'un timeout
+     * 
+     * @param idFrom ID du processus ne répondant pas
+     * @throws RemoteException 
+     */
+    public void signalerTimeout(int idFrom) throws RemoteException
+    {
+        this.myLocal.recoitTimeOut(idFrom);
+    }
 }
