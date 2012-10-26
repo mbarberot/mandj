@@ -10,7 +10,6 @@
     <name>Whiteboard's network management</name>
   
     <build>
-      
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -27,6 +26,9 @@
                                 <copy 
                                     file="src/main/java/remote/Message.java"
                                     todir="../wbclient/src/main/java/remote" />
+                                <copy 
+                                    file="src/main/java/remote/TypeMessage.java"
+                                    todir="../wbclient/src/main/java/remote" />
                             </tasks>
                         </configuration>
                         <goals>
@@ -36,7 +38,6 @@
 
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>rmic-maven-plugin</artifactId>
@@ -50,7 +51,6 @@
                     </execution>
                 </executions>
             </plugin>
-     
         </plugins>
 
         <pluginManagement>
