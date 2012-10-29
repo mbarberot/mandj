@@ -198,4 +198,8 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
     {
         this.myLocal.recoitTimeOut(idFrom);
     }
+
+	public void receptionWB(ArrayList<String> wb) throws RemoteException {
+		this.myLocal.recupereWB(wb);
+	}
 }

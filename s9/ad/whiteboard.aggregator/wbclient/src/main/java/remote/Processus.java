@@ -51,6 +51,11 @@ public class Processus
     private Modele wb;
     
     /**
+     * True => toutes les données d'initialisation sont là (voisins, maître et wb courant récupérés)
+     */
+    boolean initReady;
+    
+    /**
      * Constructeur
      * 
      * @param host Hote du processus
@@ -130,7 +135,7 @@ public class Processus
      * Le processus récupère un id via le serveur et déclare son stub à celui-ci
      * Il récupère au passage l'état actuel du WB
      */
-    public void connexionReso()
+    public synchronized void connexionReso()
     {
         try
         {
@@ -139,8 +144,20 @@ public class Processus
             this.algo = ElectionFactory.createAlgoElection(Client.ALGO, reso, myRemote, voisins, pId);
             this.myRemote = new ProcessusRemoteImpl(this, pId, algo);
             this.reso.naming(pId, myRemote.getHost());
-            // Récupération du WB actuel
-            recupereWB();
+            
+            
+            //recupereWB();
+            
+            while(!this.initReady)
+            {
+            	try {
+					wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+            }
+            
+            
         }
         catch (RemoteException e)
         {
@@ -177,6 +194,9 @@ public class Processus
                 //TODO println
                 System.out.println("Le maître est " + this.masterId);
             }
+            
+         // Récupération du WB actuel
+            this.reso.sendTo(this.myRemote.getId(), masterId, TypeMessage.DEMANDE_ETAT_WB, null);
 
         }
         catch (RemoteException e)
@@ -208,23 +228,18 @@ public class Processus
     /**
      * Récupère auprès du serveur l'état actuel du wb
      */
-    public void recupereWB()
-    {
-        try
-        {
-            //TODO println
-            System.out.println("Récupération d'un WB à jour");
-            
-            //
-            // TODO : faire la requête depuis le client et non depuis le serveur !
-            // 
-            this.wb.recoitWB(this.reso.getEtatWB(myRemote.getId()));
-        }
-        catch (RemoteException e)
-        {
-            e.printStackTrace();
-        }
-    }
+	public synchronized void recupereWB(ArrayList<String> wb) {
+
+		// TODO println
+		System.out.println("Récupération d'un WB à jour");
+
+		this.wb.recoitWB(wb);
+
+		// Le client est prêt à dessiner
+		this.initReady = true;
+		notifyAll();
+
+	}
 
     /**
      * Retourner l'état du WB sous forme de liste de String
@@ -255,10 +270,6 @@ public class Processus
      */
     public void envoiNouveauDessin(Forme nF)
     {
-        //
-        // TODO : discuter du problème potentiel (cf mail) ?
-        //
-        
         
         // Demander au maître l'accès au tableau
         // => sendTo (moi, maitre, ACCES_WB)
@@ -321,9 +332,8 @@ public class Processus
 		                }
 		            
 		        }
-        	}
+        	}        	
         }
-       
         this.accesWB = 0;
     }
 

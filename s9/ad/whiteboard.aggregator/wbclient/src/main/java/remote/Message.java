@@ -1,11 +1,13 @@
 package remote;
 
+import java.io.Serializable;
+
 /**
  * Classe définissant les types de messages
  *
  * @author Mathieu Barberot et Joan Racenet
  */
-public class Message
+public class Message implements Serializable
 {
     private int idFrom;
     private TypeMessage type;
