@@ -169,13 +169,21 @@ public class ThreadTraitementMessages extends Thread
                 }
                 catch (TimeOutException e)
                 {
+                	// Si le message relevant une exception était une demande de SC
+                	if(e.getMError().getType() == TypeMessage.DEMANDE_SC)
+                	{
+                       ajoutNouveauMessage(new Message(e.getMError().getIdTo(), 
+                    		   TypeMessage.REFUSER_ACCES_SC, e.getMError().getIdFrom(), null));
+
+                	}
+                	
                     Iterator mess = this.listeMessages.iterator();
 
                     while (mess.hasNext())
                     {
                         Message tmp = (Message) mess.next();
                         // Supprimer les messages destinés au client déconnecté
-                        if (tmp.getIdTo() == e.getProc())
+                        if (tmp.getIdTo() == e.getMError().getIdTo())
                         {
                             // Si des demandes de SC étaient dans la file, refuser la SC
                             if (tmp.getType() == TypeMessage.DEMANDE_SC)
@@ -215,22 +223,18 @@ public class ThreadTraitementMessages extends Thread
             if (dest == null)
             {
 
-                // Appeler méthode remote signalerTimeout
-                try
-                {
-                    if (m.getIdFrom() != m.getIdTo())
-                    {
-                        System.out.println(m.getIdTo() + " signale timeout à " + m.getIdFrom());
-                        this.listeProc.get(new Integer(m.getIdFrom())).signalerTimeout(m.getIdTo());
-                    }
-                }
-                catch (RemoteException e1)
-                {
-                    e1.printStackTrace();
-                }
-                throw new TimeOutException("Le client " + m.getIdTo()
-                        + " n'est plus connecté");
-
+				// Appeler méthode remote signalerTimeout
+				try {
+					if (m.getIdFrom() != m.getIdTo()) {
+						System.out.println(m.getIdTo() + " signale timeout à "
+								+ m.getIdFrom());
+						 this.listeProc.get(new Integer(m.getIdFrom())).signalerTimeout(m.getIdTo());
+					}
+				} catch (RemoteException e1) {
+					e1.printStackTrace();
+				}
+                throw new TimeOutException(m);
+                
             }
         }
 
@@ -296,7 +300,15 @@ public class ThreadTraitementMessages extends Thread
                     e.printStackTrace();
                 }
                 break;
-                
+            case DEMANDE_ETAT_WB:            	
+	            IProcessus demandeur = this.listeProc.get(new Integer(m.getIdFrom()));
+	            try {
+					ArrayList<String> currentWB = dest.getListeForme();
+					demandeur.receptionWB(currentWB);
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+            	
             case ELECTION:
                 try
                 {

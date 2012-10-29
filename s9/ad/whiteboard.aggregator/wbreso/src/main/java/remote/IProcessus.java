@@ -29,6 +29,13 @@ public interface IProcessus extends Remote
     public void receptionNouvelleForme(String data) throws RemoteException;
 
     /**
+     * Transmission d'une liste de formes (whiteboard) au processus
+     * @param wb
+     * @throws RemoteException
+     */
+    public void receptionWB(ArrayList<String> wb) throws RemoteException;
+    
+    /**
      * Notification de l'arrivée d'un nouveau processus
      * 
      * @param idNew ID du nouveau processus
