@@ -206,19 +206,7 @@ public class ThreadTraitementMessages extends Thread
 
         //TODO println
         System.out.println(m.toString() + " en traitement ");
-        /*
-         * Attente avant traitement
-         */
-        int desync_time = (int) (Math.random() * 5000 + 3000);
-        try
-        {
-            Thread.sleep(desync_time);
-        }
-        catch (InterruptedException e2)
-        {
-            e2.printStackTrace();
-        }
-
+        
         if (m.getType() != TypeMessage.CONNEXION_NOUVEAU_PROC)
         {
             dest = this.listeProc.get(m.getIdTo());
