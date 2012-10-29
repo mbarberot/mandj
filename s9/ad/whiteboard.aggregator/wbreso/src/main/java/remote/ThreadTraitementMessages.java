@@ -169,14 +169,14 @@ public class ThreadTraitementMessages extends Thread
                 }
                 catch (TimeOutException e)
                 {
-                	// Si le message relevant une exception était une demande de SC
-                	if(e.getMError().getType() == TypeMessage.DEMANDE_SC)
-                	{
-                       ajoutNouveauMessage(new Message(e.getMError().getIdTo(), 
-                    		   TypeMessage.REFUSER_ACCES_SC, e.getMError().getIdFrom(), null));
+                    // Si le message relevant une exception était une demande de SC
+                    if (e.getMError().getType() == TypeMessage.DEMANDE_SC)
+                    {
+                        ajoutNouveauMessage(new Message(e.getMError().getIdTo(),
+                                TypeMessage.REFUSER_ACCES_SC, e.getMError().getIdFrom(), null));
 
-                	}
-                	
+                    }
+
                     Iterator mess = this.listeMessages.iterator();
 
                     while (mess.hasNext())
@@ -214,7 +214,7 @@ public class ThreadTraitementMessages extends Thread
 
         //TODO println
         System.out.println(m.toString() + " en traitement ");
-        
+
         if (m.getType() != TypeMessage.CONNEXION_NOUVEAU_PROC)
         {
             dest = this.listeProc.get(m.getIdTo());
@@ -223,18 +223,22 @@ public class ThreadTraitementMessages extends Thread
             if (dest == null)
             {
 
-				// Appeler méthode remote signalerTimeout
-				try {
-					if (m.getIdFrom() != m.getIdTo()) {
-						System.out.println(m.getIdTo() + " signale timeout à "
-								+ m.getIdFrom());
-						 this.listeProc.get(new Integer(m.getIdFrom())).signalerTimeout(m.getIdTo());
-					}
-				} catch (RemoteException e1) {
-					e1.printStackTrace();
-				}
+                // Appeler méthode remote signalerTimeout
+                try
+                {
+                    if (m.getIdFrom() != m.getIdTo())
+                    {
+                        System.out.println(m.getIdTo() + " signale timeout à "
+                                + m.getIdFrom());
+                        this.listeProc.get(new Integer(m.getIdFrom())).signalerTimeout(m.getIdTo());
+                    }
+                }
+                catch (RemoteException e1)
+                {
+                    e1.printStackTrace();
+                }
                 throw new TimeOutException(m);
-                
+
             }
         }
 
@@ -256,7 +260,7 @@ public class ThreadTraitementMessages extends Thread
                     e.printStackTrace();
                 }
                 break;
-                
+
             case DEMANDE_SC:
                 try
                 {
@@ -267,7 +271,7 @@ public class ThreadTraitementMessages extends Thread
                     e.printStackTrace();
                 }
                 break;
-                
+
             case AUTORISER_ACCES_SC:
                 try
                 {
@@ -278,7 +282,7 @@ public class ThreadTraitementMessages extends Thread
                     e1.printStackTrace();
                 }
                 break;
-                
+
             case REFUSER_ACCES_SC:
                 try
                 {
@@ -289,7 +293,7 @@ public class ThreadTraitementMessages extends Thread
                     e1.printStackTrace();
                 }
                 break;
-                
+
             case ENVOI_NOUVELLE_FORME:
                 try
                 {
@@ -300,15 +304,18 @@ public class ThreadTraitementMessages extends Thread
                     e.printStackTrace();
                 }
                 break;
-            case DEMANDE_ETAT_WB:            	
-	            IProcessus demandeur = this.listeProc.get(new Integer(m.getIdFrom()));
-	            try {
-					ArrayList<String> currentWB = dest.getListeForme();
-					demandeur.receptionWB(currentWB);
-				} catch (RemoteException e) {
-					e.printStackTrace();
-				}
-            	
+            case DEMANDE_ETAT_WB:
+                IProcessus demandeur = this.listeProc.get(new Integer(m.getIdFrom()));
+                try
+                {
+                    ArrayList<String> currentWB = dest.getListeForme();
+                    demandeur.receptionWB(currentWB);
+                }
+                catch (RemoteException e)
+                {
+                    e.printStackTrace();
+                }
+
             case ELECTION:
                 try
                 {
