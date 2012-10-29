@@ -1,5 +1,6 @@
 package remote;
 
+import remote.messages.TypeMessage;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;

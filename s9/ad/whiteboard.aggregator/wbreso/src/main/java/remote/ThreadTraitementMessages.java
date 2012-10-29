@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import remote.messages.Message;
+import remote.messages.TypeMessage;
 
 public class ThreadTraitementMessages extends Thread
 {
@@ -312,6 +312,8 @@ public class ThreadTraitementMessages extends Thread
             case ELECTION:
                 try
                 {
+                    // TODO : Println
+                    System.out.println("-------------------> AccepteMessageElection");
                     dest.accepteMessageElection(m);
                 }
                 catch (RemoteException ex)

@@ -24,11 +24,11 @@
                                     file="src/main/java/remote/IReseau.java"
                                     todir="../wbclient/src/main/java/remote" />
                                 <copy 
-                                    file="src/main/java/remote/Message.java"
-                                    todir="../wbclient/src/main/java/remote" />
+                                    file="src/main/java/remote/messages/Message.java"
+                                    todir="../wbclient/src/main/java/remote/messages" />
                                 <copy 
-                                    file="src/main/java/remote/TypeMessage.java"
-                                    todir="../wbclient/src/main/java/remote" />
+                                    file="src/main/java/remote/messages/TypeMessage.java"
+                                    todir="../wbclient/src/main/java/remote/messages" />
                             </tasks>
                         </configuration>
                         <goals>

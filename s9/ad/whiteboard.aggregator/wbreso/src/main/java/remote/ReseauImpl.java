@@ -1,5 +1,7 @@
 package remote;
 
+import remote.messages.TypeMessage;
+import remote.messages.Message;
 import java.net.InetAddress;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
