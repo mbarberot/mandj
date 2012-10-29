@@ -1,5 +1,6 @@
 package remote;
 
+import remote.messages.Message;
 import remote.messages.TypeMessage;
 import forme.Forme;
 import forme.FormeFactory;
@@ -152,9 +153,7 @@ public class Processus
             this.myRemote = new ProcessusRemoteImpl(this, pId, algo);
             this.reso.naming(pId, myRemote.getHost());
             
-            
-            //recupereWB();
-            
+                        
             while(!this.initReady)
             {
             	try {
@@ -175,7 +174,7 @@ public class Processus
     /**
      * Recupere la liste des voisins connus + récupère le processus maitre
      */
-    public void recupereVoisins()
+    public void recupereVoisins() //TODO : bloquer si élection en cours
     {
         try
         {
@@ -202,8 +201,8 @@ public class Processus
                 System.out.println("Le maître est " + this.masterId);
             }
             
-         // Récupération du WB actuel
-            this.reso.sendTo(this.myRemote.getId(), masterId, TypeMessage.DEMANDE_ETAT_WB, null);
+         // Récupération du WB actuel => TODO : bloquer si
+            this.reso.sendTo(new Message(this.myRemote.getId(), TypeMessage.DEMANDE_ETAT_WB, masterId, null));
 
         }
         catch (RemoteException e)
@@ -285,7 +284,7 @@ public class Processus
         //			- Sinon => la demande d'accès au WB est placée en file d'attente
         try
         {
-            this.reso.sendTo(this.myRemote.getId(), this.masterId, TypeMessage.DEMANDE_SC, null);
+            this.reso.sendTo(new Message(this.myRemote.getId(),  TypeMessage.DEMANDE_SC, this.masterId, null));
         }
         catch (RemoteException e1)
         {
@@ -321,7 +320,7 @@ public class Processus
 		            System.out.println("Envoi de la forme à " + idTo);
 		                try
 		                {
-		                    reso.sendTo(myRemote.getId(), idTo, TypeMessage.ENVOI_NOUVELLE_FORME, nF.makeItSendable());
+		                    reso.sendTo(new Message(myRemote.getId(),TypeMessage.ENVOI_NOUVELLE_FORME, idTo, nF.makeItSendable()));
 		                }
 		                catch (RemoteException e)
 		                {

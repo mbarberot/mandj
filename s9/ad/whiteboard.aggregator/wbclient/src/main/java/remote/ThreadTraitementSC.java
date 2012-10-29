@@ -1,5 +1,6 @@
 package remote;
 
+import remote.messages.Message;
 import remote.messages.TypeMessage;
 import java.rmi.RemoteException;
 import java.util.Collections;
@@ -86,7 +87,7 @@ public class ThreadTraitementSC extends Thread
                 {
                     try
                     {
-                        stub.sendTo(masterId, proc, TypeMessage.AUTORISER_ACCES_SC, null);
+                        stub.sendTo(new Message(masterId, TypeMessage.AUTORISER_ACCES_SC, proc, null));
                     }
                     catch (RemoteException e)
                     {
