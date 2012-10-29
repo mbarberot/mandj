@@ -336,7 +336,10 @@ public class Processus
     {
         try
         {
-            wb.recoitDessin(FormeFactory.createForme(forme));
+        	synchronized(wb)
+        	{
+        		wb.recoitDessin(FormeFactory.createForme(forme));
+        	}
         }
         catch (Exception ex)
         {
