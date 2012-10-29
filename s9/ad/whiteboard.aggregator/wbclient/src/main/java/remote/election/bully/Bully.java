@@ -3,16 +3,15 @@ package remote.election.bully;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import remote.IProcessus;
 import remote.IReseau;
-import remote.Message;
-import remote.TypeMessage;
+import remote.Processus;
+import remote.messages.TypeMessage;
 import remote.election.IElection;
-import remote.election.message.ElectionAlgorithm;
-import remote.election.message.ElectionMessage;
-import remote.election.message.ElectionTypeMessage;
+import remote.messages.ElectionAlgorithm;
+import remote.messages.ElectionMessage;
+import remote.messages.ElectionTypeMessage;
+import remote.messages.Message;
 
 /**
  * Implémentation de l'algorithme d'élection de Bully
@@ -25,7 +24,7 @@ public class Bully extends UnicastRemoteObject implements IElection, IBully
     /**
      * Temps d'attente
      */
-    private static final long TEMPO = 1000;
+    private static final long TEMPO = 30000;
     /**
      * Interface reseau
      */
@@ -59,9 +58,9 @@ public class Bully extends UnicastRemoteObject implements IElection, IBully
      */
     private boolean newCoor;
     /**
-     * Liste des voisins
+     * Processus contenant
      */
-    private ArrayList<Integer> voisins;
+    private Processus parent;
 
     /**
      * Constructeur
@@ -71,21 +70,19 @@ public class Bully extends UnicastRemoteObject implements IElection, IBully
      * @param id ID du processus
      * @throws RemoteException
      */
-    public Bully(IReseau reso, IProcessus processus, ArrayList<Integer> voisins, int id) throws RemoteException
+    public Bully(IReseau reso, IProcessus processus, Processus parent, int id) throws RemoteException
     {
         super();
 
         // Couches de communication
         this.reso = reso;           // ~= Send
         this.processus = processus; // ~= Recv
-
-        this.nbVoisins = voisins.size();
+        this.parent = parent;
         this.id = id;
         this.election = false;
         this.ok = false;
         this.newCoor = false;
-        this.voisins = voisins;
-        
+
         // TODO : println
         System.out.println("Algo Bully - Prêt");
 
@@ -95,24 +92,26 @@ public class Bully extends UnicastRemoteObject implements IElection, IBully
     {
         // TODO : println
         System.out.println("[ELECTION] Initialisation");
-        
+
         this.election = true;
         this.ok = false;
         this.newCoor = false;
 
         ElectionMessage em;
-
+        
+        ArrayList<Integer> voisins = this.parent.getVoisins();
+        
         // Propagation de l'election aux voisins 
         for (Integer j : voisins)
         {
-            if (this.id-1 < j.intValue())
+            if (this.id < j.intValue())
             {
                 try
                 {
                     // TODO : println
-                    System.out.println("Envoie ELECTION au processus "+j);
+                    System.out.println("Envoie ELECTION au processus " + j);
                     em = new ElectionMessage(this.id, j.intValue(), null, ElectionAlgorithm.BULLY, ElectionTypeMessage.BULLY_ELECTION);
-                    reso.sendTo(this.id, j.intValue(), TypeMessage.ELECTION, null);
+                    reso.sendTo(this.id, j.intValue(), TypeMessage.ELECTION, em);
                 }
                 catch (RemoteException ex)
                 {
@@ -126,55 +125,65 @@ public class Bully extends UnicastRemoteObject implements IElection, IBully
         // Attente de timeout ou d'acknowledge
         // = while(!ok || TEMPO)
         //
-        try
-        {
-            // TODO : println
-            System.out.println("[ELECTION] Attente d'un message ACK");
-            this.wait(TEMPO);
-        }
-        catch (InterruptedException ex)
-        {
-            ex.printStackTrace();
-        }
-
-
-        if (ok)
+        synchronized (this)
         {
             try
             {
                 // TODO : println
-                System.out.println("[ELECTION] Attente du nouveau maitre");
-                this.wait();
+                System.out.println("[ELECTION] Attente d'un message ACK");
+                this.wait(TEMPO);
             }
             catch (InterruptedException ex)
             {
                 ex.printStackTrace();
             }
         }
-        else
+
+
+        if (ok)
         {
-            // Diffusion du nouveau coordinateur
-            this.idCoor = this.id;
-            for (Integer j : voisins)
+            synchronized (this)
             {
                 try
                 {
                     // TODO : println
-                    System.out.println("[ELECTION] Victoire !");
-                    // TODO : println
-                    System.out.println("[ELECTION] Diffusion de mon ID aux autres processus");
-                    
-                    em = new ElectionMessage(this.id, j.intValue(), ElectionAlgorithm.BULLY, ElectionTypeMessage.BULLY_COOR);
-                    reso.sendTo(this.id, j.intValue(), TypeMessage.ELECTION, em);
+                    System.out.println("[ELECTION] Attente du nouveau maitre");
+                    this.wait();
                 }
-                catch (RemoteException ex)
+                catch (InterruptedException ex)
                 {
                     ex.printStackTrace();
+                }
+            }
+        }
+        else
+        {
+            // Diffusion du nouveau coordinateur
+            // TODO : println
+            System.out.println("[ELECTION] Victoire !");
+            this.idCoor = this.id;
+            for (Integer j : voisins)
+            {
+                if(j.intValue() != this.id)
+                {
+                    try
+                    {
+                        // TODO : println
+                        System.out.println("[ELECTION] Envoi ID nouveau maitre("+this.idCoor+") à " + j.intValue());
+
+                        em = new ElectionMessage(this.id, j.intValue(), ElectionAlgorithm.BULLY, ElectionTypeMessage.BULLY_COOR);
+                        reso.sendTo(this.id, j.intValue(), TypeMessage.ELECTION, em);
+                    }
+                    catch (RemoteException ex)
+                    {
+                        ex.printStackTrace();
+                    }
                 }
 
             }
         }
-        
+
+
         // TODO : println
         System.out.println("[ELECTION] Fin de l'élection");
         this.election = false;
@@ -186,8 +195,13 @@ public class Bully extends UnicastRemoteObject implements IElection, IBully
      *
      * @param m Le message
      */
-    public void accepteMessage(ElectionMessage m)
+    public void accepteMessage(Message m)
     {
+        // TODO : Println
+        System.out.println("[ELECTION] Message reçu : " + m.toString() + " - is instanceof ElectionMessage = " + (m instanceof ElectionMessage));
+        
+        
+        /*
         switch (m.getElectionMsg())
         {
             case BULLY_ELECTION:
@@ -199,7 +213,7 @@ public class Bully extends UnicastRemoteObject implements IElection, IBully
             case BULLY_COOR:
                 this.accepteCoor(m.getIdFrom());
                 break;
-        }
+        }*/
     }
 
     /**
@@ -212,7 +226,7 @@ public class Bully extends UnicastRemoteObject implements IElection, IBully
         try
         {
             // TODO : println
-            System.out.println("[ELECTION] Message ELECTION reçu du processus "+j);
+            System.out.println("[ELECTION] Message ELECTION reçu du processus " + j);
             reso.sendTo(this.id, j, TypeMessage.ELECTION,
                     new ElectionMessage(this.id, j, ElectionAlgorithm.BULLY, ElectionTypeMessage.BULLY_ACK));
         }
@@ -233,10 +247,13 @@ public class Bully extends UnicastRemoteObject implements IElection, IBully
      */
     public void accepteAck()
     {
-        // TODO : println
-        System.out.println("[ELECTION] ACK reçu");
-        this.ok = true;
-        this.notifyAll();
+        synchronized (this)
+        {
+            // TODO : println
+            System.out.println("[ELECTION] ACK reçu");
+            this.ok = true;
+            this.notifyAll();
+        }
     }
 
     /**
@@ -246,10 +263,13 @@ public class Bully extends UnicastRemoteObject implements IElection, IBully
      */
     public void accepteCoor(int j)
     {
-        // TODO : println
-        System.out.println("[ELECTION] NEWCOOR reçu, le nouveau maitre est "+j);
-        this.idCoor = j;
-        this.newCoor = true;
-        this.notifyAll();
+        synchronized (this)
+        {
+            // TODO : println
+            System.out.println("[ELECTION] NEWCOOR reçu, le nouveau maitre est " + j);
+            this.idCoor = j;
+            this.newCoor = true;
+            this.notifyAll();
+        }
     }
 }

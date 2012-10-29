@@ -1,5 +1,6 @@
 package remote;
 
+import remote.messages.TypeMessage;
 import forme.Forme;
 import forme.FormeFactory;
 import java.net.MalformedURLException;
@@ -126,6 +127,12 @@ public class Processus
     {
         return algo;
     }
+
+    public ArrayList<Integer> getVoisins()
+    {
+        return voisins;
+    }
+    
     
     
 
@@ -141,7 +148,7 @@ public class Processus
         {
             int pId = reso.register();
             // Création de l'algo
-            this.algo = ElectionFactory.createAlgoElection(Client.ALGO, reso, myRemote, voisins, pId);
+            this.algo = ElectionFactory.createAlgoElection(Client.ALGO, reso, myRemote, this, pId);
             this.myRemote = new ProcessusRemoteImpl(this, pId, algo);
             this.reso.naming(pId, myRemote.getHost());
             
@@ -285,16 +292,6 @@ public class Processus
             e1.printStackTrace();
         }
 
-        /*
-         * TODO : Thread 
-         *
-         * Problème ici.
-         * 
-         * demande de SC au maitre deconnecté
-         * -> fonction recoitTimeout executée pendant le wait() de SC
-         * => illegalMonitorState exception...
-         * 
-         */
         // Attente de l'autorisation
         synchronized (this)
         {

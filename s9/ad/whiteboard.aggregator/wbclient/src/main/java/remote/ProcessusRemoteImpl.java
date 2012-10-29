@@ -1,5 +1,6 @@
 package remote;
 
+import remote.messages.Message;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
@@ -10,7 +11,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import main.Client;
 import remote.election.IElection;
-import remote.election.message.ElectionMessage;
+import remote.messages.ElectionMessage;
 
 /**
  * Classe implémentant la couche réseau
@@ -161,10 +162,7 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
      */
     public void accepteMessageElection(Message m) throws RemoteException
     {
-        if(m instanceof ElectionMessage)
-        {
-            this.algo.accepteMessage((ElectionMessage)m);
-        }
+        this.algo.accepteMessage(m);
     }
 
     

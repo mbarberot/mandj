@@ -23,6 +23,15 @@
                                 <copy 
                                     file="src/main/java/remote/IProcessus.java"
                                     todir="../wbreso/src/main/java/remote" />
+                                <copy 
+                                    file="src/main/java/remote/messages/ElectionMessage.java"
+                                    todir="../wbreso/src/main/java/remote/messages" />
+                                <copy 
+                                    file="src/main/java/remote/messages/ElectionTypeMessage.java"
+                                    todir="../wbreso/src/main/java/remote/messages" />
+                                <copy 
+                                    file="src/main/java/remote/messages/ElectionAlgorithm.java"
+                                    todir="../wbreso/src/main/java/remote/messages" />
                             </tasks>
                         </configuration>
                         <goals>

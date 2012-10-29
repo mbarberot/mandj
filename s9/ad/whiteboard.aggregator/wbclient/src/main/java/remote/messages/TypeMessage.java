@@ -1,4 +1,4 @@
-package remote;
+package remote.messages;
 
 /**
  * Les différents types de message.

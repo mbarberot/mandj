@@ -1,7 +1,6 @@
 package remote.election;
 
-import remote.Message;
-import remote.election.message.ElectionMessage;
+import remote.messages.Message;
 
 /**
  * Interface mère des algorithmes d'élection
@@ -17,5 +16,5 @@ public interface IElection
      * Accepte le message
      * @param m Message
      */
-    public void accepteMessage(ElectionMessage m);
+    public void accepteMessage(Message m);
 }
