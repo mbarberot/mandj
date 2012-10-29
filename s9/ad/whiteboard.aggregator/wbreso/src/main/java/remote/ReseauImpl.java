@@ -116,14 +116,14 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau {
 	 * @throws RemoteException
 	 * @throws TimeOutException
 	 */
-	public void sendTo(int idFrom, int idTo, TypeMessage msg, Object data)
+	public void sendTo(Message m)
 			throws RemoteException {
 		/*
          * Attente avant traitement
          */
 		
         int desync_time = (int) (Math.random() * 7000 + 3000);
-        System.out.println("Message de " + idFrom + " à " + idTo + " de type " + msg 
+        System.out.println("Message de " + m.getIdFrom() + " à " + m.getIdTo() + " de type " + m.getType() 
         		+ " en attente pour " + desync_time + "sec");
         try
         {
@@ -134,7 +134,7 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau {
             e2.printStackTrace();
         }
 
-		this.messages.ajoutNouveauMessage(new Message(idFrom,msg,idTo,data));
+		this.messages.ajoutNouveauMessage(m);
 
 	}
 

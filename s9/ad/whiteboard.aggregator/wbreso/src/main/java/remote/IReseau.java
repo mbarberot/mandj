@@ -1,5 +1,6 @@
 package remote;
 
+import remote.messages.Message;
 import remote.messages.TypeMessage;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -48,7 +49,7 @@ public interface IReseau extends Remote
      * @throws RemoteException
      * @throws TimeOutException 
      */
-    public void sendTo(int idFrom, int idTo, TypeMessage msg, Object data) throws RemoteException;
+    public void sendTo(Message m) throws RemoteException;
 
     /**
      * Méthode de récupération des processus voisins 
