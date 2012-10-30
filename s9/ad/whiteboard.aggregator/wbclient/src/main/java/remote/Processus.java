@@ -109,6 +109,13 @@ public class Processus
         return this.masterId;
     }
 
+    public void setMaster(int masterId)
+    {
+        this.masterId = masterId;
+    }
+
+    
+    
     /**
      * Retourne l'interface du serveur Reseau
      * 
