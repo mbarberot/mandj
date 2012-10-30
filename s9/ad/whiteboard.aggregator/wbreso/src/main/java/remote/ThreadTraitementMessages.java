@@ -313,6 +313,7 @@ public class ThreadTraitementMessages extends Thread
                 {
                     e.printStackTrace();
                 }
+                break;
 
             case ELECTION:
                 try
