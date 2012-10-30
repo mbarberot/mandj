@@ -13,6 +13,7 @@ public class TimeOutException extends Exception
 
     public TimeOutException(Message m)
     {
+    	super("Erreur sur le message " + m.toString());
         this.mError = m;
     }
 
