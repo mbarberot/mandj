@@ -43,7 +43,7 @@ public class Modele
             //
             // TODO : Passer la machine distante dans les paramètres du main
             //
-            String host = "rmi://" + InetAddress.getByName(Client.MACHINE_DISTANTE).getHostAddress();
+            String host = "//" + InetAddress.getByName(Client.MACHINE_DISTANTE).getHostAddress();
             this.proc = new Processus(host, this);
             proc.connexionReso();
         }

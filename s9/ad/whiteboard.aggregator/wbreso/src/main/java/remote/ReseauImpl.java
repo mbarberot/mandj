@@ -66,12 +66,10 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau {
 	 *            Hote du processus
 	 * @throws RemoteException
 	 */
-	public void naming(int idProc, String host) throws RemoteException {
+	public void naming(int idProc) throws RemoteException {
 		try {
 
-			IProcessus proc = (IProcessus) Naming.lookup("rmi://"
-					+ InetAddress.getByName(host).getHostAddress() + "/"
-					+ Reso.CLIENT_NAME + idProc);
+			IProcessus proc = (IProcessus) Naming.lookup(Reso.CLIENT_NAME + idProc);
 			
 			messages.ajoutNouveauClient(idProc, proc);
 

@@ -150,9 +150,8 @@ public class Processus
             int pId = reso.register();
             // Création de l'algo
             this.algo = ElectionFactory.createAlgoElection(Client.ALGO, reso, myRemote, this, pId);
-            this.myRemote = new ProcessusRemoteImpl(this, pId, algo);
-            this.reso.naming(pId, myRemote.getHost());
-            
+            this.myRemote = new ProcessusRemoteImpl(this, pId, algo, Client.MACHINE_DISTANTE);
+            this.reso.naming(pId);            
                         
             while(!this.initReady)
             {

@@ -1,17 +1,18 @@
 package remote;
 
-import remote.messages.Message;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+
 import main.Client;
 import remote.election.IElection;
-import remote.messages.ElectionMessage;
+import remote.messages.Message;
 
 /**
  * Classe implémentant la couche réseau
@@ -30,10 +31,6 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
      */
     private Processus myLocal;
     /**
-     * Adresse de l'hôte local
-     */
-    private String host;
-    /**
      * Algorithme d'élection à contacter pour les messages d'élection
      */
     private IElection algo;
@@ -43,7 +40,7 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
      */
     private ThreadTraitementSC traitementSC;
     
-    protected ProcessusRemoteImpl(Processus myLocal, int nId, IElection algo) throws RemoteException
+    protected ProcessusRemoteImpl(Processus myLocal, int nId, IElection algo, String host) throws RemoteException
     {
         super();
         this.pId = nId;
@@ -51,29 +48,15 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
         this.algo = algo;
         this.traitementSC = null;
 
-        /*
-         * Enregistrement dans le rmiregistry
-         */
-        if (LocateRegistry.getRegistry() == null)
-        {
-            LocateRegistry.createRegistry(1099);
-        }
+		/*
+		 * Enregistrement dans le rmiregistry distant
+		 */
+		Registry reg = LocateRegistry.getRegistry(host);
 
-        try
-        {
-            this.host = InetAddress.getLocalHost().getHostName();
-            System.out.println("Client enregistre a l'adresse " + host + "/" + Client.CLIENT_NAME + this.pId);
-            String rebindURL = "rmi://" + InetAddress.getByName(host).getHostAddress();
-            Naming.rebind(rebindURL + "/" + Client.CLIENT_NAME + this.pId, this);
-        }
-        catch (UnknownHostException e)
-        {
-            e.printStackTrace();
-        }
-        catch (MalformedURLException e)
-        {
-            e.printStackTrace();
-        }
+		System.out.println("Client enregistre a l'adresse " + host + "/"
+				+ Client.CLIENT_NAME + this.pId);
+		reg.rebind(Client.CLIENT_NAME + this.pId, this);
+
 
     }
 
@@ -181,16 +164,6 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
     public int getId()
     {
         return this.pId;
-    }
-
-    /**
-     * Retourne l'hote du processus
-     * 
-     * @return Hote du processus
-     */
-    public String getHost()
-    {
-        return this.host;
     }
 
     /**
