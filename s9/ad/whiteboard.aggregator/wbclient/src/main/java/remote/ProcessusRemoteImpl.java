@@ -108,7 +108,14 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
      */
     public void signaleNouveauVoisin(int idNew) throws RemoteException
     {
-        this.myLocal.recupereVoisins();
+    	// => un nouveau voisin est arrivé
+    	if(idNew != this.getId())
+    	{
+    		this.myLocal.ajoutNouveauVoisin(idNew);
+    	}else // => le processus local vient d'arriver (récupération du WB, des voisins, du maître)
+    	{
+    		this.myLocal.recupereVoisins();
+    	}
     }
 
     /**

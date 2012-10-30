@@ -201,7 +201,7 @@ public class Processus
                 System.out.println("Le maître est " + this.masterId);
             }
             
-         // Récupération du WB actuel => TODO : bloquer si
+         // Récupération du WB actuel
             this.reso.sendTo(new Message(this.myRemote.getId(), TypeMessage.DEMANDE_ETAT_WB, masterId, null));
 
         }

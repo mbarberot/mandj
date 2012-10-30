@@ -60,15 +60,6 @@ public interface IReseau extends Remote
     public ArrayList<Integer> getVoisins() throws RemoteException;
 
     /**
-     * Méthode de récupération des formes
-     * 
-     * @param idFrom ID du processus demandeur
-     * @return Liste des formes à dessiner
-     * @throws RemoteException 
-     */
-    public ArrayList<String> getEtatWB(int idFrom) throws RemoteException;
-
-    /**
      * Retourne l'identifiant du processus maitre
      * 
      * @return ID du processus maitre

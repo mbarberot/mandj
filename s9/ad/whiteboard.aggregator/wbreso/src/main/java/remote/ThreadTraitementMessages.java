@@ -56,10 +56,13 @@ public class ThreadTraitementMessages extends Thread
      */
     public void ajoutNouveauClient(int pId, IProcessus proc)
     {
-        if (!listeProc.containsKey(pId))
-        {
-            listeProc.put(new Integer(pId), proc);
-        }
+    	synchronized(listeProc)
+    	{
+	        if (!listeProc.containsKey(pId))
+	        {
+	            listeProc.put(new Integer(pId), proc);
+	        }
+    	}
     }
 
     /*
@@ -67,7 +70,10 @@ public class ThreadTraitementMessages extends Thread
      */
     public void suppressionClient(int pId)
     {
-        listeProc.remove(new Integer(pId));
+    	synchronized(listeProc)
+    	{
+    		listeProc.remove(new Integer(pId));
+    	}
     }
 
     /*
@@ -77,11 +83,14 @@ public class ThreadTraitementMessages extends Thread
     {
         ArrayList<Integer> lClient = new ArrayList<Integer>();
 
-        Iterator<Integer> iter = this.listeProc.keySet().iterator();
-
-        while (iter.hasNext())
+        synchronized(listeProc)
         {
-            lClient.add(iter.next());
+	        Iterator<Integer> iter = this.listeProc.keySet().iterator();
+	
+	        while (iter.hasNext())
+	        {
+	            lClient.add(iter.next());
+	        }
         }
 
         return lClient;
@@ -92,52 +101,27 @@ public class ThreadTraitementMessages extends Thread
      */
     public int getMaster()
     {
-        for (int proc : this.listeProc.keySet())
-        {
-            try
-            {
-                if (this.listeProc.get(proc).isMaster())
-                {
-                    return proc;
-                }
-            }
-            catch (RemoteException e)
-            {
-                e.printStackTrace();
-            }
-        }
+    	synchronized(listeProc)
+    	{
+	        for (int proc : this.listeProc.keySet())
+	        {
+	            try
+	            {
+	                if (this.listeProc.get(proc).isMaster())
+	                {
+	                    return proc;
+	                }
+	            }
+	            catch (RemoteException e)
+	            {
+	                e.printStackTrace();
+	            }
+	        }
+    	}
         return -1;
     }
 
-    /*
-     * Renvoie le tableau blanc à jour
-     */
-    public ArrayList<String> getWB(int idFrom) throws RemoteException
-    {
-        //
-        // TODO
-        // - récupérer la version du maître ?
-        // - maj des commentaires (voisin = forme) ?
-        // - pourquoi est-ce dans le serveur Réseau ?
-        // le processus devrait effectuer cette démarche seul.
-        //
-        ArrayList<String> res = new ArrayList<String>();
-        ArrayList<String> tmp = null;
-        for (Integer i : this.listeProc.keySet())
-        {
-            if (i != idFrom)
-            {
-                tmp = this.listeProc.get(i).getListeForme();
-                if (tmp.size() > res.size())
-                {
-                    res = tmp;
-                }
-            }
-        }
-
-        return res;
-    }
-
+    
     /*
      * Boucle de traitement principal
      */

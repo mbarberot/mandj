@@ -148,19 +148,6 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau {
 		return this.messages.getListeClients();
 	}
 
-	/**
-	 * Recupère la liste des voisins la plus à jour auprès des processus
-	 * participants
-	 * 
-	 * @param idFrom
-	 *            ID du processus demandeur
-	 * @return La liste des formes
-	 * @throws RemoteException
-	 */
-	public ArrayList<String> getEtatWB(int idFrom) throws RemoteException {
-		
-		return this.messages.getWB(idFrom);
-	}
 
 
 	/**
