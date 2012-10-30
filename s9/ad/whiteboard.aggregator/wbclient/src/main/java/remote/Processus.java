@@ -141,6 +141,10 @@ public class Processus
         return voisins;
     }
     
+    public int getId()
+    {
+    	return this.myRemote.getId();
+    }
     
     
 
@@ -403,5 +407,13 @@ public class Processus
         System.out.println("Accès à la SC autorisé");
         this.accesWB = autorisation;
         notifyAll();
+    }
+    
+    /**
+     * Si le client local devient maître => lancer le traitement de la SC
+     */
+    public void startThreadSC()
+    {
+    	this.myRemote.devientMaster();
     }
 }

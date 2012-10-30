@@ -159,6 +159,13 @@ public class Bully extends UnicastRemoteObject implements IElection, IBully
             System.out.println("[ELECTION] Victoire !");
             this.idCoor = this.id;
             this.parent.setMaster(idCoor);
+            
+            //TODO démarrer le thread de SC
+            if(idCoor == this.parent.getId())
+            {
+            	this.parent.startThreadSC();
+            }
+            
             for (Integer j : voisins)
             {
                 if(j.intValue() != this.id)

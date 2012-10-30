@@ -122,7 +122,7 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau {
 		
         int desync_time = (int) (Math.random() * 7000 + 3000);
         System.out.println("Message de " + m.getIdFrom() + " à " + m.getIdTo() + " de type " + m.getType() 
-        		+ " en attente pour " + desync_time + "sec");
+        		+ " en attente pour " + desync_time + " ms");
         try
         {
             Thread.sleep(desync_time);

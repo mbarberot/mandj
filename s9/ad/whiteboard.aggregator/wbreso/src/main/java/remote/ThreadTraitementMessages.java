@@ -70,10 +70,9 @@ public class ThreadTraitementMessages extends Thread
      */
     public void suppressionClient(int pId)
     {
-    	synchronized(listeProc)
-    	{
+    		
     		listeProc.remove(new Integer(pId));
-    	}
+
     }
 
     /*
@@ -169,11 +168,11 @@ public class ThreadTraitementMessages extends Thread
                         // Supprimer les messages destinés au client déconnecté
                         if (tmp.getIdTo() == e.getMError().getIdTo())
                         {
-                            // Si des demandes de SC étaient dans la file, refuser la SC
+                            /*// Si des demandes de SC étaient dans la file, refuser la SC
                             if (tmp.getType() == TypeMessage.DEMANDE_SC)
                             {
                                 ajoutNouveauMessage(new Message(tmp.getIdTo(), TypeMessage.REFUSER_ACCES_SC, tmp.getIdFrom(), null));
-                            }
+                            }*/
 
                             mess.remove();
                         }
@@ -181,7 +180,6 @@ public class ThreadTraitementMessages extends Thread
 
 
                     }
-
                     e.printStackTrace();
                 }
             }
@@ -207,6 +205,7 @@ public class ThreadTraitementMessages extends Thread
             if (dest == null)
             {
 
+            	System.out.println("TIMEOUUUUUUUUUT !");
                 // Appeler méthode remote signalerTimeout
                 try
                 {
