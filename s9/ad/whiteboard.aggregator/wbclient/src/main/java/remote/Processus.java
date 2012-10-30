@@ -234,18 +234,19 @@ public class Processus
     /**
      * Récupère auprès du serveur l'état actuel du wb
      */
-	public synchronized void recupereWB(ArrayList<String> wb) {
+    public synchronized void recupereWB(ArrayList<String> wb)
+    {
 
-		// TODO println
-		System.out.println("Récupération d'un WB à jour");
+        // TODO println
+        System.out.println("Récupération d'un WB à jour");
 
-		this.wb.recoitWB(wb);
+        this.wb.recoitWB(wb);
 
-		// Le client est prêt à dessiner
-		this.initReady = true;
-		notifyAll();
+        // Le client est prêt à dessiner
+        this.initReady = true;
+        notifyAll();
 
-	}
+    }
 
     /**
      * Retourner l'état du WB sous forme de liste de String

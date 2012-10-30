@@ -250,9 +250,7 @@ public class ThreadTraitementMessages extends Thread
                     // broadcast
                     for (Integer dests : this.listeProc.keySet())
                     {
-                        this.listeProc.get(dests).signaleNouveauVoisin(
-                                m.getIdFrom());
-
+                        this.listeProc.get(dests).signaleNouveauVoisin(m.getIdFrom());
                     }
                 }
                 catch (RemoteException e)
@@ -319,8 +317,6 @@ public class ThreadTraitementMessages extends Thread
             case ELECTION:
                 try
                 {
-                    // TODO : Println
-                    System.out.println("-------------------> AccepteMessageElection");
                     dest.accepteMessageElection(m);
                 }
                 catch (RemoteException ex)
