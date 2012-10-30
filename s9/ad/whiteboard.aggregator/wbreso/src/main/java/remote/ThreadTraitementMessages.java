@@ -152,6 +152,21 @@ public class ThreadTraitementMessages extends Thread
                 }
                 catch (TimeOutException e)
                 {
+                    // Appeler méthode remote signalerTimeout
+                    try
+                    {
+                        if (m.getIdFrom() != m.getIdTo())
+                        {
+                            System.out.println(m.getIdTo() + " signale timeout à "
+                                    + m.getIdFrom());
+                            this.listeProc.get(new Integer(m.getIdFrom())).signalerTimeout(m.getIdTo());
+                        }
+                    }
+                    catch (RemoteException e1)
+                    {
+                        e1.printStackTrace();
+                    }
+
                     // Si le message relevant une exception était une demande de SC
                     if (e.getMError().getType() == TypeMessage.DEMANDE_SC)
                     {
@@ -204,24 +219,7 @@ public class ThreadTraitementMessages extends Thread
             // Gestion du timeout
             if (dest == null)
             {
-
-            	System.out.println("TIMEOUUUUUUUUUT !");
-                // Appeler méthode remote signalerTimeout
-                try
-                {
-                    if (m.getIdFrom() != m.getIdTo())
-                    {
-                        System.out.println(m.getIdTo() + " signale timeout à "
-                                + m.getIdFrom());
-                        this.listeProc.get(new Integer(m.getIdFrom())).signalerTimeout(m.getIdTo());
-                    }
-                }
-                catch (RemoteException e1)
-                {
-                    e1.printStackTrace();
-                }
                 throw new TimeOutException(m);
-
             }
         }
 
