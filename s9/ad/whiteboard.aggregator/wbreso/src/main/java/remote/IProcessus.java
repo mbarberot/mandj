@@ -1,9 +1,9 @@
 package remote;
 
+import remote.messages.Message;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import remote.messages.Message;
 
 /**
  * Interface de manipulation d'un processus via RMI

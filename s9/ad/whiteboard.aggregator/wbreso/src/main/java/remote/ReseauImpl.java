@@ -5,6 +5,8 @@ import remote.messages.Message;
 import java.net.InetAddress;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -67,9 +69,14 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau {
 	 * @throws RemoteException
 	 */
 	public void naming(int idProc) throws RemoteException {
-		try {
-
-			IProcessus proc = (IProcessus) Naming.lookup(Reso.CLIENT_NAME + idProc);
+		try 
+		{
+			
+			//
+			// TODO : Changer lx133 par une variable host
+			// TODO : Passer host dans les paramètres
+			//
+			IProcessus proc = (IProcessus) Naming.lookup("rmi://lx133/" + Reso.CLIENT_NAME + idProc);
 			
 			messages.ajoutNouveauClient(idProc, proc);
 

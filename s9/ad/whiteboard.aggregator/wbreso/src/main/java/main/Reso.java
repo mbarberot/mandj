@@ -6,6 +6,8 @@ import java.net.UnknownHostException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+
 import remote.ReseauImpl;
 
 /**
@@ -28,7 +30,7 @@ public class Reso
         {
             System.out.println("Usage : Reso <nom_rmi_reseau> <nom_rmi_client> <algo>");
             System.out.println("algo = chang_roberts | bully | dolev_klawe_rodeh");
-            System.exit(0);
+            System.exit(1);
         }
         else
         {
@@ -41,6 +43,8 @@ public class Reso
         {
             // Création du registre RMI
             LocateRegistry.createRegistry(1099);
+            
+            
 
             // Création du serveur Reso
             ReseauImpl reso = new ReseauImpl();
