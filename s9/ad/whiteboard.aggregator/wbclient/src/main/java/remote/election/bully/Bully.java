@@ -127,7 +127,7 @@ public class Bully extends UnicastRemoteObject implements IElection, IBully
 
         // Lancement d'un thread pour l'attente d'un message ACK
         bullyWait = new ThreadBullyWait(this);
-        bullyWait.waitForACK(TEMPO*voisins.size()*3);
+        bullyWait.waitForACK(TEMPO*voisins.size()+1*2);
         
     }
     
@@ -153,11 +153,7 @@ public class Bully extends UnicastRemoteObject implements IElection, IBully
             this.idCoor = this.id;
             this.parent.setMaster(idCoor);
             
-            //TODO démarrer le thread de SC
-            if(idCoor == this.parent.getId())
-            {
-            	this.parent.startThreadSC();
-            }
+            this.parent.startThreadSC();
             
             for (Integer j : voisins)
             {
@@ -247,7 +243,8 @@ public class Bully extends UnicastRemoteObject implements IElection, IBully
     }
 
     /**
-     * Accepte un accord d'un processus
+     * Accepte un accord d'un processus.
+     * Un ACK est reçu que lorsque on l'attend.
      */
     public void accepteAck()
     {
@@ -259,7 +256,8 @@ public class Bully extends UnicastRemoteObject implements IElection, IBully
 
     /**
      * Accepte le message de nouveau maitre
-     *
+     * Un COOR peut être envoyé alors que l'on ne l'attend pas !
+     * 
      * @param j ID du vainqueur de l'élection = nouveau maitre
      */
     public void accepteCoor(int j)
@@ -269,6 +267,14 @@ public class Bully extends UnicastRemoteObject implements IElection, IBully
             this.idCoor = j;
             this.parent.setMaster(idCoor);
             this.newCoor = true;
-            this.bullyWait.notifyCOOR();
+            if(this.bullyWait != null)
+            {
+                this.bullyWait.notifyCOOR();
+            }
+    }
+
+    public void timeout(int idProc)
+    {
+        // Nothing to do here !
     }
 }

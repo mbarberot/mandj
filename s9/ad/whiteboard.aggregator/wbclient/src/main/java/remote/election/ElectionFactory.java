@@ -5,6 +5,7 @@ import remote.IProcessus;
 import remote.IReseau;
 import remote.Processus;
 import remote.election.bully.Bully;
+import remote.election.changroberts.ChangRoberts;
 
 /**
  * Factory d'instanciation d'un algo d'élection
@@ -20,9 +21,9 @@ public class ElectionFactory
         {
             return new Bully(reso, processus, parent, id);
         }
-        else if (algo.equalsIgnoreCase("chan_roberts"))
+        else if (algo.equalsIgnoreCase("chang_roberts"))
         {
-            // TODO : return new ChanRoberts
+            return new ChangRoberts(parent, reso, id);
         }
         else if (algo.equalsIgnoreCase("dolev_klaw_rodeh"))
         {

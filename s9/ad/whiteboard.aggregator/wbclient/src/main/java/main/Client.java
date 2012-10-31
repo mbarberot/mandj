@@ -31,7 +31,8 @@ public class Client
             System.out.println("Usage : Reso <nmachine_distante> <nom_rmi_reseau> <nom_rmi_client> <algo>");
             System.out.println("algo = chang_roberts | bully | dolev_klawe_rodeh");
             System.exit(0);
-        } else
+        }
+        else
         {
             MACHINE_DISTANTE = args[0];
             SERVER_NAME = args[1];

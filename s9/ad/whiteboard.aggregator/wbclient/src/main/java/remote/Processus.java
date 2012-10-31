@@ -136,7 +136,7 @@ public class Processus
         return algo;
     }
 
-    public ArrayList<Integer> getVoisins()
+    public synchronized ArrayList<Integer> getVoisins()
     {
         return voisins;
     }
@@ -162,18 +162,21 @@ public class Processus
             // Création de l'algo
             this.algo = ElectionFactory.createAlgoElection(Client.ALGO, reso, myRemote, this, pId);
             this.myRemote = new ProcessusRemoteImpl(this, pId, algo, Client.MACHINE_DISTANTE);
-            this.reso.naming(pId);            
-                        
-            while(!this.initReady)
+            this.reso.naming(pId);
+
+            while (!this.initReady)
             {
-            	try {
-					wait();
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
+                try
+                {
+                    wait();
+                }
+                catch (InterruptedException e)
+                {
+                    e.printStackTrace();
+                }
             }
-            
-            
+
+
         }
         catch (RemoteException e)
         {
@@ -209,9 +212,10 @@ public class Processus
                 this.masterId = this.reso.whoIsMaster();
                 //TODO println
                 System.out.println("Le maître est " + this.masterId);
+                // TODO : if masterId = -1 : ne pas faire d'élection et attendre qu'une élection se fasse !
             }
-            
-         // Récupération du WB actuel
+
+            // Récupération du WB actuel
             this.reso.sendTo(new Message(this.myRemote.getId(), TypeMessage.DEMANDE_ETAT_WB, masterId, null));
 
         }
@@ -390,11 +394,19 @@ public class Processus
     	{
     		this.voisins.remove(new Integer(idFrom));
     	}
+        
+        // Si le maitre est déconnecté, on lance une élection
+        // Sinon, on signale la deconnection à l'algorithme au cas où il en aurait besoin
         if(idFrom == this.masterId)
         {
             System.out.println("Le maître ne répond plus : Démarrage de l'éléction !");
             this.algo.demarrerElection();
         }
+        else
+        {
+            this.algo.timeout(idFrom);
+        }
+        
     }
     
     /**
