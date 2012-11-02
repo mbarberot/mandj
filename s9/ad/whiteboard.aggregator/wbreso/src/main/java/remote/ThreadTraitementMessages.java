@@ -284,10 +284,25 @@ public class ThreadTraitementMessages extends Thread
                 }
                 break;
             case DEMANDE_ETAT_WB:
+            	/* Permet de réceptionner à n'importe quel moment le tableau le plus à jour */
                 IProcessus demandeur = this.listeProc.get(new Integer(m.getIdFrom()));
+                ArrayList<String> currentWB = new ArrayList<String>();
+                ArrayList<String> tmp = null;
+                for(IProcessus proc : listeProc.values())
+                {
+                	try {
+						tmp = proc.getListeForme();
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
+                	if(tmp.size() > currentWB.size())
+                	{
+                		currentWB = tmp;
+                	}
+                }
                 try
                 {
-                    ArrayList<String> currentWB = dest.getListeForme();
+                    
                     demandeur.receptionWB(currentWB);
                 }
                 catch (RemoteException e)
@@ -316,3 +331,4 @@ public class ThreadTraitementMessages extends Thread
 
     }
 }
+

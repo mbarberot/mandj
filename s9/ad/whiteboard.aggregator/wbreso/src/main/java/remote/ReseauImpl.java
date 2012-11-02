@@ -84,7 +84,7 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau {
 			System.out.println("Ajout du proc " + idProc);
 
 			/* Signaler aux participants l'arrivée du nouveau processus*/
-			this.messages.ajoutNouveauMessage(new Message(idProc, TypeMessage.CONNEXION_NOUVEAU_PROC, -1, null));
+			sendTo(new Message(idProc, TypeMessage.CONNEXION_NOUVEAU_PROC, -1, null));
 			
 
 		} catch (Exception ex) {
@@ -123,24 +123,10 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau {
 	 */
 	public void sendTo(Message m)
 			throws RemoteException {
-		/*
-         * Attente avant traitement
-         */
 		
-        int desync_time = (int) (Math.random() * 7000 + 3000);
-        System.out.println("Message de " + m.getIdFrom() + " à " + m.getIdTo() + " de type " + m.getType() 
-        		+ " en attente pour " + desync_time + " ms");
-        try
-        {
-            Thread.sleep(desync_time);
-        }
-        catch (InterruptedException e2)
-        {
-            e2.printStackTrace();
-        }
 
-		this.messages.ajoutNouveauMessage(m);
-
+        Thread th = new Thread(new ThreadAjoutFile(m, this.messages));
+        th.start();
 	}
 
 	/**
