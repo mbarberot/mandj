@@ -40,7 +40,7 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
      */
     private ThreadTraitementSC traitementSC;
     
-    protected ProcessusRemoteImpl(Processus myLocal, int nId, IElection algo, String host) throws RemoteException
+    protected ProcessusRemoteImpl(Processus myLocal, int nId, IElection algo) throws RemoteException
     {
         super();
         this.pId = nId;
@@ -49,13 +49,18 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
         this.traitementSC = null;
 
 		/*
-		 * Enregistrement dans le rmiregistry distant
+		 * Enregistrement dans le rmiregistry local
 		 */
-		Registry reg = LocateRegistry.getRegistry(host);
-
-		System.out.println("Client enregistre a l'adresse " + host + "/"
-				+ Client.CLIENT_NAME + this.pId);
-		reg.rebind(Client.CLIENT_NAME + this.pId, this);
+        if(LocateRegistry.getRegistry() == null)
+        {
+        	LocateRegistry.createRegistry(1099);
+        }
+        
+		try {
+			Naming.rebind(Client.CLIENT_NAME + this.pId, this);
+		} catch (MalformedURLException e) {			
+			e.printStackTrace();
+		}
 
 
     }
@@ -177,8 +182,9 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements IProcess
         this.myLocal.recoitTimeOut(idFrom);
     }
 
-    public void receptionWB(ArrayList<String> wb) throws RemoteException
-    {
-        this.myLocal.recupereWB(wb);
-    }
+    
+	public void signalerFinAccesSC(int idFrom) throws RemoteException {
+		this.traitementSC.signalerFinAccesSC();
+		
+	}
 }

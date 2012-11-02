@@ -12,6 +12,6 @@ public enum TypeMessage
     DEMANDE_SC,
     AUTORISER_ACCES_SC,
     REFUSER_ACCES_SC,
-    DEMANDE_ETAT_WB,
+    FIN_ACCES_SC,
     ELECTION
 }

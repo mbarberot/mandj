@@ -4,7 +4,10 @@ import remote.messages.Message;
 import remote.messages.TypeMessage;
 import forme.Forme;
 import forme.FormeFactory;
+
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -161,8 +164,11 @@ public class Processus
             int pId = reso.register();
             // Création de l'algo
             this.algo = ElectionFactory.createAlgoElection(Client.ALGO, reso, myRemote, this, pId);
-            this.myRemote = new ProcessusRemoteImpl(this, pId, algo, Client.MACHINE_DISTANTE);
-            this.reso.naming(pId);
+            this.myRemote = new ProcessusRemoteImpl(this, pId, algo);
+            
+            String myHostName = InetAddress.getLocalHost().getHostName();
+            
+            this.reso.naming(pId, myHostName);
 
             while (!this.initReady)
             {
@@ -181,13 +187,15 @@ public class Processus
         catch (RemoteException e)
         {
             e.printStackTrace();
-        }
+        } catch (UnknownHostException e1) {
+			e1.printStackTrace();
+		}
     }
 
     /**
      * Recupere la liste des voisins connus + récupère le processus maitre
      */
-    public void recupereVoisins() //TODO : bloquer si élection en cours
+    public synchronized void recupereVoisins() //TODO : bloquer si élection en cours
     {
         try
         {
@@ -216,7 +224,15 @@ public class Processus
             }
 
             // Récupération du WB actuel
-            this.reso.sendTo(new Message(this.myRemote.getId(), TypeMessage.DEMANDE_ETAT_WB, masterId, null));
+            ArrayList<String> wb = this.reso.getWB(getId());
+            for(String f : wb)
+            {
+            	recoitDessin(f);
+            }
+            
+            // Le client est prêt à dessiner
+            this.initReady = true;
+            notifyAll();
 
         }
         catch (RemoteException e)
@@ -243,23 +259,6 @@ public class Processus
     public void suppressionVoisin(int vId)
     {
         this.voisins.remove(new Integer(vId));
-    }
-
-    /**
-     * Récupère auprès du serveur l'état actuel du wb
-     */
-    public synchronized void recupereWB(ArrayList<String> wb)
-    {
-
-        // TODO println
-        System.out.println("Récupération d'un WB à jour");
-
-        this.wb.recoitWB(wb);
-
-        // Le client est prêt à dessiner
-        this.initReady = true;
-        notifyAll();
-
     }
 
     /**
@@ -326,6 +325,7 @@ public class Processus
         
         if(this.accesWB == 1)
         {
+        	System.out.println("Accès la SC autorisé :)");
         	synchronized(this.voisins)
         	{
 		        Iterator iterVoisin = voisins.iterator();
@@ -343,7 +343,24 @@ public class Processus
 		                }
 		            
 		        }
-        	}        	
+        	}
+        	
+        	// Signaler la fin de la diffusion
+        	try {
+        		System.out.println("Attente avant d'envoyer le message de fin d'accès à la SC");
+				Thread.sleep(10000);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+        	try {
+				reso.sendTo(new Message(myRemote.getId(), TypeMessage.FIN_ACCES_SC,this.masterId, null));
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+        }
+        else
+        {
+        	System.out.println("Accès à la SC refusé :(");
         }
         this.accesWB = 0;
     }
@@ -396,7 +413,7 @@ public class Processus
     	}
         
         // Si le maitre est déconnecté, on lance une élection
-        // Sinon, on signale la deconnection à l'algorithme au cas où il en aurait besoin
+        // Sinon, on signale la deconnexion à l'algorithme au cas où il en aurait besoin
         if(idFrom == this.masterId)
         {
             System.out.println("Le maître ne répond plus : Démarrage de l'éléction !");
@@ -414,9 +431,7 @@ public class Processus
      * Débloquage de l'attente.
      */
     public synchronized void recoitAccesSC(int autorisation)
-    {
-        //TODO println
-        System.out.println("Accès à la SC autorisé");
+    {        
         this.accesWB = autorisation;
         notifyAll();
     }

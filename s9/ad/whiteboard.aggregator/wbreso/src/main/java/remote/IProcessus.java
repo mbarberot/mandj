@@ -28,13 +28,6 @@ public interface IProcessus extends Remote
      * @throws RemoteException 
      */
     public void receptionNouvelleForme(String data) throws RemoteException;
-
-    /**
-     * Transmission d'une liste de formes (whiteboard) au processus
-     * @param wb
-     * @throws RemoteException
-     */
-    public void receptionWB(ArrayList<String> wb) throws RemoteException;
     
     /**
      * Notification de l'arrivée d'un nouveau processus
@@ -69,6 +62,11 @@ public interface IProcessus extends Remote
      */
     public void demanderSectionCritique(int idFrom) throws RemoteException;
     
+    /**
+     * Le processus idFrom signale la fin d'accès à la SC
+     * @throws RemoteException
+     */
+    public void signalerFinAccesSC(int idFrom) throws RemoteException;
     /**
      * Reception d'un message lié aux éléctions
      * 

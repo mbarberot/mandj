@@ -64,19 +64,15 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau {
 	 * 
 	 * @param idProc
 	 *            - ID du processus
-	 * @param host
+	 * @param clientHost
 	 *            Hote du processus
 	 * @throws RemoteException
 	 */
-	public void naming(int idProc) throws RemoteException {
+	public void naming(int idProc, String clientHost) throws RemoteException {
 		try 
 		{
-			
-			//
-			// TODO : Changer lx133 par une variable host
-			// TODO : Passer host dans les paramètres
-			//
-			IProcessus proc = (IProcessus) Naming.lookup("rmi://lx133/" + Reso.CLIENT_NAME + idProc);
+			String host = InetAddress.getByName(clientHost).getHostAddress();
+			IProcessus proc = (IProcessus) Naming.lookup("//" + host + "/" + Reso.CLIENT_NAME + idProc);
 			
 			messages.ajoutNouveauClient(idProc, proc);
 
@@ -138,9 +134,19 @@ public class ReseauImpl extends UnicastRemoteObject implements IReseau {
 	public ArrayList<Integer> getVoisins() throws RemoteException {
 		return this.messages.getListeClients();
 	}
+	
+	/**
+	 * Retourne le WB le plus à jour parmis tous les clients déjà connectés
+	 * @param idFrom
+	 * @return
+	 * @throws RemoteException
+	 */
+	public ArrayList<String> getWB(int idFrom) throws RemoteException{
+		return this.messages.getWB(idFrom);
+	}
 
 
-
+	
 	/**
 	 * Permet de récupérer l'identifiant du maître parmi les processus
 	 * participants

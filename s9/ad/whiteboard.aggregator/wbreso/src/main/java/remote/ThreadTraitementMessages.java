@@ -27,12 +27,22 @@ public class ThreadTraitementMessages extends Thread
     private int masterId;
 
     /*
+     * Permet de déterminer si une diffusion de dessin est en cours
+     */
+    private boolean diffusionEnCours;
+    /*
+     * Les demandes de connexions en attente
+     */
+    private ArrayList<Message> demandesConnexions;
+    /*
      * Initialisation
      */
     public ThreadTraitementMessages()
     {
         this.listeProc = new HashMap<Integer, IProcessus>();
         this.listeMessages = new LinkedList<Message>();
+        this.diffusionEnCours = false;
+        this.demandesConnexions = new ArrayList<Message>();
     }
 
     /*
@@ -40,15 +50,28 @@ public class ThreadTraitementMessages extends Thread
      */
     public synchronized void ajoutNouveauMessage(Message m)
     {
-
-        listeMessages.add(m);
-
-        // TODO println
-        System.out.println(m.toString() + " ajouté dans la file d'attente ");
-        if (listeMessages.size() >= 1)
-        {
-            this.notifyAll();
-        }
+    	if(m.getType() == TypeMessage.CONNEXION_NOUVEAU_PROC && diffusionEnCours)
+    	{
+    		System.out.println("Connexion du client " + m.getIdFrom() + " mise en attente");
+    		demandesConnexions.add(m);
+    	}
+    	else
+    	{
+	
+	    	if(m.getType() == TypeMessage.DEMANDE_SC)
+	    	{
+	        	diffusionEnCours = true;
+	    	}
+	    	
+	        listeMessages.add(m);       
+	        
+	        // TODO println
+	        System.out.println(m.toString() + " ajouté dans la file d'attente ");
+	        if (listeMessages.size() >= 1)
+	        {
+	            this.notifyAll();
+	        }
+    	}
     }
 
     /*
@@ -120,7 +143,34 @@ public class ThreadTraitementMessages extends Thread
         return -1;
     }
 
-    
+    /*
+     * Récupère le tableau le plus à jour
+     */
+    public ArrayList<String> getWB(int idFrom)
+    {
+    	ArrayList<String> res = new ArrayList<String>();
+    	ArrayList<String> tmp = null;
+    	
+    	for(Integer i : this.listeProc.keySet())
+    	{
+    		if(i != idFrom)
+    		{
+	    		IProcessus req = this.listeProc.get(i);
+	    		try {
+					tmp = req.getListeForme();
+					if(tmp.size() > res.size())
+					{
+						res = tmp;
+					}
+				} catch (RemoteException e) {
+					e.printStackTrace();
+				}
+    		}
+    		
+    	}
+       
+    	return res;
+    }
     /*
      * Boucle de traitement principal
      */
@@ -182,13 +232,7 @@ public class ThreadTraitementMessages extends Thread
                         Message tmp = (Message) mess.next();
                         // Supprimer les messages destinés au client déconnecté
                         if (tmp.getIdTo() == e.getMError().getIdTo())
-                        {
-                            /*// Si des demandes de SC étaient dans la file, refuser la SC
-                            if (tmp.getType() == TypeMessage.DEMANDE_SC)
-                            {
-                                ajoutNouveauMessage(new Message(tmp.getIdTo(), TypeMessage.REFUSER_ACCES_SC, tmp.getIdFrom(), null));
-                            }*/
-
+                        {                         
                             mess.remove();
                         }
 
@@ -225,7 +269,7 @@ public class ThreadTraitementMessages extends Thread
 
         switch (m.getType())
         {
-            case CONNEXION_NOUVEAU_PROC:
+            case CONNEXION_NOUVEAU_PROC:            	
                 try
                 {
                     // broadcast
@@ -283,34 +327,25 @@ public class ThreadTraitementMessages extends Thread
                     e.printStackTrace();
                 }
                 break;
-            case DEMANDE_ETAT_WB:
-            	/* Permet de réceptionner à n'importe quel moment le tableau le plus à jour */
-                IProcessus demandeur = this.listeProc.get(new Integer(m.getIdFrom()));
-                ArrayList<String> currentWB = new ArrayList<String>();
-                ArrayList<String> tmp = null;
-                for(IProcessus proc : listeProc.values())
-                {
-                	try {
-						tmp = proc.getListeForme();
-					} catch (RemoteException e) {
-						e.printStackTrace();
-					}
-                	if(tmp.size() > currentWB.size())
-                	{
-                		currentWB = tmp;
-                	}
-                }
-                try
-                {
-                    
-                    demandeur.receptionWB(currentWB);
-                }
-                catch (RemoteException e)
-                {
-                    e.printStackTrace();
-                }
-                break;
 
+            case FIN_ACCES_SC:
+			try {
+				dest.signalerFinAccesSC(m.getIdFrom());
+				this.diffusionEnCours = false;
+				System.out.println("Traitement des clients en attente de connexion");
+				Iterator iter = demandesConnexions.iterator();
+				
+				while(iter.hasNext())
+				{
+					Message connexion = (Message) iter.next();
+					ajoutNouveauMessage(connexion);
+					iter.remove();
+				}
+				
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			break;
             case ELECTION:
                 try
                 {
