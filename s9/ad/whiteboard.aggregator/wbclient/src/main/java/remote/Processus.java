@@ -163,7 +163,7 @@ public class Processus
         {
             int pId = reso.register();
             // Création de l'algo
-            this.algo = ElectionFactory.createAlgoElection(Client.ALGO, reso, myRemote, this, pId);
+            this.algo = ElectionFactory.createAlgoElection(Client.ALGO, reso, this, pId);
             this.myRemote = new ProcessusRemoteImpl(this, pId, algo);
             
             String myHostName = InetAddress.getLocalHost().getHostName();
@@ -416,8 +416,15 @@ public class Processus
         // Sinon, on signale la deconnexion à l'algorithme au cas où il en aurait besoin
         if(idFrom == this.masterId)
         {
-            System.out.println("Le maître ne répond plus : Démarrage de l'éléction !");
-            this.algo.demarrerElection();
+            if(!this.algo.isInElection())
+            {
+                System.out.println("Le maître ne répond plus : Démarrage de l'éléction !");
+                this.algo.demarrerElection();
+            }
+            else
+            {
+                this.algo.timeout(idFrom);
+            }
         }
         else
         {
@@ -431,7 +438,9 @@ public class Processus
      * Débloquage de l'attente.
      */
     public synchronized void recoitAccesSC(int autorisation)
-    {        
+    {
+        //TODO println
+        System.out.println("Accès à la SC " + (autorisation == 1 ? "autorisé" : "refusé"));
         this.accesWB = autorisation;
         notifyAll();
     }

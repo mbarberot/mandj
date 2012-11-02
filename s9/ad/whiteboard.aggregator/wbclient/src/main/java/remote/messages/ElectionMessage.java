@@ -35,4 +35,56 @@ public class ElectionMessage extends Message implements Serializable
         return electionMsg;
     }
     
+    @Override
+    public String toString()
+    {
+        String algorithme = "Algorithme : ";
+        
+        switch(this.algo)
+        {
+            case BULLY : 
+                algorithme += "BULLY";
+                break;
+                
+            case CHANG_ROBERTS :
+                algorithme += "CHANG et ROBERTS";
+                break;
+                
+            case DOLEV_KLAWE_RODEH :
+                algorithme += "DOLEV, KLAWE et RODEH";
+                break;
+        }
+        
+        String message = "Message : ";
+        
+        switch(this.electionMsg)
+        {
+            case BULLY_ACK : 
+                message += "ACK";
+                break;
+            case BULLY_COOR :
+                message += "COOR";
+                break;
+            case BULLY_ELECTION :
+                message += "ELECTION";
+                break;
+                
+            case CR_TOK :
+                message += "<TOK," + ((Integer)getData()) + ">";
+                break;
+                
+            case DKR_ONE :
+                message += "<ONE," + ((Integer)getData()) + ">";
+                break;
+            case DKR_SMALL :
+                message += "<SMALL," + ((Integer)getData()) + ">";
+                break;
+            case DKR_TWO :
+                message += "<TWO," + ((Integer)getData()) + ">";
+                break;
+        }
+        
+        return message;
+    } 
+           
 }

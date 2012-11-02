@@ -1,9 +1,7 @@
 package remote.election.bully;
 
 import java.rmi.RemoteException;
-import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import remote.IProcessus;
 import remote.IReseau;
 import remote.Processus;
 import remote.election.IElection;
@@ -17,7 +15,7 @@ import remote.messages.Message;
  *
  * @author Mathieu Barberot et Joan Racenet
  */
-public class Bully extends UnicastRemoteObject implements IElection, IBully
+public class Bully implements IElection, IBully
 {
 
     /**
@@ -28,10 +26,6 @@ public class Bully extends UnicastRemoteObject implements IElection, IBully
      * Interface reseau
      */
     private IReseau reso;
-    /**
-     * Interface processus
-     */
-    private IProcessus processus;
     /**
      * Nombre de voisins
      */
@@ -69,33 +63,31 @@ public class Bully extends UnicastRemoteObject implements IElection, IBully
      * Constructeur
      *
      * @param reso Interface reseau
-     * @param voisins Liste des voisins
+     * @param parent Processus parent
      * @param id ID du processus
      * @throws RemoteException
      */
-    public Bully(IReseau reso, IProcessus processus, Processus parent, int id) throws RemoteException
+    public Bully(IReseau reso, Processus parent, int id) throws RemoteException
     {
         super();
 
-        // Couches de communication
-        this.reso = reso;           // ~= Send
-        this.processus = processus; // ~= Recv
+        this.reso = reso;
         this.parent = parent;
         this.id = id;
         this.election = false;
         this.ok = false;
         this.newCoor = false;
         this.bullyWait = null;
-        
-        
+
+
         // TODO : println
         System.out.println("Algo Bully - Prêt");
 
     }
 
     /**
-     * Début de l'élection :
-     * - envoi des messages de types ELECTION aux processus j tels que : j > i
+     * Début de l'élection : - envoi des messages de types ELECTION aux
+     * processus j tels que : j > i
      */
     public void demarrerElection()
     {
@@ -127,14 +119,14 @@ public class Bully extends UnicastRemoteObject implements IElection, IBully
 
         // Lancement d'un thread pour l'attente d'un message ACK
         bullyWait = new ThreadBullyWait(this);
-        bullyWait.waitForACK(TEMPO*voisins.size()+1*2);
-        
+        bullyWait.waitForACK(TEMPO * voisins.size() + 1 * 2);
+
     }
-    
+
     /**
-     * Fin de l'attente du message ACK
-     * - soit un message ACK a été reçu et on attend un signe du nouveau maitre
-     * - soit le temps limite imparti est écoulé et on s'autoproclame maitre
+     * Fin de l'attente du message ACK - soit un message ACK a été reçu et on
+     * attend un signe du nouveau maitre - soit le temps limite imparti est
+     * écoulé et on s'autoproclame maitre
      */
     public void doneWaitingForACK()
     {
@@ -146,23 +138,23 @@ public class Bully extends UnicastRemoteObject implements IElection, IBully
         else
         {
             this.voisins = parent.getVoisins();
-            
+
             // Diffusion du nouveau coordinateur
             // TODO : println
             System.out.println("[ELECTION] Victoire !");
             this.idCoor = this.id;
             this.parent.setMaster(idCoor);
-            
+
             this.parent.startThreadSC();
-            
+
             for (Integer j : voisins)
             {
-                if(j.intValue() != this.id)
+                if (j.intValue() != this.id)
                 {
                     try
                     {
                         // TODO : println
-                        System.out.println("[ELECTION] Envoi ID nouveau maitre("+this.idCoor+") à " + j.intValue());
+                        System.out.println("[ELECTION] Envoi ID nouveau maitre(" + this.idCoor + ") à " + j.intValue());
                         reso.sendTo(new ElectionMessage(this.id, j.intValue(), ElectionAlgorithm.BULLY, ElectionTypeMessage.BULLY_COOR));
                     }
                     catch (RemoteException ex)
@@ -175,7 +167,7 @@ public class Bully extends UnicastRemoteObject implements IElection, IBully
             endElection();
         }
     }
-    
+
     /**
      * Fin de l'attente du nouveau maitre : on a reçu l'ID du nouveau maitre
      */
@@ -201,8 +193,8 @@ public class Bully extends UnicastRemoteObject implements IElection, IBully
      */
     public void accepteMessage(Message m)
     {
-        ElectionMessage em = (ElectionMessage)m;
-        
+        ElectionMessage em = (ElectionMessage) m;
+
         switch (em.getElectionMsg())
         {
             case BULLY_ELECTION:
@@ -243,38 +235,43 @@ public class Bully extends UnicastRemoteObject implements IElection, IBully
     }
 
     /**
-     * Accepte un accord d'un processus.
-     * Un ACK est reçu que lorsque on l'attend.
+     * Accepte un accord d'un processus. Un ACK est reçu que lorsque on
+     * l'attend.
      */
     public void accepteAck()
     {
-            // TODO : println
-            System.out.println("[ELECTION] ACK reçu");
-            this.ok = true;
-            this.bullyWait.notifyACK();
+        // TODO : println
+        System.out.println("[ELECTION] ACK reçu");
+        this.ok = true;
+        this.bullyWait.notifyACK();
     }
 
     /**
-     * Accepte le message de nouveau maitre
-     * Un COOR peut être envoyé alors que l'on ne l'attend pas !
-     * 
+     * Accepte le message de nouveau maitre Un COOR peut être envoyé alors que
+     * l'on ne l'attend pas !
+     *
      * @param j ID du vainqueur de l'élection = nouveau maitre
      */
     public void accepteCoor(int j)
     {
-            // TODO : println
-            System.out.println("[ELECTION] NEWCOOR reçu, le nouveau maitre est " + j);
-            this.idCoor = j;
-            this.parent.setMaster(idCoor);
-            this.newCoor = true;
-            if(this.bullyWait != null)
-            {
-                this.bullyWait.notifyCOOR();
-            }
+        // TODO : println
+        System.out.println("[ELECTION] NEWCOOR reçu, le nouveau maitre est " + j);
+        this.idCoor = j;
+        this.parent.setMaster(idCoor);
+        this.newCoor = true;
+        if (this.bullyWait != null)
+        {
+            this.bullyWait.notifyCOOR();
+        }
     }
 
     public void timeout(int idProc)
     {
         // Nothing to do here !
+    }
+
+    public boolean isInElection()
+    {
+        return election;
     }
 }

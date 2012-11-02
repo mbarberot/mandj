@@ -19,7 +19,6 @@ import remote.messages.Message;
  */
 public class ChangRoberts implements IChangRoberts, IElection
 {
-
     /**
      * Les différents états du processus dans l'algorithme
      */
@@ -48,6 +47,10 @@ public class ChangRoberts implements IChangRoberts, IElection
      */
     private int id;
     /**
+     * true si en election, false sinon
+     */
+    private boolean election;
+    /**
      * Dernier message <tok,id> envoyé (pour un renvoi éventuel après timeout)
      */
     private ElectionMessage em;
@@ -65,6 +68,7 @@ public class ChangRoberts implements IChangRoberts, IElection
         this.reso = reso;
         this.id = id;
         this.etat = EtatElection.SLEEP;
+        this.election = false;
     }
 
     /**
@@ -92,6 +96,7 @@ public class ChangRoberts implements IChangRoberts, IElection
         System.out.println("[ELECTION] Démarrage de l'élection");
 
         this.etat = EtatElection.CAND;
+        this.election = true;
         try
         {
             // TODO : Println
@@ -131,6 +136,7 @@ public class ChangRoberts implements IChangRoberts, IElection
      */
     public void accepteTOK(int j)
     {
+        this.election = true;
         // TODO : Println
         System.out.println("[ELECTION] Accepte <tok," + j + ">");
         switch (this.etat)
@@ -148,7 +154,7 @@ public class ChangRoberts implements IChangRoberts, IElection
                     this.etat = EtatElection.LEADER;
                     this.parent.setMaster(j);
                     this.parent.startThreadSC();
-
+                    this.election = false;
                 }
                 else if (this.id < j)
                 {
@@ -156,6 +162,7 @@ public class ChangRoberts implements IChangRoberts, IElection
                     System.out.println("[ELECTION] Défaite ! Le nouveau maitre est " + j);
                     this.etat = EtatElection.PERDU;
                     this.parent.setMaster(j);
+                    this.election = false;
                     try
                     {
                         // TODO : Println
@@ -176,6 +183,7 @@ public class ChangRoberts implements IChangRoberts, IElection
                 System.out.println("[ELECTION] Sleeping : Le nouveau maitre est " + j);
                 this.etat = EtatElection.PERDU;
                 this.parent.setMaster(j);
+                this.election = false;
                 try
                 {
                     // TODO : Println
@@ -217,5 +225,10 @@ public class ChangRoberts implements IChangRoberts, IElection
                 ex.printStackTrace();
             }
         }
+    }
+    
+    public boolean isInElection()
+    {
+        return election;
     }
 }

@@ -41,11 +41,12 @@ public class Message implements Serializable
     {
         return idTo;
     }
-	
-	public String toString()
-	{
-		return "Message FROM : " + idFrom + " TO : " + idTo + " De type " + type;
- 	}
+
+    @Override
+    public String toString()
+    {
+        return "Message FROM : " + idFrom + " TO : " + idTo + " De type " + type;
+    }
 
     public Object getData()
     {

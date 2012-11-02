@@ -28,4 +28,12 @@ public interface IElection
      * @param idProc Processus déconnecté
      */
     public void timeout(int idProc);
+    
+    /**
+     * Retourne si l'élection est en cours
+     * 
+     * @return Statut de l'élection : true = en cours, false sinon
+     */
+    public boolean isInElection();
+          
 }
