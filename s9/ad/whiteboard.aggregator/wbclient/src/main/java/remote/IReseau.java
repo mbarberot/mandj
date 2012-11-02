@@ -29,7 +29,7 @@ public interface IReseau extends Remote
      * @param host Hôte du processus
      * @throws RemoteException 
      */
-    public void naming(int idProc) throws RemoteException;
+    public void naming(int idProc, String clientHost) throws RemoteException;
 
     /**
      * Notification au serveur du départ d'un processus
@@ -59,6 +59,14 @@ public interface IReseau extends Remote
      */
     public ArrayList<Integer> getVoisins() throws RemoteException;
 
+    /**
+     * Méthode de récupération du whiteboard actuel
+     * @param idFrom
+     * @return
+     * @throws RemoteException
+     */
+    public ArrayList<String> getWB(int idFrom) throws RemoteException;
+    
     /**
      * Retourne l'identifiant du processus maitre
      * 
