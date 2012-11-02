@@ -21,22 +21,18 @@ public class Reso
     public static String SERVER_NAME;
     // Nom du client sur le registre RMI
     public static String CLIENT_NAME;
-    // Type d'algorithme
-    public static String ALGO;
-
+ 
     public static void main(String[] args)
     {
-        if(args.length < 3)
+        if(args.length < 2)
         {
             System.out.println("Usage : Reso <nom_rmi_reseau> <nom_rmi_client> <algo>");
-            System.out.println("algo = chang_roberts | bully | dolev_klawe_rodeh");
             System.exit(1);
         }
         else
         {
             SERVER_NAME = args[0] ;
             CLIENT_NAME = args[1] ;
-            ALGO = args[2];
         }
         
         try
