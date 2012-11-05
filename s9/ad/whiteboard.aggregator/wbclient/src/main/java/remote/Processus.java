@@ -248,7 +248,10 @@ public class Processus
      */
     public void ajoutNouveauVoisin(int nId)
     {
-        this.voisins.add(nId);
+    	synchronized(this.voisins)
+    	{
+    		this.voisins.add(nId);
+    	}
     }
 
     /**
@@ -258,7 +261,10 @@ public class Processus
      */
     public void suppressionVoisin(int vId)
     {
-        this.voisins.remove(new Integer(vId));
+    	synchronized(this.voisins)
+    	{
+    		this.voisins.remove(new Integer(vId));
+    	}
     }
 
     /**

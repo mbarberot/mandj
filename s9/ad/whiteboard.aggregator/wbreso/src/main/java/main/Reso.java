@@ -1,12 +1,16 @@
 package main;
 
 import java.net.InetAddress;
+import java.net.InterfaceAddress;
 import java.net.MalformedURLException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
+import java.util.Enumeration;
+import java.util.List;
 
 import remote.ReseauImpl;
 
@@ -40,13 +44,36 @@ public class Reso
             // Création du registre RMI
             LocateRegistry.createRegistry(1099);
             
-            
+      
+          // Rendre l'adresse du rmiregistry disponible sur le réseau
+            String myAddress="";
+
+            // Recupere l'adresse adaptee
+            Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); 
+
+            while (en.hasMoreElements()){ 
+               List<InterfaceAddress> i = en.nextElement().getInterfaceAddresses();
+
+              for (InterfaceAddress l : i) {
+                InetAddress addr = l.getAddress();
+
+                if (addr.isSiteLocalAddress()){
+                  myAddress=addr.getHostAddress();
+                 }
+               }
+            }
+
+            // Ensuite positionner l'adresse qui convient :
+
+            System.setProperty("java.rmi.server.hostname", myAddress);
+
+
 
             // Création du serveur Reso
             ReseauImpl reso = new ReseauImpl();
 
             // Rebind
-            String url = "rmi://" + InetAddress.getLocalHost().getHostAddress() + "/" + SERVER_NAME;
+            String url = "rmi://" + myAddress + "/" + SERVER_NAME;
             Naming.rebind(url, reso);
 
             // TODO : println
@@ -58,14 +85,12 @@ public class Reso
         {
             e.printStackTrace();
         }
-        catch (UnknownHostException e)
-        {
-            e.printStackTrace();
-        }
         catch (MalformedURLException e)
         {
             e.printStackTrace();
-        }
+        } catch (SocketException e) {
+			e.printStackTrace();
+		}
 
     }
 }
