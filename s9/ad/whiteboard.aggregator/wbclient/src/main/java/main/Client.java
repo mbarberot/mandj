@@ -28,7 +28,7 @@ public class Client
     {
         if (args.length < 4)
         {
-            System.out.println("Usage : Reso <nmachine_distante> <nom_rmi_reseau> <nom_rmi_client> <algo>");
+            System.out.println("Usage : Reso <numero_machine_distante> <nom_rmi_reseau> <nom_rmi_client> <algo>");
             System.out.println("algo = chang_roberts | bully | dolev_klawe_rodeh");
             System.exit(0);
         }

@@ -40,9 +40,6 @@ public class Modele
         // Création du processus
         try
         {
-            //
-            // TODO : Passer la machine distante dans les paramètres du main
-            //
             String host = "//" + InetAddress.getByName(Client.MACHINE_DISTANTE).getHostAddress();
             this.proc = new Processus(host, this);
             proc.connexionReso();
