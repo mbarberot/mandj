@@ -1,10 +1,7 @@
 package remote;
 
-import remote.messages.Message;
-import remote.messages.TypeMessage;
 import forme.Forme;
 import forme.FormeFactory;
-
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
@@ -17,10 +14,12 @@ import main.Client;
 import modele.Modele;
 import remote.election.ElectionFactory;
 import remote.election.IElection;
+import remote.messages.Message;
+import remote.messages.TypeMessage;
 
 /**
  * Classe permettant l'interfaçage tableau blanc / réseau
- * 
+ *
  * @author Mathieu Barberot et Joan Racenet
  */
 public class Processus
@@ -54,15 +53,20 @@ public class Processus
      * Le processus a accès aux données du wb
      */
     private Modele wb;
-    
     /**
-     * True => toutes les données d'initialisation sont là (voisins, maître et wb courant récupérés)
+     * True => toutes les données d'initialisation sont là (voisins, maître et
+     * wb courant récupérés)
      */
     boolean initReady;
-    
+    /**
+     * Dans le cas d'un processus arrivant après le départ du maitre. True, si
+     * le processus doit attendre un nouveau maitre, false sinon
+     */
+    private boolean waitingMaster;
+
     /**
      * Constructeur
-     * 
+     *
      * @param host Hote du processus
      * @param mod Modele du MVC
      */
@@ -89,14 +93,14 @@ public class Processus
         {
             e.printStackTrace();
         }
-        
+
     }
 
-   /**
-    * Retourne le nombre de voisins
-    * 
-    * @return Le nombre de voisins
-    */
+    /**
+     * Retourne le nombre de voisins
+     *
+     * @return Le nombre de voisins
+     */
     public int getSizeVoisins()
     {
         return this.voisins.size();
@@ -104,7 +108,7 @@ public class Processus
 
     /**
      * Retourne l'ID du processus maitre
-     * 
+     *
      * @return L'ID du processus maitre
      */
     public int getMaster()
@@ -112,16 +116,29 @@ public class Processus
         return this.masterId;
     }
 
+    /**
+     * Définit l'id du processus maitre. Si on attendait un maitre, on continue
+     * l'initialisation
+     *
+     * @param masterId ID du nouveau maitre
+     */
     public void setMaster(int masterId)
     {
         this.masterId = masterId;
+
+        //TODO println
+        System.out.println("Le maître est " + masterId);
+
+        if (waitingMaster)
+        {
+            waitingMaster = false;
+            recupereWB();
+        }
     }
 
-    
-    
     /**
      * Retourne l'interface du serveur Reseau
-     * 
+     *
      * @return L'interface du serveur Reseau
      */
     public IReseau getReso()
@@ -131,7 +148,7 @@ public class Processus
 
     /**
      * Retourne l'algorithme d'election
-     * 
+     *
      * @return L'interface de l'algorithme d'election
      */
     public IElection getAlgo()
@@ -139,37 +156,48 @@ public class Processus
         return algo;
     }
 
+    /**
+     * Retourne la liste des voisins
+     *
+     * @return Liste des voisins
+     */
     public synchronized ArrayList<Integer> getVoisins()
     {
         return voisins;
     }
-    
-    public int getId()
-    {
-    	return this.myRemote.getId();
-    }
-    
-    
 
     /**
-     * Connexion au serveur Reseau.
-     * 
-     * Le processus récupère un id via le serveur et déclare son stub à celui-ci
-     * Il récupère au passage l'état actuel du WB
+     * Retourne l'ID du processus courant
+     *
+     * @return ID du processus courant
+     */
+    public int getId()
+    {
+        return this.myRemote.getId();
+    }
+
+    /**
+     * Connexion au serveur Reseau. Le processus récupère un id via le serveur
+     * et déclare son stub à celui-ci
      */
     public synchronized void connexionReso()
     {
         try
         {
+            // Récupération de l'ID
             int pId = reso.register();
+
             // Création de l'algo
             this.algo = ElectionFactory.createAlgoElection(Client.ALGO, reso, this, pId);
+
+            // Création de l'interface avec le Reseau
             this.myRemote = new ProcessusRemoteImpl(this, pId, algo);
-            
+
+            // Notification au serveur Reseau de l'enregistrement du processus
             String myHostName = InetAddress.getLocalHost().getHostName();
-            
             this.reso.naming(pId, myHostName);
 
+            // Attente de la fin de l'initialisation
             while (!this.initReady)
             {
                 try
@@ -181,77 +209,119 @@ public class Processus
                     e.printStackTrace();
                 }
             }
-
-
         }
         catch (RemoteException e)
         {
             e.printStackTrace();
-        } catch (UnknownHostException e1) {
-			e1.printStackTrace();
-		}
+        }
+        catch (UnknownHostException e1)
+        {
+            e1.printStackTrace();
+        }
     }
 
     /**
-     * Recupere la liste des voisins connus + récupère le processus maitre
+     * Recupere la liste des voisins connus. Une fois ceux-ci acquis, on
+     * determine le maitre.
      */
-    public synchronized void recupereVoisins() //TODO : bloquer si élection en cours
+    public synchronized void recupereVoisins()
     {
         try
         {
             this.voisins = this.reso.getVoisins();
-            
-            //
-            // TODO : éviter cette partie si déjà maître
-            //
-            
-            // Si un seul voisin => le processus local devient automatiquement le maitre
-            if (this.voisins.size() == 1)
-            {
-                this.masterId = this.myRemote.getId();
-                //TODO println
-                System.out.println("Je suis le seul maître à bord");
-                this.myRemote.devientMaster();
-            } else
-            {
-                //TODO println
-                System.out.println(this.voisins.size() + "voisins récupérés ");
-                // Demander au serveur qui est le maître
-                this.masterId = this.reso.whoIsMaster();
-                //TODO println
-                System.out.println("Le maître est " + this.masterId);
-                // TODO : if masterId = -1 : ne pas faire d'élection et attendre qu'une élection se fasse !
-            }
+            defineMaster();
+        }
+        catch (RemoteException ex)
+        {
+            ex.printStackTrace();
+        }
+    }
 
+    /**
+     * Determine le maitre, s'il est en ligne. Dans le cas où le maitre est hors
+     * ligne, on attend l'élection d'un nouveau maitre Une fois le maitre
+     * acquis, on passe à l'étape de récupération des formes.
+     *
+     * @throws RemoteException
+     */
+    public synchronized void defineMaster() throws RemoteException
+    {
+        // Si un seul voisin => le processus local devient automatiquement le maitre
+        if (this.voisins.size() == 1)
+        {
+            this.masterId = this.myRemote.getId();
+            //TODO println
+            System.out.println("Je suis le seul maître à bord");
+            this.myRemote.devientMaster();
+
+            recupereWB();
+        }
+        else
+        {
+            //TODO println
+            System.out.println(this.voisins.size() + " voisins récupérés ");
+            // Demander au serveur qui est le maître
+            int masterID = this.reso.whoIsMaster();
+
+            if (masterID == -1)
+            {
+                // Pas de maitre.
+                // On attend la fin de la prochaine élection
+                // (potentiellement en cours)
+                // TODO println
+                System.out.println("Pas de maitre, attente d'un nouveau maitre");
+
+                this.waitingMaster = true;
+                algo.waitNewMaster();
+            }
+            else
+            {
+                this.waitingMaster = false;
+                setMaster(masterID);
+                recupereWB();
+            }
+        }
+    }
+
+    /**
+     * Recupere les formes du maitre. Une fois cette tâche terminée, on notifie
+     * de la fin de la phase d'initialisation
+     */
+    public synchronized void recupereWB()
+    {
+        try
+        {
             // Récupération du WB actuel
             ArrayList<String> wb = this.reso.getWB(getId());
-            for(String f : wb)
+            for (String f : wb)
             {
-            	recoitDessin(f);
+                recoitDessin(f);
             }
-            
+
+            // TODO println
+            System.out.println("WB à jour");
+
             // Le client est prêt à dessiner
             this.initReady = true;
             notifyAll();
-
         }
-        catch (RemoteException e)
+        catch (RemoteException ex)
         {
-            e.printStackTrace();
+            ex.printStackTrace();
         }
     }
 
     /**
      * Ajout d'un processus dans la liste des voisins
-     * 
+     *
      * @param nId ID du nouveau processus
      */
     public void ajoutNouveauVoisin(int nId)
     {
-    	synchronized(this.voisins)
-    	{
-    		this.voisins.add(nId);
-    	}
+        synchronized (this.voisins)
+        {
+            this.voisins.add(nId);
+        }
     }
 
     /**
@@ -261,10 +331,10 @@ public class Processus
      */
     public void suppressionVoisin(int vId)
     {
-    	synchronized(this.voisins)
-    	{
-    		this.voisins.remove(new Integer(vId));
-    	}
+        synchronized (this.voisins)
+        {
+            this.voisins.remove(new Integer(vId));
+        }
     }
 
     /**
@@ -277,7 +347,7 @@ public class Processus
         //
         // TODO : Renommer la méthode en qqch comme "serializeListeForme" ?
         //
-        
+
         ArrayList<Forme> myWB = this.wb.getFormes();
         ArrayList<String> myStringWB = new ArrayList<String>();
 
@@ -296,7 +366,7 @@ public class Processus
      */
     public void envoiNouveauDessin(Forme nF)
     {
-        
+
         // Demander au maître l'accès au tableau
         // => sendTo (moi, maitre, ACCES_WB)
         // => le maître répond :
@@ -304,7 +374,7 @@ public class Processus
         //			- Sinon => la demande d'accès au WB est placée en file d'attente
         try
         {
-            this.reso.sendTo(new Message(this.myRemote.getId(),  TypeMessage.DEMANDE_SC, this.masterId, null));
+            this.reso.sendTo(new Message(this.myRemote.getId(), TypeMessage.DEMANDE_SC, this.masterId, null));
         }
         catch (RemoteException e1)
         {
@@ -328,45 +398,51 @@ public class Processus
         }
 
         // Broadcast du nouveau dessin
-        
-        if(this.accesWB == 1)
+
+        if (this.accesWB == 1)
         {
-        	System.out.println("Accès la SC autorisé :)");
-        	synchronized(this.voisins)
-        	{
-		        Iterator iterVoisin = voisins.iterator();
-		        while (iterVoisin.hasNext())
-		        {
-		            Integer idTo = (Integer) iterVoisin.next();
-		            System.out.println("Envoi de la forme à " + idTo);
-		                try
-		                {
-		                    reso.sendTo(new Message(myRemote.getId(),TypeMessage.ENVOI_NOUVELLE_FORME, idTo, nF.makeItSendable()));
-		                }
-		                catch (RemoteException e)
-		                {
-		                    e.printStackTrace();
-		                }
-		            
-		        }
-        	}
-        	
-        	// Signaler la fin de la diffusion
-        	try {
-        		System.out.println("Attente avant d'envoyer le message de fin d'accès à la SC");
-				Thread.sleep(10000);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
-        	try {
-				reso.sendTo(new Message(myRemote.getId(), TypeMessage.FIN_ACCES_SC,this.masterId, null));
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
+            System.out.println("Accès la SC autorisé :)");
+            synchronized (this.voisins)
+            {
+                Iterator iterVoisin = voisins.iterator();
+                while (iterVoisin.hasNext())
+                {
+                    Integer idTo = (Integer) iterVoisin.next();
+                    System.out.println("Envoi de la forme à " + idTo);
+                    try
+                    {
+                        reso.sendTo(new Message(myRemote.getId(), TypeMessage.ENVOI_NOUVELLE_FORME, idTo, nF.makeItSendable()));
+                    }
+                    catch (RemoteException e)
+                    {
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+
+            // Signaler la fin de la diffusion
+            try
+            {
+                System.out.println("Attente avant d'envoyer le message de fin d'accès à la SC");
+                Thread.sleep(10000);
+            }
+            catch (InterruptedException e1)
+            {
+                e1.printStackTrace();
+            }
+            try
+            {
+                reso.sendTo(new Message(myRemote.getId(), TypeMessage.FIN_ACCES_SC, this.masterId, null));
+            }
+            catch (RemoteException e)
+            {
+                e.printStackTrace();
+            }
         }
         else
         {
-        	System.out.println("Accès à la SC refusé :(");
+            System.out.println("Accès à la SC refusé :(");
         }
         this.accesWB = 0;
     }
@@ -380,10 +456,10 @@ public class Processus
     {
         try
         {
-        	synchronized(wb)
-        	{
-        		wb.recoitDessin(FormeFactory.createForme(forme));
-        	}
+            synchronized (wb)
+            {
+                wb.recoitDessin(FormeFactory.createForme(forme));
+            }
         }
         catch (Exception ex)
         {
@@ -408,21 +484,22 @@ public class Processus
 
     /**
      * Supprime un voisin qui a renvoyé un timeout
+     *
      * @param idFrom
      */
     public void recoitTimeOut(int idFrom)
     {
-    	System.out.println("Timeout : " + idFrom);
-    	synchronized(this.voisins)
-    	{
-    		this.voisins.remove(new Integer(idFrom));
-    	}
-        
+        System.out.println("Timeout : " + idFrom);
+        synchronized (this.voisins)
+        {
+            this.voisins.remove(new Integer(idFrom));
+        }
+
         // Si le maitre est déconnecté, on lance une élection
         // Sinon, on signale la deconnexion à l'algorithme au cas où il en aurait besoin
-        if(idFrom == this.masterId)
+        if (idFrom == this.masterId)
         {
-            if(!this.algo.isInElection())
+            if (!this.algo.isInElection())
             {
                 System.out.println("Le maître ne répond plus : Démarrage de l'éléction !");
                 this.algo.demarrerElection();
@@ -436,12 +513,11 @@ public class Processus
         {
             this.algo.timeout(idFrom);
         }
-        
+
     }
-    
+
     /**
-     * Autorisation d'accèder à la Section Critique.
-     * Débloquage de l'attente.
+     * Autorisation d'accèder à la Section Critique. Débloquage de l'attente.
      */
     public synchronized void recoitAccesSC(int autorisation)
     {
@@ -450,12 +526,12 @@ public class Processus
         this.accesWB = autorisation;
         notifyAll();
     }
-    
+
     /**
      * Si le client local devient maître => lancer le traitement de la SC
      */
     public void startThreadSC()
     {
-    	this.myRemote.devientMaster();
+        this.myRemote.devientMaster();
     }
 }

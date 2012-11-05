@@ -222,7 +222,9 @@ public class ThreadTraitementMessages extends Thread
                     {
                         ajoutNouveauMessage(new Message(e.getMError().getIdTo(),
                                 TypeMessage.REFUSER_ACCES_SC, e.getMError().getIdFrom(), null));
-
+                        
+                        // Si la section critique est refusée, on est plus dans une diffusion
+                        diffusionEnCours = false;
                     }
 
                     Iterator mess = this.listeMessages.iterator();

@@ -30,6 +30,7 @@ public class ChangRoberts implements IChangRoberts, IElection
         PERDU,
         SLEEP
     }
+    
     /**
      * Processus parent
      */
@@ -71,20 +72,7 @@ public class ChangRoberts implements IChangRoberts, IElection
         this.election = false;
     }
 
-    /**
-     * Génère l'ID du processus suivant
-     *
-     * @return ID du processus suivant
-     */
-    private Integer getNextProc()
-    {
-        ArrayList<Integer> voisins = parent.getVoisins();
-
-        int index = voisins.indexOf(new Integer(this.id));
-        int size = voisins.size();
-
-        return voisins.get((index + 1) % size).intValue();
-    }
+    
 
     /**
      * Démarrage de l'élection - le processus est placé dans l'état "candidat" -
@@ -97,17 +85,10 @@ public class ChangRoberts implements IChangRoberts, IElection
 
         this.etat = EtatElection.CAND;
         this.election = true;
-        try
-        {
-            // TODO : Println
-            System.out.println("[ELECTION] Envoi de <tok," + this.id + "> à " + getNextProc());
-            em = new ElectionMessage(this.id, getNextProc(), new Integer(id), ElectionAlgorithm.CHANG_ROBERTS, ElectionTypeMessage.CR_TOK);
-            reso.sendTo(em);
-        }
-        catch (RemoteException ex)
-        {
-            ex.printStackTrace();
-        }
+
+        // TODO : Println
+        System.out.println("[ELECTION] Envoi du premier token");
+        send(id); 
     }
 
     /**
@@ -119,16 +100,22 @@ public class ChangRoberts implements IChangRoberts, IElection
     {
         if (m instanceof ElectionMessage)
         {
-            ElectionMessage em = (ElectionMessage) m;
+            ElectionMessage newEM = (ElectionMessage) m;
+            int val = ((Integer)newEM.getData()).intValue();
 
-            if (em.getElectionMsg() == ElectionTypeMessage.CR_TOK)
+            if (newEM.getElectionMsg() == ElectionTypeMessage.CR_TOK)
             {
-                this.accepteTOK(
-                        ((Integer) em.getData()).intValue());
+                this.accepteTOK(val);
             }
         }
     }
-
+    
+   
+    
+    
+    
+    
+    
     /**
      * Accepte le token du processus j et execute l'algorithme.
      *
@@ -137,65 +124,41 @@ public class ChangRoberts implements IChangRoberts, IElection
     public void accepteTOK(int j)
     {
         this.election = true;
+        
         // TODO : Println
         System.out.println("[ELECTION] Accepte <tok," + j + ">");
+        
         switch (this.etat)
         {
-            //
-            // Etat CANDIDAT à l'élection
-            //
             case CAND:
-
-                // On reçoit son ID dans le token = Victoire
-                if (j == this.id)
+                
+                setMaster(j);
+                
+                if(this.id == j)
                 {
-                    // TODO : Println
+                    // TODO println
                     System.out.println("[ELECTION] Victoire !");
-                    this.etat = EtatElection.LEADER;
-                    this.parent.setMaster(j);
-                    this.parent.startThreadSC();
-                    this.election = false;
                 }
-                else if (this.id < j)
+                else if(this.id < j)
                 {
-                    // TODO : Println
+                    // TODO println
                     System.out.println("[ELECTION] Défaite ! Le nouveau maitre est " + j);
-                    this.etat = EtatElection.PERDU;
-                    this.parent.setMaster(j);
-                    this.election = false;
-                    try
-                    {
-                        // TODO : Println
-                        System.out.println("[ELECTION] Transfert de <tok," + j + "> à " + getNextProc());
-                        em = new ElectionMessage(this.id, getNextProc(), new Integer(j), ElectionAlgorithm.CHANG_ROBERTS, ElectionTypeMessage.CR_TOK);
-                        reso.sendTo(em);
-
-                    }
-                    catch (RemoteException ex)
-                    {
-                        ex.printStackTrace();
-                    }
+                
+                    // TODO : Println
+                    System.out.println("[ELECTION] Transfert du token du maitre au processus suivant");
+                    send(j);
                 }
                 break;
 
             case SLEEP:
+                
                 // TODO : Println
                 System.out.println("[ELECTION] Sleeping : Le nouveau maitre est " + j);
-                this.etat = EtatElection.PERDU;
-                this.parent.setMaster(j);
-                this.election = false;
-                try
-                {
-                    // TODO : Println
-                    System.out.println("[ELECTION] Transfert de <tok," + j + "> à " + getNextProc());
-                    em = new ElectionMessage(this.id, getNextProc(), new Integer(j), ElectionAlgorithm.CHANG_ROBERTS, ElectionTypeMessage.CR_TOK);
-                    reso.sendTo(em);
-
-                }
-                catch (RemoteException ex)
-                {
-                    ex.printStackTrace();
-                }
+                setMaster(j);
+                
+                // TODO : Println
+                System.out.println("[ELECTION] Sleeping : Transfert du token du maitre au processus suivant");
+                send(j);
         }
 
     }
@@ -211,24 +174,100 @@ public class ChangRoberts implements IChangRoberts, IElection
     {
         if (idProc == em.getIdTo())
         {
-            Integer j = (Integer) em.getData();
-
-            try
-            {
-                // TODO : Println
-                System.out.println("[ELECTION] Timeout : Nouveau transfert de <tok," + j.intValue() + "> à " + getNextProc());
-                em = new ElectionMessage(this.id, getNextProc(), j, ElectionAlgorithm.CHANG_ROBERTS, ElectionTypeMessage.CR_TOK);
-                reso.sendTo(em);
-            }
-            catch (RemoteException ex)
-            {
-                ex.printStackTrace();
-            }
+            int j = ((Integer) em.getData()).intValue();
+            // TODO : Println
+            System.out.println("[ELECTION] Timeout : Ré-envoi du token");
+            send(j);
         }
     }
     
+    /**
+     * Retourne si le processus est en cours d'élection ou non.
+     * 
+     * @return true si en élection, false sinon
+     */
     public boolean isInElection()
     {
         return election;
+    }
+    
+    /**
+     * Attend qu'un nouveau maitre soit élu pour ne pas créer de problèmes !
+     */
+    public void waitNewMaster()
+    {
+        // Le processus est endormi. 
+        // Il participe à l'élection mais sera forcément perdant
+        this.etat = EtatElection.SLEEP;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /**
+     * Génère l'ID du processus suivant
+     *
+     * @return ID du processus suivant
+     */
+    private Integer getNextProc()
+    {
+        ArrayList<Integer> voisins = parent.getVoisins();
+
+        int index = voisins.indexOf(new Integer(this.id));
+        int size = voisins.size();
+
+        return voisins.get((index + 1) % size).intValue();
+    }
+    
+    /**
+     * Définit le nouveau maitre.
+     * Si le maitre est le processus courant, on démarre le thread de la SC.
+     * 
+     * @param masterID ID du processus maitre
+     */
+    private void setMaster(int masterID)
+    {
+        this.parent.setMaster(masterID);
+        
+        if(this.id == masterID)
+        {   
+            this.etat = EtatElection.LEADER;    
+            this.parent.startThreadSC();    
+        }
+        else if(this.id < masterID)
+        {
+            this.etat = EtatElection.PERDU;
+        }
+        
+        this.election = false;
+    }
+    
+    /**
+     * Envoie un <tok,j> au processus suivant
+     * 
+     * @param j Valeur du token
+     */
+    private void send(int j)
+    {   
+        try
+        {
+            Integer q = new Integer(j);
+            int next = getNextProc();
+            
+            // TODO : Println
+            System.out.println("[ELECTION] Envoi de <tok," + j + "> à " + next);
+            em = new ElectionMessage(this.id, next, j, ElectionAlgorithm.CHANG_ROBERTS, ElectionTypeMessage.CR_TOK);
+            reso.sendTo(em);
+        }
+        catch (RemoteException ex)
+        {
+            ex.printStackTrace();
+        }
     }
 }

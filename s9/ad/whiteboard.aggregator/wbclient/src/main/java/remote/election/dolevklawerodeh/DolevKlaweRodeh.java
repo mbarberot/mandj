@@ -2,8 +2,8 @@ package remote.election.dolevklawerodeh;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.LinkedList;
+import java.util.Queue;
 import remote.IReseau;
 import remote.Processus;
 import remote.election.IElection;
@@ -20,6 +20,14 @@ import remote.messages.Message;
 public class DolevKlaweRodeh implements IElection, IDolevKlaweRodeh
 {
 
+    /**
+     * Etats dans lequel l'algorithme peut se trouver
+     */
+    private enum EtatDKR
+    {
+
+        actif, passif, leader, perdu
+    };
     /**
      * Processus parent
      */
@@ -48,16 +56,10 @@ public class DolevKlaweRodeh implements IElection, IDolevKlaweRodeh
      * true si un election est en cours, false sinon
      */
     private boolean election;
-    private boolean receivedOne;
-
     /**
-     * Etats dans lequel l'algorithme peut se trouver
+     * true si en attente d'un token one, false sinon
      */
-    private enum EtatDKR
-    {
-
-        actif, passif, leader, perdu
-    };
+    private boolean waitingOne;
     /**
      * Etat courant de l'algorithme
      */
@@ -66,6 +68,10 @@ public class DolevKlaweRodeh implements IElection, IDolevKlaweRodeh
      * Dernier message envoyé (pour la gestion du timeout)
      */
     private ElectionMessage em;
+    /**
+     * Liste des messages reçus
+     */
+    private FileMessages file;
 
     /**
      * Constructeur
@@ -87,22 +93,10 @@ public class DolevKlaweRodeh implements IElection, IDolevKlaweRodeh
         this.lead = parent.getMaster();
         this.etat = EtatDKR.passif;
         this.election = false;
-        this.receivedOne = false;
-    }
+        this.waitingOne = true;
+        this.file = new FileMessages(this);
 
-    /**
-     * Calcule l'ID du processus suivant
-     *
-     * @return ID du processus suivant dans l'anneau
-     */
-    private Integer getNextProc()
-    {
-        ArrayList<Integer> voisins = parent.getVoisins();
-
-        int index = voisins.indexOf(new Integer(this.id));
-        int size = voisins.size();
-
-        return voisins.get((index + 1) % size).intValue();
+        this.file.start();
     }
 
     /**
@@ -111,21 +105,21 @@ public class DolevKlaweRodeh implements IElection, IDolevKlaweRodeh
      */
     public void demarrerElection()
     {
-            // TODO : Println
-            System.out.println("[ELECTION] Début de l'élection, Algorithme de Dolev Klawe et Rodeh");
+        // TODO : Println
+        System.out.println("[ELECTION] Début de l'élection, Algorithme de Dolev Klawe et Rodeh");
 
-            // INIT
-            this.ci = id;
-            this.vac = -1;
-            this.lead = -1;
-            this.election = false;
-            this.receivedOne = false;
-            this.etat = EtatDKR.actif;
+        // INIT
+        this.ci = id;
+        this.vac = -1;
+        this.lead = -1;
+        this.election = false;
+        this.waitingOne = true;
+        this.etat = EtatDKR.actif;
 
-            // TODO println
-            System.out.println("[ELECTION] Envoi du premier token ONE");
-            send(ElectionTypeMessage.DKR_ONE, new Integer(ci));
-        
+        // TODO println
+        System.out.println("[ELECTION] Envoi du premier token ONE");
+        send(ElectionTypeMessage.DKR_ONE, new Integer(ci));
+
     }
 
     /**
@@ -139,7 +133,10 @@ public class DolevKlaweRodeh implements IElection, IDolevKlaweRodeh
         ElectionMessage _em;
         if (m instanceof ElectionMessage)
         {
+            // Cast du message
             _em = (ElectionMessage) m;
+
+
             int q = ((Integer) _em.getData()).intValue();
 
             switch (_em.getElectionMsg())
@@ -148,7 +145,14 @@ public class DolevKlaweRodeh implements IElection, IDolevKlaweRodeh
                     this.recoitOne(q);
                     break;
                 case DKR_TWO:
-                    this.recoitTwo(q);
+                    if (waitingOne)
+                    {
+                        file.addMessage(_em);
+                    }
+                    else
+                    {
+                        this.recoitTwo(q);
+                    }
                     break;
                 case DKR_SMALL:
                     recoitSmall(q);
@@ -180,6 +184,26 @@ public class DolevKlaweRodeh implements IElection, IDolevKlaweRodeh
     }
 
     /**
+     * Retourne si l'algorithme est en cous d'élection
+     *
+     * @return true si l'élection est en cours, false sinon
+     */
+    public boolean isInElection()
+    {
+        return election;
+    }
+
+    /**
+     * Attend le nouveau maitre.
+     *
+     */
+    public void waitNewMaster()
+    {
+        this.etat = EtatDKR.passif;
+
+    }
+
+    /**
      * Accepte le message <one,q>
      *
      * @param q Valeur du token ONE
@@ -189,6 +213,7 @@ public class DolevKlaweRodeh implements IElection, IDolevKlaweRodeh
         // TODO println
         System.out.println("[ELECTION] Token reçu : <ONE," + q + ">");
         this.election = true;
+        this.waitingOne = false;
 
         if (etat == EtatDKR.actif)
         {
@@ -248,6 +273,7 @@ public class DolevKlaweRodeh implements IElection, IDolevKlaweRodeh
             System.out.println("[ELECTION] Mode passif : transfert au prochain processus");
             send(ElectionTypeMessage.DKR_TWO, new Integer(q));
         }
+
     }
 
     /**
@@ -266,6 +292,44 @@ public class DolevKlaweRodeh implements IElection, IDolevKlaweRodeh
             // TODO println
             System.out.println("[ELECTION] Mode passif : Transfert au prochain processus.");
             send(ElectionTypeMessage.DKR_SMALL, new Integer(q));
+        }
+    }
+
+    /**
+     * Calcule l'ID du processus suivant
+     *
+     * @return ID du processus suivant dans l'anneau
+     */
+    private Integer getNextProc()
+    {
+        ArrayList<Integer> voisins = parent.getVoisins();
+
+        int index = voisins.indexOf(new Integer(this.id));
+        int size = voisins.size();
+
+        return voisins.get((index + 1) % size).intValue();
+    }
+
+    /**
+     * Methode de simplification de l'envoi d'un message d'élection. On ne
+     * stipule que les informations du token.
+     *
+     * @param typeMess Type de token (ONE, TWO ou SMALL)
+     * @param value Valeur du token
+     */
+    private void send(ElectionTypeMessage typeMess, Integer value)
+    {
+        int next = getNextProc();
+        try
+        {
+            em = new ElectionMessage(this.id, next, value, ElectionAlgorithm.DOLEV_KLAWE_RODEH, typeMess);
+            // TODO println
+            System.out.println("[ELECTION] Envoi de : " + em.toString() + " à " + next);
+            reso.sendTo(em);
+        }
+        catch (RemoteException ex)
+        {
+            ex.printStackTrace();
         }
     }
 
@@ -294,33 +358,5 @@ public class DolevKlaweRodeh implements IElection, IDolevKlaweRodeh
         }
 
         this.election = false;
-    }
-
-    /**
-     * Methode de simplification de l'envoi d'un message d'élection. On ne
-     * stipule que les informations du token.
-     *
-     * @param typeMess Type de token (ONE, TWO ou SMALL)
-     * @param value Valeur du token
-     */
-    private void send(ElectionTypeMessage typeMess, Integer value)
-    {
-        int next = getNextProc();
-        try
-        {
-            em = new ElectionMessage(this.id, next, value, ElectionAlgorithm.DOLEV_KLAWE_RODEH, typeMess);
-            // TODO println
-            System.out.println("[ELECTION] Envoi de : " + em.toString() + " à " + next);
-            reso.sendTo(em);
-        }
-        catch (RemoteException ex)
-        {
-            ex.printStackTrace();
-        }
-    }
-    
-    public boolean isInElection()
-    {
-        return election;
     }
 }

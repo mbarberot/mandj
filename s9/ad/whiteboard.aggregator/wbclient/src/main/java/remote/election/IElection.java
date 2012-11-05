@@ -35,5 +35,10 @@ public interface IElection
      * @return Statut de l'élection : true = en cours, false sinon
      */
     public boolean isInElection();
+    
+    /**
+     * Attend qu'un nouveau maitre soit élu
+     */
+    public void waitNewMaster();
           
 }

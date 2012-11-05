@@ -2,6 +2,8 @@ package remote.election.bully;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import remote.IReseau;
 import remote.Processus;
 import remote.election.IElection;
@@ -58,6 +60,12 @@ public class Bully implements IElection, IBully
      * Thread d'attente pour bully
      */
     private ThreadBullyWait bullyWait;
+    /**
+     * Cas du processus qui arrive en cours d'élection.
+     * Il doit perdre cette élection ! 
+     * Donc loser = true sinon false
+     */
+    private boolean loser;
 
     /**
      * Constructeur
@@ -75,14 +83,10 @@ public class Bully implements IElection, IBully
         this.parent = parent;
         this.id = id;
         this.election = false;
+        this.loser = false;
         this.ok = false;
         this.newCoor = false;
         this.bullyWait = null;
-
-
-        // TODO : println
-        System.out.println("Algo Bully - Prêt");
-
     }
 
     /**
@@ -97,6 +101,7 @@ public class Bully implements IElection, IBully
         this.election = true;
         this.ok = false;
         this.newCoor = false;
+        this.idCoor = -1;
 
         this.voisins = this.parent.getVoisins();
         // Propagation de l'election aux voisins 
@@ -104,16 +109,9 @@ public class Bully implements IElection, IBully
         {
             if (this.id < j.intValue())
             {
-                try
-                {
-                    // TODO : println
-                    System.out.println("[ELECTION] Envoie ELECTION au processus " + j);
-                    reso.sendTo(new ElectionMessage(this.id, j.intValue(), null, ElectionAlgorithm.BULLY, ElectionTypeMessage.BULLY_ELECTION));
-                }
-                catch (RemoteException ex)
-                {
-                    ex.printStackTrace();
-                }
+                // TODO : println
+                System.out.println("[ELECTION] Envoie ELECTION au processus " + j);
+                send(j.intValue(), ElectionTypeMessage.BULLY_ELECTION);
             }
         }
 
@@ -122,70 +120,7 @@ public class Bully implements IElection, IBully
         bullyWait.waitForACK(TEMPO * voisins.size() + 1 * 2);
 
     }
-
-    /**
-     * Fin de l'attente du message ACK - soit un message ACK a été reçu et on
-     * attend un signe du nouveau maitre - soit le temps limite imparti est
-     * écoulé et on s'autoproclame maitre
-     */
-    public void doneWaitingForACK()
-    {
-        if (ok)
-        {
-            bullyWait = new ThreadBullyWait(this);
-            bullyWait.waitForCOOR();
-        }
-        else
-        {
-            this.voisins = parent.getVoisins();
-
-            // Diffusion du nouveau coordinateur
-            // TODO : println
-            System.out.println("[ELECTION] Victoire !");
-            this.idCoor = this.id;
-            this.parent.setMaster(idCoor);
-
-            this.parent.startThreadSC();
-
-            for (Integer j : voisins)
-            {
-                if (j.intValue() != this.id)
-                {
-                    try
-                    {
-                        // TODO : println
-                        System.out.println("[ELECTION] Envoi ID nouveau maitre(" + this.idCoor + ") à " + j.intValue());
-                        reso.sendTo(new ElectionMessage(this.id, j.intValue(), ElectionAlgorithm.BULLY, ElectionTypeMessage.BULLY_COOR));
-                    }
-                    catch (RemoteException ex)
-                    {
-                        ex.printStackTrace();
-                    }
-                }
-
-            }
-            endElection();
-        }
-    }
-
-    /**
-     * Fin de l'attente du nouveau maitre : on a reçu l'ID du nouveau maitre
-     */
-    public void doneWaitingForCOOR()
-    {
-        endElection();
-    }
-
-    /**
-     * Fin de l'élection
-     */
-    public void endElection()
-    {
-        // TODO : println
-        System.out.println("[ELECTION] Fin de l'élection");
-        this.election = false;
-    }
-
+    
     /**
      * Accepte un message lié aux elections.
      *
@@ -208,6 +143,61 @@ public class Bully implements IElection, IBully
                 break;
         }
     }
+    
+    /**
+     * Fin de l'attente du message ACK - soit un message ACK a été reçu et on
+     * attend un signe du nouveau maitre - soit le temps limite imparti est
+     * écoulé et on s'autoproclame maitre
+     */
+    public void doneWaitingForACK()
+    {
+        if (ok)
+        {
+            bullyWait = new ThreadBullyWait(this);
+            bullyWait.waitForCOOR();
+        }
+        else
+        {
+            // Diffusion du nouveau coordinateur
+            // TODO : println
+            System.out.println("[ELECTION] Victoire !");
+            this.idCoor = this.id;
+            this.voisins = parent.getVoisins();
+            for (Integer j : voisins)
+            {
+                if (j.intValue() != this.id)
+                {
+                    // TODO : println
+                    System.out.println("[ELECTION] Envoi ID nouveau maitre(" + this.id + ") à " + j.intValue());
+                    send(j.intValue(),ElectionTypeMessage.BULLY_COOR);
+                }
+
+            }
+            
+            endElection();
+        }
+    }
+
+    /**
+     * Fin de l'attente du nouveau maitre : on a reçu l'ID du nouveau maitre
+     */
+    public void doneWaitingForCOOR()
+    {
+        endElection();
+    }
+
+    /**
+     * Fin de l'élection
+     */
+    public void endElection()
+    {
+        // TODO : println
+        System.out.println("[ELECTION] Fin de l'élection");
+        setMaster(idCoor);
+        this.election = false;
+    }
+
+    
 
     /**
      * Accepte un message d'élection
@@ -215,18 +205,16 @@ public class Bully implements IElection, IBully
      * @param j ID du processus initiateur
      */
     public void accepteElection(int j)
-    {
-        try
+    {       
+        // TODO : println
+        System.out.println("[ELECTION] Message ELECTION reçu du processus " + j);
+        
+        if(!loser)
         {
             // TODO : println
-            System.out.println("[ELECTION] Message ELECTION reçu du processus " + j);
-            reso.sendTo(new ElectionMessage(this.id, j, ElectionAlgorithm.BULLY, ElectionTypeMessage.BULLY_ACK));
+            System.out.println("[ELECTION] Envoi d'un message ACK à " + j);
+            send(j, ElectionTypeMessage.BULLY_ACK);
         }
-        catch (RemoteException ex)
-        {
-            ex.printStackTrace();
-        }
-
 
         if (!election)
         {
@@ -255,23 +243,89 @@ public class Bully implements IElection, IBully
     public void accepteCoor(int j)
     {
         // TODO : println
-        System.out.println("[ELECTION] NEWCOOR reçu, le nouveau maitre est " + j);
-        this.idCoor = j;
-        this.parent.setMaster(idCoor);
+        System.out.println("[ELECTION] NEWCOOR reçu de " + j);
         this.newCoor = true;
+        this.idCoor = j;
         if (this.bullyWait != null)
         {
             this.bullyWait.notifyCOOR();
         }
     }
 
+    /**
+     * Gère la déonnection d'un processus.
+     * Inutile pour cet algorithme.
+     * 
+     * @param idProc ID du processus déconnecté
+     */
     public void timeout(int idProc)
     {
         // Nothing to do here !
     }
 
+    /**
+     * Retourne si l'élection est en cours ou pas
+     * 
+     * @return true si l'élection est en cours 
+     */
     public boolean isInElection()
     {
         return election;
+    }
+
+    /**
+     * On veut attendre la fin de l'élection pour acquérir le nouveau maitre.
+     */
+    public void waitNewMaster()
+    {
+        this.election = true;
+        this.loser = true;
+        
+        if (this.bullyWait == null)
+        {
+            this.bullyWait = new ThreadBullyWait(this);
+        }
+        this.bullyWait.waitForCOOR();
+    }
+    
+    
+    
+    /**
+     * Envoi un message d'élection.
+     * 
+     * @param idTo Destinataire
+     * @param typeMess Type du message (ELECTION, ACK ou COOR)
+     */
+    private void send(int idTo, ElectionTypeMessage typeMess)
+    {
+        try
+        {
+            ElectionMessage em = new ElectionMessage(this.id, idTo, null, ElectionAlgorithm.BULLY, typeMess);
+            reso.sendTo(em);
+        }
+        catch (RemoteException ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+    
+    /**
+     * Définit le nouveau maitre.
+     * Notifie le Processus du nouveau maitre.
+     * Lance le thread de traitement des demandes de SC si nécessaire
+     * 
+     * @param masterID ID du maitre élu
+     */
+    private void setMaster(int masterID)
+    {
+        // TODO Println
+        System.out.println("[ELECTION] Le nouveau maitre est " + masterID);
+        
+        this.parent.setMaster(masterID);
+        
+        if(this.id == masterID)
+        {
+            this.parent.startThreadSC();
+        }
     }
 }
