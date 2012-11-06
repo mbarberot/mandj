@@ -10,8 +10,6 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import main.Client;
 import modele.Modele;
 import remote.election.ElectionFactory;
@@ -257,17 +255,12 @@ public class Processus
 
         if (masterID == -1)
         {
-            if (this.voisins.size() == 1)
+            int id = this.getId();
+            int size = this.voisins.size();
+            if(size > 1 && voisins.get(size -1).intValue() != this.getId())
             {
-                
-                    try
-                    {
-                        this.wait(15000);
-                    }
-                    catch (InterruptedException ex)
-                    {
-                        ex.printStackTrace();
-                    }
+                // TODO println
+                System.out.println("Pas de maitre, election d'un nouveau maitre");
                 this.algo.demarrerElection();
                 this.waitingMaster = true;
             }
