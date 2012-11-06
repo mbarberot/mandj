@@ -27,7 +27,7 @@
             </descriptors>
             <archive>
               <manifest>
-                <mainClass>main.Reso</mainClass>
+                <mainClass>main.Client</mainClass>
               </manifest>
             </archive>
           </configuration>
