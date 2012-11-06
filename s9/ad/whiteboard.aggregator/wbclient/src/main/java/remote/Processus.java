@@ -10,6 +10,8 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import main.Client;
 import modele.Modele;
 import remote.election.ElectionFactory;
@@ -247,23 +249,29 @@ public class Processus
     public synchronized void defineMaster() throws RemoteException
     {
         // Si un seul voisin => le processus local devient automatiquement le maitre
-        if (this.voisins.size() == 1)
-        {
-            this.masterId = this.myRemote.getId();
-            //TODO println
-            System.out.println("Je suis le seul maître à bord");
-            this.myRemote.devientMaster();
 
-            recupereWB();
-        }
-        else
-        {
-            //TODO println
-            System.out.println(this.voisins.size() + " voisins récupérés ");
-            // Demander au serveur qui est le maître
-            int masterID = this.reso.whoIsMaster();
+        //TODO println
+        System.out.println(this.voisins.size() + " voisins récupérés ");
+        // Demander au serveur qui est le maître
+        int masterID = this.reso.whoIsMaster();
 
-            if (masterID == -1)
+        if (masterID == -1)
+        {
+            if (this.voisins.size() == 1)
+            {
+                
+                    try
+                    {
+                        this.wait(15000);
+                    }
+                    catch (InterruptedException ex)
+                    {
+                        ex.printStackTrace();
+                    }
+                this.algo.demarrerElection();
+                this.waitingMaster = true;
+            }
+            else
             {
                 // Pas de maitre.
                 // On attend la fin de la prochaine élection
@@ -274,14 +282,16 @@ public class Processus
                 this.waitingMaster = true;
                 algo.waitNewMaster();
             }
-            else
-            {
-                this.waitingMaster = false;
-                setMaster(masterID);
-                recupereWB();
-            }
         }
+        else
+        {
+            this.waitingMaster = false;
+            setMaster(masterID);
+            recupereWB();
+        }
+    
     }
+
 
     /**
      * Recupere les formes du maitre. Une fois cette tâche terminée, on notifie
@@ -511,7 +521,10 @@ public class Processus
         }
         else
         {
-            this.algo.timeout(idFrom);
+            if(this.algo.isInElection())
+            {
+                this.algo.timeout(idFrom);
+            }
         }
 
     }
