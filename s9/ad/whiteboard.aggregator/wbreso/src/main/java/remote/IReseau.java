@@ -29,7 +29,7 @@ public interface IReseau extends Remote
      * @param host Hôte du processus
      * @throws RemoteException 
      */
-    public void naming(int idProc, String clientHost) throws RemoteException;
+    public void naming(int idProc, Object clientHost) throws RemoteException;
 
     /**
      * Notification au serveur du départ d'un processus
