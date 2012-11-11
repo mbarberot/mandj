@@ -195,7 +195,7 @@ public class Processus
 
             // Notification au serveur Reseau de l'enregistrement du processus
             String myHostName = InetAddress.getLocalHost().getHostName();
-            this.reso.naming(pId, myHostName);
+            this.reso.naming(pId, this.myRemote);
 
             // Attente de la fin de l'initialisation
             while (!this.initReady)
@@ -269,9 +269,8 @@ public class Processus
                 // Pas de maitre.
                 // On attend la fin de la prochaine élection
                 // (potentiellement en cours)
-                // TODO println
+                // TODO println            	
                 System.out.println("Pas de maitre, attente d'un nouveau maitre");
-
                 this.waitingMaster = true;
                 algo.waitNewMaster();
             }
