@@ -52,45 +52,6 @@ public class ProcessusRemoteImpl extends UnicastRemoteObject implements
 		this.myLocal = myLocal;
 		this.algo = algo;
 		this.traitementSC = null;
-
-		/*
-		 * Enregistrement dans le rmiregistry local
-		 */
-		if (LocateRegistry.getRegistry() == null) {
-			LocateRegistry.createRegistry(1099);
-		}
-
-		try {
-			// Rendre l'adresse du rmiregistry disponible sur le réseau
-			String myAddress = "";
-
-			// Recupere l'adresse adaptee
-			Enumeration<NetworkInterface> en = NetworkInterface
-					.getNetworkInterfaces();
-
-			while (en.hasMoreElements()) {
-				List<InterfaceAddress> i = en.nextElement()
-						.getInterfaceAddresses();
-
-				for (InterfaceAddress l : i) {
-					InetAddress addr = l.getAddress();
-
-					if (addr.isSiteLocalAddress()) {
-						myAddress = addr.getHostAddress();
-					}
-				}
-			}
-
-			// Ensuite positionner l'adresse qui convient :
-
-			System.setProperty("java.rmi.server.hostname", myAddress);
-			Naming.rebind(Client.CLIENT_NAME + this.pId, this);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (SocketException e) {
-			e.printStackTrace();
-		}
-
 	}
 
 	/**
