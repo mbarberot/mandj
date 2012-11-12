@@ -257,7 +257,7 @@ public class Processus
         {
             int id = this.getId();
             int size = this.voisins.size();
-            if(size > 1 && voisins.get(size -1).intValue() != this.getId())
+            if(size > 1 && voisins.get(size -1).intValue() != id)
             {
                 // TODO println
                 System.out.println("Pas de maitre, election d'un nouveau maitre");
