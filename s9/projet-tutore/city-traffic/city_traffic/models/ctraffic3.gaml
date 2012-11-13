@@ -1,9 +1,9 @@
 /**
- *  ctraffic2
+ *  ctraffic3
  *  Description: 
  */
 
-model ctraffic2
+model ctraffic3
 
 global
 {
@@ -14,8 +14,9 @@ global
 	init
 	{
 		create services from: services_file;
-		create roads from: roads_file with: [directed::read("type"), idStart::read("idStart"), idEnd::read("idEnd")];
-		set city_graph <- as_edge_graph(list(roads));
+		//create species:Streets from: roads_file with: [directed::read("type"), idStart::read("idStart"), idEnd::read("idEnd")];
+		create species:Street from: roads_file returns:streets;
+		set city_graph <- as_edge_graph(list(streets));
 		create people number : 10 {
 			set location <- any_location_in (one_of(list(services)));
 		}
@@ -33,8 +34,8 @@ entities
 			draw shape: circle size:15 color: color ;
 		} 
 	}
-	
-	species roads
+	/*
+	species name:Street
 	{
 		string directed;
 		int idStart;
@@ -50,6 +51,7 @@ entities
 			draw color: color ;			
 		}
 	}
+	*/
 	
 	species people skills: [moving,citymoving]{
 		rgb color <- rgb('yellow') ;
@@ -62,6 +64,9 @@ entities
 		
 		reflex move when: target != nil {
 			do goto target: target on: city_graph;
+		
+			/*do driveto target: target on: city_graph;*/
+		
 			switch target { 
 				match location {
 					write("Objectif atteint");
@@ -82,7 +87,7 @@ experiment load_city type: gui {
 	output {
 		display test_display refresh_every: 1 {
 			species services aspect: base ; 
-			species roads aspect: base ;
+			species streets aspect: base;
 			species people aspect: base;
 		}
 	}
