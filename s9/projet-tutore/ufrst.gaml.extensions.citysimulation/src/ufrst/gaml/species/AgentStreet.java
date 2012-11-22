@@ -41,7 +41,7 @@ import msi.gaml.types.IType;
  *
  */
 @species(name="Street")
-@vars({@var(name = "waytype", type = IType.STRING_STR, init = "DOUBLE"), 
+@vars({@var(name = "waytype", type = IType.STRING_STR), 
 	@var(name = "idstart", type = IType.INT_STR, init = "-1"),
 	@var(name = "idend", type = IType.INT_STR, init = "-1")})
 public class AgentStreet extends GamlAgent
@@ -80,6 +80,10 @@ public class AgentStreet extends GamlAgent
         {
         	//TODO [DEBUG]
         	System.out.println("Get my way type ");
+        	
+        	if(this.getAttribute("waytype") == null)
+        		return "DOUBLE";
+        	
         	return (oneWay)? "UNIQUE" : "DOUBLE";
         }
         
