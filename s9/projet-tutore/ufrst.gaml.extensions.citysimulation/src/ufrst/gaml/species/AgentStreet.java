@@ -1,35 +1,14 @@
 package ufrst.gaml.species;
 
-import org.geotools.styling.Description;
-
-import com.vividsolutions.jts.geom.CoordinateFilter;
-import com.vividsolutions.jts.geom.CoordinateSequenceComparator;
-import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryComponentFilter;
-import com.vividsolutions.jts.geom.GeometryFilter;
-import com.vividsolutions.jts.geom.LineSegment;
-
 import msi.gama.kernel.simulation.ISimulation;
 import msi.gama.metamodel.agent.GamlAgent;
 import msi.gama.metamodel.population.IPopulation;
-import msi.gama.metamodel.shape.GamaShape;
-import msi.gama.metamodel.shape.IShape;
-import msi.gama.precompiler.GamlAnnotations.action;
 import msi.gama.precompiler.GamlAnnotations.getter;
 import msi.gama.precompiler.GamlAnnotations.setter;
 import msi.gama.precompiler.GamlAnnotations.species;
 import msi.gama.precompiler.GamlAnnotations.var;
 import msi.gama.precompiler.GamlAnnotations.vars;
-import msi.gama.runtime.IScope;
 import msi.gama.runtime.exceptions.GamaRuntimeException;
-import msi.gama.util.GamaPath;
-import msi.gaml.descriptions.IDescription;
-import msi.gaml.factories.DescriptionFactory;
-import msi.gaml.species.GamlSpecies;
-import msi.gaml.statements.AspectStatement;
-import msi.gaml.statements.IStatement;
 import msi.gaml.types.IType;
 
 /**
@@ -41,9 +20,11 @@ import msi.gaml.types.IType;
  *
  */
 @species(name="Street")
-@vars({@var(name = "waytype", type = IType.STRING_STR), 
+@vars({
+	@var(name = "waytype", type = IType.STRING_STR), 
 	@var(name = "idstart", type = IType.INT_STR, init = "-1"),
-	@var(name = "idend", type = IType.INT_STR, init = "-1")})
+	@var(name = "idend", type = IType.INT_STR, init = "-1")
+	})
 public class AgentStreet extends GamlAgent
 {
         
@@ -72,7 +53,9 @@ public class AgentStreet extends GamlAgent
         {
         	//TODO [DEBUG]
         	System.out.println("Set my way type ");
-        	oneWay = (isOneWay.equalsIgnoreCase("UNIQUE"));        		
+        	System.out.println("----------\n"+ isOneWay);
+        	oneWay = (isOneWay.equalsIgnoreCase("UNIQUE"));
+        	System.out.println("waytype = " + oneWay + "\n---------------");
         }
                 
         @getter("waytype")
@@ -81,9 +64,14 @@ public class AgentStreet extends GamlAgent
         	//TODO [DEBUG]
         	System.out.println("Get my way type ");
         	
-        	if(this.getAttribute("waytype") == null)
-        		return "DOUBLE";
         	
+        	/*if(this.getAttribute("waytype") == null)
+        	{
+        		System.out.println("GetWayType Attribute == null");
+        		return "DOUBLE";
+        	}*/
+        		
+        	System.out.println("waytype =" + oneWay );
         	return (oneWay)? "UNIQUE" : "DOUBLE";
         }
         
