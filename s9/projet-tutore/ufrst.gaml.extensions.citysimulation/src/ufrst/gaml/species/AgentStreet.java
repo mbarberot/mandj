@@ -80,7 +80,8 @@ public class AgentStreet extends GamlAgent
         {
         	//TODO [DEBUG]
         	System.out.println("Set my idStart with : " + start);
-        	idStart = start;        	
+        	idStart = start;   
+        	this.setAttribute("idstart", start);
         }
         
         @getter("idstart")
@@ -97,6 +98,7 @@ public class AgentStreet extends GamlAgent
         	//TODO [DEBUG]
         	System.out.println("Set my idEnd with : " + end);
         	idEnd = end;
+        	this.setAttribute("idend", end);
         }
         
         @getter("idend")
