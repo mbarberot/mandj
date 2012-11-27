@@ -1,9 +1,10 @@
 /**
- *  ctraffic3
+ *  ctraffic4
+ *  Author: kawa
  *  Description: 
  */
 
-model ctraffic3
+model ctraffic4
 
 global
 {
@@ -14,16 +15,8 @@ global
 	init
 	{
 		create services from: services_file;
-		create streets from: roads_file;
-		
-		
-		/*create 
-			species:myStreet 
-			from: roads_file 
-			returns:streets 
-			with:[waytype::read("type"), idstart::read("idStart"), idend::read("idEnd")];*/
-			
-		set city_graph <- as_edge_graph(list(streets));
+		create roads from: roads_file with: [waytype::read("type"), idstart::read("idStart"), idend::read("idEnd")];
+		set city_graph <- as_edge_graph(list(roads));
 		create people number : 10 {
 			set location <- any_location_in (one_of(list(services)));
 		}
@@ -42,25 +35,22 @@ entities
 		} 
 	}
 	
-	species streets
+	species roads parent:Street
 	{
+		string directed;
+		int idStart;
+		int idEnd;
 		rgb color <- rgb('black');
-		/*
-		string oneWay <- waytype;
 		
-		if condition:oneWay = "DOUBLE"
+		if condition:waytype = "UNIQUE"
 		{
 			set color <- rgb('green');
 		}
-		*/
 		
-		aspect base 
-		{
-			draw shape:line color: color ;			
+		aspect base {
+			draw color: color ;			
 		}
 	}
-	
-	
 	
 	species people skills: [moving,citymoving]{
 		rgb color <- rgb('yellow') ;
@@ -73,9 +63,6 @@ entities
 		
 		reflex move when: target != nil {
 			do goto target: target on: city_graph;
-		
-			/*do driveto target: target on: city_graph;*/
-		
 			switch target { 
 				match location {
 					write("Objectif atteint");
@@ -96,7 +83,7 @@ experiment load_city type: gui {
 	output {
 		display test_display refresh_every: 1 {
 			species services aspect: base ; 
-			species streets aspect: base;
+			species roads aspect: base ;
 			species people aspect: base;
 		}
 	}
