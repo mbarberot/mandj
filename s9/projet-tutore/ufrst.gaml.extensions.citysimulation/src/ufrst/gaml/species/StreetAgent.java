@@ -25,7 +25,7 @@ import msi.gaml.types.IType;
 	@var(name = "idstart", type = IType.INT_STR, init = "-1"),
 	@var(name = "idend", type = IType.INT_STR, init = "-1")
 	})
-public class AgentStreet extends GamlAgent
+public class StreetAgent extends GamlAgent
 {
         
         /**
@@ -40,7 +40,7 @@ public class AgentStreet extends GamlAgent
         /** Identifier of the node of the end of the street (used if the street is a one-way)*/
         private int idEnd;
         
-        public AgentStreet(ISimulation sim, IPopulation s) throws GamaRuntimeException 
+        public StreetAgent(ISimulation sim, IPopulation s) throws GamaRuntimeException 
         {
                 super(sim, s);
         }
@@ -71,7 +71,7 @@ public class AgentStreet extends GamlAgent
         		return "DOUBLE";
         	}*/
         		
-        	System.out.println("waytype =" + oneWay );
+        	System.out.println("waytype = " + oneWay );
         	return (oneWay)? "UNIQUE" : "DOUBLE";
         }
         
