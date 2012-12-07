@@ -1,10 +1,10 @@
 /**
- *  ctraffic4
- *  Author: kawa
- *  Description: 
+ *  ctraffic5
+ *  Author: 
+ *  Description: model using the "createStreet" statement 
  */
 
-model ctraffic4
+model ctraffic5
 
 global
 {
@@ -12,19 +12,19 @@ global
 	var roads_file type:string init:"../includes/roads.shp";
 	var bounds_file type:string init:"../includes/bounds.shp";
 	
-	list piou;
+	
 	
 	graph city_graph;
 	init
 	{
 		create services from: services_file with: [identifier::read("id")];
-		create roads from: roads_file with: [waytype::read("type"), idstart::read("idStart"), idend::read("idEnd")];
+		createStreet from: roads_file with: [waytype::read("type"), idstart::read("idStart"), idend::read("idEnd")] returns:roads;
 		set city_graph <- as_edge_graph(list(roads));
 		create people number : 10 {
 			set location <- any_location_in (one_of(list(services)));
 		}
 		
-		createStreet species:Street from:roads_file returns:piou;
+		
 	}
 }
 
@@ -84,6 +84,7 @@ entities
 	}
 	
 }
+
 experiment load_city type: gui {
 	output {
 		display test_display refresh_every: 1 {
@@ -93,4 +94,5 @@ experiment load_city type: gui {
 		}
 	}
 }
+
 
