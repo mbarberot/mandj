@@ -35,17 +35,18 @@ import msi.gama.util.GamaList;
 import msi.gama.util.GamaMap;
 import msi.gama.util.file.GamaFile;
 import msi.gaml.compilation.AbstractGamlAdditions;
+import msi.gaml.compilation.ISymbol;
 import msi.gaml.descriptions.IDescription;
 import msi.gaml.expressions.IExpression;
 import msi.gaml.operators.Cast;
 import msi.gaml.species.ISpecies;
 import msi.gaml.statements.AbstractStatementSequence;
 import msi.gaml.statements.Arguments;
-import msi.gaml.statements.CreateStatement;
 import msi.gaml.statements.Facets.Facet;
 import msi.gaml.statements.IStatement;
 import msi.gaml.types.GamaFileType;
 import msi.gaml.types.IType;
+import msi.gaml.types.Types;
 
 /**
  * Custom statement for streets creation.<br/>
@@ -96,17 +97,35 @@ public class CreateStreetStatement extends AbstractStatementSequence implements 
 		from = null;
 		speciesExpr = null;
 	}
+	
+	@Override
+	public void setChildren(final List<? extends ISymbol> com) {
+		sequence = new AbstractStatementSequence(description);
+		sequence.setName("commands of createStreet ");
+		sequence.setChildren(com);
+	}
+
+	@Override
+	public void enterScope(final IScope scope) {
+		if ( returnString != null ) {
+			scope.addVarWithValue(returnString, null);
+		}
+		super.enterScope(scope);
+	}
 
 	@Override
 	public void setFormalArgs(Arguments args) {
-		// TODO Auto-generated method stub
-		
+		init = args;
 	}
 
 	@Override
 	public void setRuntimeArgs(Arguments args) {
 		// TODO Auto-generated method stub
 		
+	}
+	@Override
+	public IType getReturnType() {
+		return Types.get(IType.LIST);
 	}
 	
 	@Override
