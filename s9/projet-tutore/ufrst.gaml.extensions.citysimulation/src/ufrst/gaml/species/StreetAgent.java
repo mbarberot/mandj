@@ -1,5 +1,7 @@
 package ufrst.gaml.species;
 
+import com.vividsolutions.jts.geom.Geometry;
+
 import msi.gama.kernel.simulation.ISimulation;
 import msi.gama.metamodel.agent.GamlAgent;
 import msi.gama.metamodel.population.IPopulation;
@@ -28,7 +30,8 @@ import msi.gaml.types.IType;
 @vars({
 	@var(name = "waytype", type = IType.STRING_STR), 
 	@var(name = "idstart", type = IType.INT_STR, init = "-1"),
-	@var(name = "idend", type = IType.INT_STR, init = "-1")
+	@var(name = "idend", type = IType.INT_STR, init = "-1"),
+	@var(name = "clone", type = IType.BOOL_STR, init = "false")
 	})
 public class StreetAgent extends GamlAgent
 {
@@ -45,6 +48,8 @@ public class StreetAgent extends GamlAgent
         /** Identifier of the node of the end of the street (used if the street is a one-way)*/
         private int idEnd;
         
+        private boolean isClone = false;
+        
         public StreetAgent(ISimulation sim, IPopulation s) throws GamaRuntimeException 
         {
                 super(sim, s);
@@ -57,8 +62,37 @@ public class StreetAgent extends GamlAgent
         public void setWayType(String isOneWay)
         {
         	oneWay = (isOneWay.equalsIgnoreCase("UNIQUE"));
+        	setAttribute("waytype", isOneWay);
+        	
+        	// If not a one way => adding a copy of the agent with an inversed geometry in the population
+        	if(!oneWay)
+        	{
+        		StreetAgent theCopy = new StreetAgent(getSimulation(), getPopulation());
+        		Geometry geom = ((Geometry) this.getInnerGeometry().clone()).reverse(); 
+        	
+        		theCopy.setGeometry(this.getGeometry());
+        		theCopy.setInnerGeometry(geom);
+        		
+        		// Display the state of the geometry
+        		System.out.println("Geometry of this : " + this.getInnerGeometry().toString());
+        		System.out.println("Geometry of the clone : " + theCopy.getInnerGeometry().toString());
+        		theCopy.setLocation(getLocation());        		
+        		      		
+        		
+        		System.out.println("Number of roads in the population : " + getPopulation().size());
+        		//Add the new agent in the population
+        		theCopy.setClone(true);
+        		getPopulation().add(theCopy, null);
+        		System.out.println("Number of roads in the population (after clone) : " + getPopulation().size());
+        	}
+        		
         }
-                
+              
+        public void setWayType(boolean isOneWay)
+        {
+        	this.oneWay = isOneWay;
+        }
+        
         @getter("waytype")
         public String getWayType()
         {
@@ -89,6 +123,19 @@ public class StreetAgent extends GamlAgent
         public int getIdEnd()
         {
         	return idEnd;
+        }
+        
+        @setter("clone")
+        public void setClone(boolean isAClone)
+        {
+        	isClone = isAClone;
+        	this.setAttribute("clone", isAClone);
+        }
+        
+        @getter("clone")
+        public boolean setClone()
+        {
+        	return isClone;
         }
 
 
