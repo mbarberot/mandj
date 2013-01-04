@@ -8,23 +8,24 @@ model ctraffic5
 
 global
 {
-	var services_file type: string init:"../includes/services.shp";
-	var roads_file type:string init:"../includes/roads.shp";
-	var bounds_file type:string init:"../includes/bounds.shp";
-	
-	
+	var roads_file type:string init:"../includes/gamamodel/road.shp";
+	var bounds_file type:string init:"../includes/gamamodel/bounds.shp";
 	
 	graph city_graph;
 	init
 	{
-		create services from: services_file with: [identifier::read("id")];
-		createStreet from: roads_file with: [waytype::read("type"), idstart::read("idStart"), idend::read("idEnd")] returns:roads;
-		set city_graph <- as_edge_graph(list(roads));
-		create people number : 10 {
-			set location <- any_location_in (one_of(list(services)));
+		create roads from: roads_file with: [waytype::read("TYPE")];
+		set city_graph <- directed(as_edge_graph(list(roads)));
+			
+		create people number : 100 {
+			let my_road type: roads <- one_of (list(roads));
+			set location <- any_location_in (my_road.shape);
 		}
 		
-		
+		create services number : 50 {
+			let my_road type: roads <- one_of (list(roads));
+			set location <- any_location_in(my_road.shape);
+		}
 	}
 }
 
@@ -32,54 +33,56 @@ environment bounds:bounds_file;
 
 entities
 {
-	species services parent:Intersection
-	{
-		rgb color <- rgb('red') ;  
-		aspect base { 
-			draw shape: circle size:15 color: color ;
-		} 
+	species services{
+		rgb color <- rgb('green');
+		aspect basic{
+			draw color:color size : 50;
+		}
 	}
 	
 	species roads parent:Street
 	{
-		string directed;
 		int idStart;
 		int idEnd;
 		rgb color <- rgb('black');
-		
-		if condition:waytype = "UNIQUE"
-		{
-			set color <- rgb('green');
+
+		if( waytype = "DOUBLE"){
+			if(!clone)
+			{
+				set color <- rgb('green');
+			} else {
+				set color <- rgb('red');
+			}
 		}
-		
 		aspect base {
-			draw color: color ;			
+				draw color: color;
 		}
 	}
 	
-	species people skills: [moving,citymoving]{
+	species people skills: [moving]{
 		rgb color <- rgb('yellow') ;
-		point target <- nil; 
-		string hello <- nil;
+		services target <- nil; 
 		
-		reflex set_new_target when: target = nil {
-			set target <- any_location_in(one_of(services));
+		reflex search_a_target when: target = nil {
+			set target <- one_of(list(services));
 		}
 		
+		action new_target {
+			set target <- one_of(list(services));
+		}
 		reflex move when: target != nil {
 			do goto target: target on: city_graph;
-			switch target { 
+			switch target.location { 
 				match location {
 					write("Objectif atteint");
-					set target <- nil ;					
+					set target <- nil;
+					do new_target ;			
 				}
 			}
-		}
-		
-		
+		}		
 		
 		aspect base { 
-			draw shape: circle size:8 color: color ;
+			draw shape: circle size:10 color: color ;
 		} 	
 	}
 	
