@@ -34,8 +34,7 @@ import msi.gaml.types.IType;
 	@var(name = "clone", type = IType.BOOL_STR, init = "false")
 	})
 public class StreetAgent extends GamlAgent
-{
-        
+{        
         /**
          * Flag for one-way streets
          * True if this is a one-way streets, false otherwise
@@ -48,6 +47,7 @@ public class StreetAgent extends GamlAgent
         /** Identifier of the node of the end of the street (used if the street is a one-way)*/
         private int idEnd;
         
+        //TODO : à virer id start et id end
         private boolean isClone = false;
         
         public StreetAgent(ISimulation sim, IPopulation s) throws GamaRuntimeException 
@@ -61,6 +61,7 @@ public class StreetAgent extends GamlAgent
         @setter("waytype")
         public void setWayType(String isOneWay)
         {
+        	//TODO => comparaison sur 0 : double sens / 1 : sens unique / 2 : sens unique avec inversion du sens de digitalisation
         	oneWay = (isOneWay.equalsIgnoreCase("UNIQUE"));
         	setAttribute("waytype", isOneWay);
         	
